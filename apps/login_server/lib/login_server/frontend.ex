@@ -52,7 +52,7 @@ defmodule LoginServer.Frontend do
 
   @impl true
   def handle_halt_error(%Client{id: id} = client, reason) do
-    Logger.info("Client refused: #{id} - #{inspect(reason)}")
+    Logger.warn("Client refused: #{id} - #{inspect(reason)}")
     Client.send(client, "fail #{inspect(reason)}")
     {:ok, client}
   end

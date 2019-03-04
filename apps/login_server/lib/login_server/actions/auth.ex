@@ -1,31 +1,25 @@
 defmodule LoginServer.Actions.Auth do
   @moduledoc """
-  TODO: Too much changes on this Module....
+  Manage the login pipe when a client connect to the Frontend
   """
 
   alias ElvenGard.Structures.Client
   alias LoginServer.Crypto
 
+  @type action_return :: {:ok, map} | {:halt, any, Client.t()}
+
   @client_version Application.get_env(:login_server, :client_version)
 
-  @spec player_connect(Client.t(), map) :: {:halt, any, Client.t()}
-  def player_connect(ctx, params) do
-    with %{
-           username: user,
-           password: enc_password,
-           version: version
-         } <- params,
-         :ok <- check_version(version),
-         {:ok, password} <- decrypt_password(enc_password),
-         {:ok, account_id} <- get_account_id(user, password),
-         {:ok, server_list} <- get_server_list(),
-         {:ok, session} <- create_session(account_id, user, password),
-         packet <- create_res_packet(session, server_list) do
-      {:halt, {:ok, packet}, ctx}
-    else
-      err ->
-        {:halt, err, ctx}
-    end
+  @spec player_connect(Client.t(), map) :: action_return
+  def player_connect(client, params) do
+    params
+    |> merge_client(client)
+    |> check_version()
+    |> decrypt_password()
+    |> get_account_id()
+    |> create_session()
+    |> get_server_list()
+    |> create_res_packet()
   end
 
   #
@@ -33,60 +27,78 @@ defmodule LoginServer.Actions.Auth do
   #
 
   @doc false
-  @spec check_version(String.t()) :: :ok | {:error, :TOO_OLD}
-  defp check_version(version) do
-    if version == @client_version, do: :ok, else: {:error, :TOO_OLD}
-  end
+  @spec merge_client(map, Client.t()) :: map
+  defp merge_client(params, client), do: %{params | client: client}
 
-  @spec decrypt_password(String.t()) :: {:ok, String.t()}
-  defp decrypt_password(enc_pass) do
-    pass = Crypto.decrypt_pass(enc_pass)
-    {:ok, pass}
+  @doc false
+  @spec check_version(map) :: action_return
+  defp check_version(%{"version" => version, "client" => client} = params) do
+    if version == @client_version,
+      do: {:ok, params},
+      else: {:halt, {:error, :TOO_OLD}, client}
   end
 
   @doc false
-  @spec get_account_id(String.t(), String.t()) ::
-          {:ok, integer} | {:error, :BAD_CREDENTIALS}
-  defp get_account_id(username, password) do
-    # case Accounts.get_account_id(username, password) do
-    #   nil -> {:error, :BAD_CREDENTIALS}
-    #   account_id -> {:ok, account_id}
-    # end
+  @spec decrypt_password(action_return) :: action_return
+  defp decrypt_password({:halt, _, _} = error), do: error
 
+  defp decrypt_password({:ok, %{"password" => password} = params}) do
+    {:ok, %{params | password: Crypto.decrypt_pass(password)}}
+  end
+
+  @doc false
+  @spec get_account_id(action_return) :: action_return
+  defp get_account_id({:halt, _, _} = error), do: error
+
+  defp get_account_id({:ok, params}) do
+    %{
+      "username" => username,
+      "password" => password,
+      "client" => client
+    } = params
+
+    # TODO: Need to call the Auth service here
     if username == "admin" and password == "admin" do
-      {:ok, 1}
+      {:ok, %{params | account_id: 1}}
     else
-      {:error, :BAD_CREDENTIALS}
+      {:halt, {:error, :BAD_CREDENTIALS}, client}
     end
   end
 
   @doc false
-  @spec get_server_list() :: {:ok, String.t()} | {:error, :MAINTENANCE}
-  defp get_server_list() do
-    # case WorldManager.Interfaces.server_list() do
-    #   nil -> {:error, :MAINTENANCE}
-    #   server_list -> {:ok, server_list}
-    # end
+  @spec create_session(action_return) :: action_return
+  defp create_session({:halt, _, _} = error), do: error
 
+  defp create_session({:ok, params}) do
+    # TODO: Need to call the Auth or SessionManager service here
+    session_id = 1234
+
+    {:ok, %{params | session_id: session_id}}
+  end
+
+  @doc false
+  @spec get_server_list(action_return) :: action_return
+  defp get_server_list({:halt, _, _} = error), do: error
+
+  defp get_server_list({:ok, params}) do
+    # TODO: Need to call the WorldManager service here
     server_list = "127.0.0.1:5000:0:1.1.SomeTest -1:-1:-1:10000.10000.1"
-    {:ok, server_list}
+
+    {:ok, %{params | server_list: server_list}}
   end
 
   @doc false
-  @spec create_session(non_neg_integer, String.t(), String.t()) ::
-          {:ok, String.t()} | {:error, :ID_ALREADY_USE}
-  defp create_session(_account_id, _username, _password) do
-    # case SessionManager.Interfaces.create_session(account_id, username, password) do
-    #   {:ok, session} -> {:ok, session}
-    #   _ -> {:error, :ID_ALREADY_USE}
-    # end
+  @spec create_res_packet(action_return) :: action_return
+  defp create_res_packet({:halt, _, _} = error), do: error
 
-    {:ok, 123}
-  end
+  defp create_res_packet({:ok, params}) do
+    %{
+      "session_id" => session_id,
+      "server_list" => server_list,
+      "client" => client
+    } = params
 
-  @doc false
-  @spec create_res_packet(integer, String.t()) :: String.t()
-  defp create_res_packet(session, server_list) do
-    "NsTeST #{session} #{server_list}"
+    res_packet = "NsTeST #{session_id} #{server_list}"
+    {:halt, {:ok, res_packet}, client}
   end
 end
