@@ -1,0 +1,18 @@
+APP="flugel"
+
+BUILD_HOST="127.0.0.1"
+BUILD_USER="deploy"
+BUILD_AT="/tmp/edeliver/$APP/builds"
+
+RELEASE_DIR="/tmp/edeliver/$APP/builds/_build/prod/rel/$APP"
+
+# prevent re-installing node modules; this defaults to "."
+# GIT_CLEAN_PATHS="_build rel priv/static"
+
+STAGING_HOSTS="127.0.0.1"
+STAGING_USER="deploy"
+TEST_AT="/tmp/deploy/staging"
+
+PRODUCTION_HOSTS="127.0.0.1"
+PRODUCTION_USER="deploy"
+DELIVER_TO="/home/deploy"
