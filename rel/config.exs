@@ -9,7 +9,7 @@
 
 use Mix.Releases.Config,
     # This sets the default release built by `mix release`
-    default_release: :emulator,
+    default_release: :flugel,
     # This sets the default environment used by `mix release`
     default_environment: Mix.env()
 
@@ -40,7 +40,7 @@ environment :prod do
   set vm_args: "rel/vm.args"
   set cookie:
     :sha256
-    |> :crypto.hash(System.get_env("COOKIE"))
+    |> :crypto.hash(System.get_env("COOKIE") || "ImAStrongCookie....")
     |> Base.encode16()
     |> String.to_atom()
 end
@@ -50,7 +50,7 @@ end
 # when running `mix release`, the first release in the file
 # will be used by default
 
-release :emulator do
+release :flugel do
   set version: "0.1.0"
   set applications: [
     :runtime_tools,
