@@ -22,11 +22,7 @@ defmodule WorldServer.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {
-        :elven_gard,
-        git: "https://github.com/ImNotAVirus/ElvenGard_V2.git",
-        branch: :"refactoring-only_elven"
-      }
+      {:elven_gard, git: "https://github.com/ImNotAVirus/ElvenGard_V2.git"}
     ]
   end
 end
