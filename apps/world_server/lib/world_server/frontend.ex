@@ -9,12 +9,22 @@ defmodule WorldServer.Frontend do
     port: 5000
 
   require Logger
+
+  alias ElvenGard.Service
   alias ElvenGard.Structures.Client
+
+  #
+  # `ElvenGard.Helpers.Frontend` implementation
+  #
 
   @impl true
   def handle_init(args) do
-    port = get_in(args, [:port])
+    port = Keyword.get(args, :port)
     Logger.info("World server started on port #{port}")
+
+    # Register in world_manager after 2 secs (ensure world_manager is started)
+    Process.send_after(self(), :register_me, 2_000)
+
     {:ok, nil}
   end
 
@@ -41,5 +51,15 @@ defmodule WorldServer.Frontend do
   def handle_error(%Client{id: id} = client, reason) do
     Logger.error("An error occured with client #{id}: #{inspect(reason)}")
     {:ok, client}
+  end
+
+  #
+  # `GenServer` implementation
+  #
+
+  @impl true
+  def handle_info(:register_me, state) do
+    :ok = Service.cast(:world_manager, {:add_world, self()})
+    {:noreply, state}
   end
 end

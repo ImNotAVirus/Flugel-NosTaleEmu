@@ -13,7 +13,7 @@ defmodule LoginServer.Actions.Auth do
   @spec player_connect(Client.t(), map) :: action_return
   def player_connect(client, params) do
     params
-    |> merge_client(client)
+    |> normalize_params(client)
     |> check_version()
     |> decrypt_password()
     |> get_account_id()
@@ -27,12 +27,21 @@ defmodule LoginServer.Actions.Auth do
   #
 
   @doc false
-  @spec merge_client(map, Client.t()) :: map
-  defp merge_client(params, client), do: %{params | client: client}
+  @spec normalize_params(map, Client.t()) :: map
+  defp normalize_params(params, client) do
+    other_params = %{
+      client: client,
+      account_id: nil,
+      session_id: nil,
+      server_list: nil
+    }
+
+    Map.merge(params, other_params)
+  end
 
   @doc false
   @spec check_version(map) :: action_return
-  defp check_version(%{"version" => version, "client" => client} = params) do
+  defp check_version(%{version: version, client: client} = params) do
     if version == @client_version,
       do: {:ok, params},
       else: {:halt, {:error, :TOO_OLD}, client}
@@ -42,7 +51,7 @@ defmodule LoginServer.Actions.Auth do
   @spec decrypt_password(action_return) :: action_return
   defp decrypt_password({:halt, _, _} = error), do: error
 
-  defp decrypt_password({:ok, %{"password" => password} = params}) do
+  defp decrypt_password({:ok, %{password: password} = params}) do
     {:ok, %{params | password: Crypto.decrypt_pass(password)}}
   end
 
@@ -52,9 +61,9 @@ defmodule LoginServer.Actions.Auth do
 
   defp get_account_id({:ok, params}) do
     %{
-      "username" => username,
-      "password" => password,
-      "client" => client
+      username: username,
+      password: password,
+      client: client
     } = params
 
     # TODO: Need to call the Auth service here
@@ -93,9 +102,9 @@ defmodule LoginServer.Actions.Auth do
 
   defp create_res_packet({:ok, params}) do
     %{
-      "session_id" => session_id,
-      "server_list" => server_list,
-      "client" => client
+      session_id: session_id,
+      server_list: server_list,
+      client: client
     } = params
 
     res_packet = "NsTeST #{session_id} #{server_list}"

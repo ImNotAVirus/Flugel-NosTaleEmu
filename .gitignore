@@ -28,3 +28,6 @@ flugel-*.tar
 # Ignore edeliver config and releases
 .deliver/config
 .deliver/releases/
+
+# Ignore Mnesia files
+Mnesia.*
