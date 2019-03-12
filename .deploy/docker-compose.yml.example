@@ -1,0 +1,37 @@
+version: '3.1'
+
+services:
+  build_node:
+    container_name: flugel-build
+    image: elixir-deploy
+    restart: always
+    expose:
+      - "22"
+
+  staging_node:
+    container_name: flugel-staging
+    image: elixir-deploy
+    restart: always
+    expose:
+      - "22"
+
+  prod-node01:
+    container_name: flugel-prod-node01
+    image: elixir-deploy
+    restart: always
+    expose:
+      - "22"
+
+  prod-node02:
+    container_name: flugel-prod-node02
+    image: elixir-deploy
+    restart: always
+    expose:
+      - "22"
+
+  prod-node03:
+    container_name: flugel-prod-node03
+    image: elixir-deploy
+    restart: always
+    expose:
+      - "22"
