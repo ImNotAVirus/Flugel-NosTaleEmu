@@ -33,4 +33,6 @@ config :elven_gard,
   num_acceptors: 5,
   response_timeout: 3000
 
-config :login_server, client_version: "0.9.3.3086"
+config :login_server,
+  port: System.get_env("LOGIN_PORT") || 4002,
+  client_version: "0.9.3.3086"

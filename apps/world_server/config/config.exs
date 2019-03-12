@@ -32,3 +32,6 @@ use Mix.Config
 config :elven_gard,
   num_acceptors: 5,
   response_timeout: 3000
+
+config :world_server,
+  port: System.get_env("WORLD_PORT") || 5000

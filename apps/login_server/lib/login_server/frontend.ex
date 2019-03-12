@@ -6,7 +6,7 @@ defmodule LoginServer.Frontend do
   use ElvenGard.Helpers.Frontend,
     packet_encoder: LoginServer.PacketEncoder,
     packet_handler: LoginServer.PacketHandler,
-    port: 4002
+    port: Application.get_env(:login_server, :port)
 
   require Logger
   alias ElvenGard.Structures.Client
