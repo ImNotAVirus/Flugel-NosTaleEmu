@@ -22,8 +22,9 @@ defmodule WorldServer.Frontend do
     port = Keyword.get(args, :port)
     Logger.info("World server started on port #{port}")
 
-    # Register in world_manager after 2 secs (ensure world_manager is started)
-    Process.send_after(self(), :register_me, 2_000)
+    # Register in world_manager after 1 secs (ensure world_manager is started)
+    # TODO: Clean that
+    Process.send_after(self(), :register_me, 1_000)
 
     {:ok, nil}
   end

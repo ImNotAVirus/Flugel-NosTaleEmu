@@ -24,6 +24,8 @@ defmodule ElvenGard.Services.GenericService do
         :pg2.create(name)
         :ok = :pg2.join(name, self())
 
+        Process.flag(:trap_exit, true)
+
         {:ok, nil}
       end
 
