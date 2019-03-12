@@ -31,3 +31,7 @@ flugel-*.tar
 
 # Ignore Mnesia files
 Mnesia.*
+
+# Ignore all .deploy except Dockerfile
+/.deploy/*
+!/.deploy/Dockerfile
