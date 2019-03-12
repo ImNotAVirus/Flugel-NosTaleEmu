@@ -27,6 +27,8 @@ This project is only a test for the toolkit [ElvenGard](https://github.com/ImNot
     nano .deliver/config
     ssh-keygen -R ip_addy
     mix edeliver build release production
+    mix edeliver deploy release to production
+    mix edeliver start production
 
 ## Contributing
 
