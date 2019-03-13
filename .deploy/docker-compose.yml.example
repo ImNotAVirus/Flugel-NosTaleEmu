@@ -5,6 +5,8 @@ services:
     container_name: flugel-build
     image: elixir-deploy
     restart: always
+    environment:
+      - ERLANG_COOKIE=S0m3V3ryS3cur3C00ki3!!!
     expose:
       - "22"
 
@@ -15,6 +17,7 @@ services:
     expose:
       - "22"
 
+  # Login node
   prod-node01:
     container_name: flugel-prod-node01
     image: elixir-deploy
@@ -22,6 +25,7 @@ services:
     expose:
       - "22"
 
+  # World node 01
   prod-node02:
     container_name: flugel-prod-node02
     image: elixir-deploy
@@ -29,6 +33,7 @@ services:
     expose:
       - "22"
 
+  # World node 02
   prod-node03:
     container_name: flugel-prod-node03
     image: elixir-deploy

@@ -42,7 +42,7 @@ environment :prod do
   # set vm_args: "rel/vm.args"
   set cookie:
     :sha256
-    |> :crypto.hash(System.get_env("COOKIE"))
+    |> :crypto.hash(System.get_env("ERLANG_COOKIE"))
     |> Base.encode16()
     |> String.to_atom()
 end
