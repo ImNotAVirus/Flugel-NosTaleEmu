@@ -27,6 +27,8 @@ WORKDIR /home/deploy
 
 COPY id_rsa.pub .ssh/authorized_keys
 
+ENV REPLACE_OS_VARS=true
+
 EXPOSE 22
 
 ENTRYPOINT ["/usr/sbin/sshd"]
