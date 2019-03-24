@@ -21,6 +21,16 @@ defmodule LoginServer.PacketEncoder do
     data
     |> Crypto.decrypt()
     |> String.replace("\n", "")
-    |> String.split(:binary.compile_pattern([" ", "\v"]))
+    |> String.split(" ", parts: 2)
+    |> List.to_tuple()
+  end
+
+  @impl true
+  def post_decode({header, params}, _client) do
+    delimitor = :binary.compile_pattern([" ", "\v"])
+    splited = String.split(params, delimitor)
+
+
+    {header, splited}
   end
 end

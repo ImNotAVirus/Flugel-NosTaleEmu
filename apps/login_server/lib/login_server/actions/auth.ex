@@ -10,8 +10,8 @@ defmodule LoginServer.Actions.Auth do
 
   @client_version Application.get_env(:login_server, :client_version)
 
-  @spec player_connect(Client.t(), map) :: action_return
-  def player_connect(client, params) do
+  @spec player_connect(Client.t(), String.t(), map) :: action_return
+  def player_connect(client, _header, params) do
     params
     |> normalize_params(client)
     |> check_version()

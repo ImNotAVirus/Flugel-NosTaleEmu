@@ -28,7 +28,7 @@ defmodule LoginServer.PacketHandler do
     @desc "Something like `0.9.3.3071`"
     field :version, :string
 
-    resolve &Auth.player_connect/2
+    resolve &Auth.player_connect/3
   end
 
   default_packet do
