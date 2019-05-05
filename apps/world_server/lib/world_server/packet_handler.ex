@@ -6,6 +6,7 @@ defmodule WorldServer.PacketHandler do
   use ElvenGard.Helpers.Packet
 
   alias WorldServer.Actions.Auth
+  alias ElvenGard.Types.Textual.{IntegerType, StringType}
 
   #
   # Useless packets
@@ -28,8 +29,8 @@ defmodule WorldServer.PacketHandler do
   /!\\ This packet doesn't have any packet header. Here, it't faked by Encoder
   """
   packet "session_id" do
-    field :session_id, :integer
-    resolve &Auth.process_session_id/2
+    field :session_id, IntegerType
+    resolve &Auth.process_session_id/3
   end
 
   @desc """
@@ -39,8 +40,8 @@ defmodule WorldServer.PacketHandler do
   /!\\ This packet doesn't have any packet header. Here, it't faked by Encoder
   """
   packet "username" do
-    field :username, :string
-    resolve &Auth.process_username/2
+    field :username, StringType
+    resolve &Auth.process_username/3
   end
 
   @desc """
@@ -50,7 +51,7 @@ defmodule WorldServer.PacketHandler do
   /!\\ This packet doesn't have any packet header. Here, it't faked by Encoder
   """
   packet "password" do
-    field :password, :string
-    resolve &Auth.process_password/2
+    field :password, StringType
+    resolve &Auth.process_password/3
   end
 end

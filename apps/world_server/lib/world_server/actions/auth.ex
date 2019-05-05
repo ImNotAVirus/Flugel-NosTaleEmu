@@ -6,8 +6,8 @@ defmodule WorldServer.Actions.Auth do
   alias ElvenGard.Structures.Client
   alias WorldServer.Actions.CharacterManagement
 
-  @spec process_session_id(Client.t(), %{session_id: integer}) :: {:cont, Client.t()}
-  def process_session_id(client, params) do
+  @spec process_session_id(Client.t(), String.t(), %{session_id: integer}) :: {:cont, Client.t()}
+  def process_session_id(client, _header, params) do
     new_client =
       client
       |> Client.put_metadata(:session_id, params.session_id)
@@ -16,8 +16,8 @@ defmodule WorldServer.Actions.Auth do
     {:cont, new_client}
   end
 
-  @spec process_username(Client.t(), %{username: String.t()}) :: {:cont, Client.t()}
-  def process_username(client, params) do
+  @spec process_username(Client.t(), String.t(), %{username: String.t()}) :: {:cont, Client.t()}
+  def process_username(client, _header, params) do
     new_client =
       client
       |> Client.put_metadata(:username, params.username)
@@ -26,8 +26,8 @@ defmodule WorldServer.Actions.Auth do
     {:cont, new_client}
   end
 
-  @spec process_password(Client.t(), %{password: String.t()}) :: {:cont, Client.t()}
-  def process_password(client, params) do
+  @spec process_password(Client.t(), String.t(), %{password: String.t()}) :: {:cont, Client.t()}
+  def process_password(client, _header, params) do
     new_client =
       client
       |> Client.put_metadata(:password, params.password)

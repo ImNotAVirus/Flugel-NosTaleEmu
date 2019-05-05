@@ -3,7 +3,9 @@ defmodule LoginServer.PacketEncoder do
   Encode and decode a Login packet
   """
 
-  use ElvenGard.Helpers.PacketEncoder
+  use ElvenGard.PacketEncoder.TextualEncoder,
+    model: LoginServer.PacketHandler,
+    separator: [" ", "\v"]
 
   require Logger
 
@@ -16,21 +18,12 @@ defmodule LoginServer.PacketEncoder do
   end
 
   @impl true
-  @spec decode(binary) :: [binary]
+  @spec decode(binary) :: {term, map}
   def decode(data) do
     data
     |> Crypto.decrypt()
     |> String.replace("\n", "")
     |> String.split(" ", parts: 2)
     |> List.to_tuple()
-  end
-
-  @impl true
-  def post_decode({header, params}, _client) do
-    delimitor = :binary.compile_pattern([" ", "\v"])
-    splited = String.split(params, delimitor)
-
-
-    {header, splited}
   end
 end

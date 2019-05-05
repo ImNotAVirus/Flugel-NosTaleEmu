@@ -10,7 +10,7 @@ defmodule WorldServer.Frontend do
 
   require Logger
 
-  alias ElvenGard.Service
+  # alias ElvenGard.Service
   alias ElvenGard.Structures.Client
 
   #
@@ -24,7 +24,7 @@ defmodule WorldServer.Frontend do
 
     # Register in world_manager after 1 secs (ensure world_manager is started)
     # TODO: Clean that
-    Process.send_after(self(), :register_me, 1_000)
+    # Process.send_after(self(), :register_me, 1_000)
 
     {:ok, nil}
   end
@@ -58,9 +58,9 @@ defmodule WorldServer.Frontend do
   # `GenServer` implementation
   #
 
-  @impl true
-  def handle_info(:register_me, state) do
-    :ok = Service.cast(:world_manager, {:add_world, self()})
-    {:noreply, state}
-  end
+  # @impl true
+  # def handle_info(:register_me, state) do
+  #   :ok = Service.cast(:world_manager, {:add_world, self()})
+  #   {:noreply, state}
+  # end
 end

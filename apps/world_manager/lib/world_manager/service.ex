@@ -28,7 +28,6 @@ defmodule ElvenGard.Services.GenericService do
 
         {:ok, nil}
       end
-
     end
   end
 end
@@ -39,8 +38,6 @@ defmodule WorldManager.StateModel do
   def attributes() do
     []
   end
-
-
 end
 
 defmodule WorldManager.Service do

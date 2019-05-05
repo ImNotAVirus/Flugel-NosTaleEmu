@@ -3,7 +3,9 @@ defmodule WorldServer.PacketEncoder do
   Parse a World packet
   """
 
-  use ElvenGard.Helpers.PacketEncoder
+  use ElvenGard.PacketEncoder.TextualEncoder,
+    model: WorldServer.PacketHandler,
+    separator: " "
 
   require Logger
 
@@ -37,19 +39,21 @@ defmodule WorldServer.PacketEncoder do
           | {:waiting_session, binary, nil}
           | {:waiting_password, binary, integer}
           | {:waiting_username, binary, integer}
-        ) :: list(list)
+        ) :: {term, map} | list({term, map})
   def decode({:done, data, session_id}) do
     data
     |> Crypto.decrypt(session_id, true)
     |> Stream.map(fn {_last_live, packet} -> packet end)
-    |> Stream.map(&String.replace(&1, "\n", ""))
-    |> Enum.map(&String.split(&1, " "))
+    |> Stream.map(&String.trim/1)
+    |> Stream.map(&String.split(&1, " ", parts: 2))
+    |> Stream.map(&normalize_list/1)
+    |> Enum.map(&List.to_tuple/1)
   end
 
   @impl true
   def decode({:waiting_session, data, nil}) do
     # Place fake packet header
-    ["session_id", Crypto.decrypt_session(data)]
+    {"session_id", Crypto.decrypt_session(data)}
   end
 
   @impl true
@@ -59,11 +63,11 @@ defmodule WorldServer.PacketEncoder do
     case data do
       [{_last_live, username}] ->
         # Place fake packet header
-        ["username", username]
+        {"username", username}
 
       [{_last_live, username}, {_last_live2, password}] ->
         # Place fake packet header
-        [["username", username], ["password", password]]
+        [{"username", username}, {"password", password}]
     end
   end
 
@@ -72,6 +76,11 @@ defmodule WorldServer.PacketEncoder do
     [{_last_live, password}] = Crypto.decrypt(data, session_id, true)
 
     # Place fake packet header
-    ["password", password]
+    {"password", password}
   end
+
+  @doc false
+  @spec normalize_list(list) :: list
+  defp normalize_list([x]), do: [x, ""]
+  defp normalize_list([_ | _] = x), do: x
 end
