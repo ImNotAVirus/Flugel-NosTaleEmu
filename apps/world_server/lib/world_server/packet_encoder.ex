@@ -3,7 +3,7 @@ defmodule WorldServer.PacketEncoder do
   Parse a World packet
   """
 
-  use ElvenGard.PacketEncoder.TextualEncoder,
+  use ElvenGard.PacketEncoders.TextualEncoder,
     model: WorldServer.PacketHandler,
     separator: " "
 

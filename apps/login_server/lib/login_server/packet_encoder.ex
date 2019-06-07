@@ -3,7 +3,7 @@ defmodule LoginServer.PacketEncoder do
   Encode and decode a Login packet
   """
 
-  use ElvenGard.PacketEncoder.TextualEncoder,
+  use ElvenGard.PacketEncoders.TextualEncoder,
     model: LoginServer.PacketHandler,
     separator: [" ", "\v"]
 
