@@ -3,7 +3,7 @@ defmodule LoginServer.PacketHandler do
   Received packet handler.
   """
 
-  use ElvenGard.Helpers.Packet
+  use ElvenGard.Packet
 
   alias LoginServer.Actions.Auth
 

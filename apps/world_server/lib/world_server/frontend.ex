@@ -3,8 +3,8 @@ defmodule WorldServer.Frontend do
   Documentation for WorldServer.Frontend
   """
 
-  use ElvenGard.Helpers.Frontend,
-    packet_encoder: WorldServer.PacketEncoder,
+  use ElvenGard.Frontend,
+    packet_protocol: WorldServer.PacketEncoder,
     packet_handler: WorldServer.PacketHandler,
     port: Application.get_env(:world_server, :port)
 
@@ -14,7 +14,7 @@ defmodule WorldServer.Frontend do
   alias ElvenGard.Structures.Client
 
   #
-  # `ElvenGard.Helpers.Frontend` implementation
+  # `ElvenGard.Frontend` implementation
   #
 
   @impl true

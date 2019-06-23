@@ -3,8 +3,8 @@ defmodule LoginServer.Frontend do
   Documentation for LoginServer.Frontend.
   """
 
-  use ElvenGard.Helpers.Frontend,
-    packet_encoder: LoginServer.PacketEncoder,
+  use ElvenGard.Frontend,
+    packet_protocol: LoginServer.PacketEncoder,
     packet_handler: LoginServer.PacketHandler,
     port: Application.get_env(:login_server, :port)
 
