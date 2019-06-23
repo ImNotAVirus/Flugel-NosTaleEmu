@@ -5,8 +5,9 @@ defmodule LoginServer.Actions.Auth do
 
   alias ElvenGard.Structures.Client
   alias LoginServer.Crypto
+  alias LoginServer.Views.AuthViews
 
-  @type action_return :: {:ok, map} | {:halt, any, Client.t()}
+  @type action_return :: {:ok, map} | {:halt, {:error, term}, Client.t()}
 
   @client_version Application.get_env(:login_server, :client_version)
 
@@ -19,7 +20,7 @@ defmodule LoginServer.Actions.Auth do
     |> get_account_id()
     |> create_session()
     |> get_server_list()
-    |> create_res_packet()
+    |> send_response()
   end
 
   #
@@ -91,23 +92,33 @@ defmodule LoginServer.Actions.Auth do
 
   defp get_server_list({:ok, params}) do
     # TODO: Need to call the WorldManager service here
-    server_list = "127.0.0.1:5000:0:1.1.SomeTest -1:-1:-1:10000.10000.1"
+    server_list = [
+      %LoginServer.Structures.ChannelInfo{
+        world_name: "NostaleEx",
+        ip: "127.0.0.1",
+        port: 5000,
+        player_count: 0,
+        max_players: 100,
+        world_id: 1,
+        channel_id: 1
+      }
+    ]
 
     {:ok, %{params | server_list: server_list}}
   end
 
   @doc false
-  @spec create_res_packet(action_return) :: action_return
-  defp create_res_packet({:halt, _, _} = error), do: error
+  @spec send_response(action_return) :: action_return
+  defp send_response({:halt, {:error, reason}, client} = error) do
+    render = AuthViews.render(:login_error, %{error: reason})
+    Client.send(client, render)
+    error
+  end
 
-  defp create_res_packet({:ok, params}) do
-    %{
-      session_id: session_id,
-      server_list: server_list,
-      client: client
-    } = params
+  defp send_response({:ok, %{client: client} = params}) do
+    render = AuthViews.render(:login_succeed, params)
+    Client.send(client, render)
 
-    res_packet = "NsTeST #{session_id} #{server_list}"
-    {:halt, {:ok, res_packet}, client}
+    {:halt, {:ok, :normal}, client}
   end
 end

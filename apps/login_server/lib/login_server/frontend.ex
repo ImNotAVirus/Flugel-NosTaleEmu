@@ -44,16 +44,14 @@ defmodule LoginServer.Frontend do
   end
 
   @impl true
-  def handle_halt_ok(%Client{id: id} = client, args) do
+  def handle_halt_ok(%Client{id: id} = client, _args) do
     Logger.info("Client accepted: #{id}")
-    Client.send(client, "#{inspect(args)}")
     {:ok, client}
   end
 
   @impl true
   def handle_halt_error(%Client{id: id} = client, reason) do
     Logger.warn("Client refused: #{id} - #{inspect(reason)}")
-    Client.send(client, "fail #{inspect(reason)}")
     {:ok, client}
   end
 end
