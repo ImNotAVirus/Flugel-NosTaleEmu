@@ -8,6 +8,9 @@ defmodule Flugel.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
 
+      default_release: :flugel,
+      releases: releases(),
+
       # Docs
       name: "Flügel",
       source_url: "https://github.com/ImNotAVirus/Flugel-NosTaleEmu",
@@ -17,6 +20,29 @@ defmodule Flugel.MixProject do
         main: "Flugel",
         # logo: "path/to/logo.png",
         extras: ["README.md"]
+      ]
+    ]
+  end
+
+  defp releases do
+    [
+      flugel: [
+        include_executables_for: [:unix],
+        include_erts: Mix.env() == :prod,
+        applications: [
+          login_server: :permanent,
+          world_server: :permanent
+        ]
+      ],
+      login_server: [
+        include_executables_for: [:unix],
+        include_erts: Mix.env() == :prod,
+        applications: [login_server: :permanent]
+      ],
+      world_server: [
+        include_executables_for: [:unix],
+        include_erts: Mix.env() == :prod,
+        applications: [world_server: :permanent]
       ]
     ]
   end

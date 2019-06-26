@@ -23,7 +23,7 @@ config :elven_gard,
 
 config :login_server,
   port: System.get_env("LOGIN_PORT", "4002") |> String.to_integer(),
-  client_version: "0.9.3.3086"
+  client_version: System.get_env("CLIENT_VERSION", "0.9.3.3086")
 
 config :world_server,
   port: System.get_env("WORLD_PORT", "5000") |> String.to_integer()

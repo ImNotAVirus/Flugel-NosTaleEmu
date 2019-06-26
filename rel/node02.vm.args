@@ -1,3 +1,0 @@
--name world_node01@127.0.0.1
--setcookie <%= release.profile.cookie %>
--kernel inet_dist_listen_min 10000 inet_dist_listen_max 10050
