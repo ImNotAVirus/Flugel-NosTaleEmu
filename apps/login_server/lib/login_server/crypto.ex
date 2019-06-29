@@ -1,6 +1,6 @@
 defmodule LoginServer.Crypto do
   @moduledoc """
-  Cryptography for a Nostale login server.
+  Cryptography for a NosTale login server.
   """
 
   use Bitwise, only_operators: true
