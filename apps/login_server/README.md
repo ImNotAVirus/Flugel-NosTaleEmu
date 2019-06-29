@@ -1,3 +1,0 @@
-# LoginServer
-
-**TODO: Add description**
