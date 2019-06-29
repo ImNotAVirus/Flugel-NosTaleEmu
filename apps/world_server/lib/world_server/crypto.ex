@@ -1,6 +1,6 @@
 defmodule WorldServer.Crypto do
   @moduledoc """
-  Cryptography for a Nostale login server.
+  Cryptography for a NosTale login server.
   """
 
   ###
