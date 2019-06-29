@@ -9,13 +9,10 @@
 # move said applications out of the umbrella.
 import Config
 
-# Sample configuration:
-#
-#     config :logger, :console,
-#       level: :info,
-#       format: "$date $time [$level] $metadata$message\n",
-#       metadata: [:user_id]
-#
+config :logger, :console,
+  level: :debug,
+  format: "$time $metadata[$level] $message\n",
+  metadata: [:application]
 
 config :elven_gard,
   num_acceptors: 5,

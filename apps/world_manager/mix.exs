@@ -18,7 +18,7 @@ defmodule WorldManager.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      mod: {WorldManager, []},
+      mod: {WorldManager.Application, []},
       extra_applications: [:logger]
     ]
   end
