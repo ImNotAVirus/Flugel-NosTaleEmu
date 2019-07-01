@@ -24,3 +24,20 @@ config :login_server,
 
 config :world_server,
   port: System.get_env("WORLD_PORT", "5000") |> String.to_integer()
+
+#
+# Session manager part
+#
+
+config :ecto_mnesia,
+  host: {:system, :atom, "MNESIA_HOST", Kernel.node()},
+  storage_type: {:system, :atom, "MNESIA_STORAGE_TYPE", :ram_copies}
+
+config :mnesia,
+  dir: 'priv/data/mnesia'
+
+config :session_manager, SessionManager.Repo,
+  adapter: EctoMnesia.Adapter
+
+config :session_manager,
+  ecto_repos: [SessionManager.Repo]

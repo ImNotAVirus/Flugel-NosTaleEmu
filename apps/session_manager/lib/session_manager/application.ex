@@ -7,8 +7,10 @@ defmodule SessionManager.Application do
 
   def start(_type, _args) do
     children = [
-      # Starts a worker by calling: SessionManager.Worker.start_link(arg)
-      # {SessionManager.Worker, arg}
+      %{
+        id: SessionManager.Repo,
+        start: {SessionManager.Repo, :start_link, []}
+      }
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
