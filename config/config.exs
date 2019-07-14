@@ -29,15 +29,13 @@ config :world_server,
 # Session manager part
 #
 
-config :ecto_mnesia,
-  host: {:system, :atom, "MNESIA_HOST", Kernel.node()},
-  storage_type: {:system, :atom, "MNESIA_STORAGE_TYPE", :ram_copies}
-
 config :mnesia,
   dir: 'priv/data/mnesia'
 
 config :session_manager, SessionManager.Repo,
-  adapter: EctoMnesia.Adapter
+  adapter: EctoMnesia.Adapter,
+  host: {:system, :atom, "MNESIA_HOST", Kernel.node()},
+  storage_type: {:system, :atom, "MNESIA_STORAGE_TYPE", :ram_copies}
 
 config :session_manager,
   ecto_repos: [SessionManager.Repo]

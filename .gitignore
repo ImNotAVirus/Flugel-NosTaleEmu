@@ -36,3 +36,7 @@ Mnesia.*
 /.deploy/*
 !/.deploy/Dockerfile
 !/.deploy/docker-compose.yml.example
+
+# Don't push Mnesia files
+**/priv/data/mnesia/*
+!**/priv/data/mnesia/.gitkeep

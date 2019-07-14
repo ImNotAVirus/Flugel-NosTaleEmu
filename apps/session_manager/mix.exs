@@ -26,7 +26,9 @@ defmodule SessionManager.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ecto_mnesia, "~> 0.9.0"}
+      # Override for ecto_mnesia
+      {:confex, "~> 3.3", override: true},
+      {:ecto_mnesia, "~> 0.9"}
     ]
   end
 end
