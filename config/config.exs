@@ -35,8 +35,7 @@ config :session_manager, SessionManager.Cache,
   levels: [SessionManager.Cache.L1, SessionManager.Cache.L2]
 
 # L1 Cache
-config :session_manager, SessionManager.Cache.L1,
-  gc_interval: 86_400
+config :session_manager, SessionManager.Cache.L1, gc_interval: 86_400
 
 # L2 Cache
 config :session_manager, SessionManager.Cache.L2,
@@ -44,5 +43,4 @@ config :session_manager, SessionManager.Cache.L2,
   hash_slot: SessionManager.Cache.JumpingHashSlot
 
 # Internal local cache used by SessionManager.Cache.L2
-config :session_manager, SessionManager.Cache.L2.Primary,
-  gc_interval: 86_400
+config :session_manager, SessionManager.Cache.L2.Primary, gc_interval: 86_400

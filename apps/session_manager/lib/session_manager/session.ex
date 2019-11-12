@@ -1,7 +1,7 @@
 defmodule SessionManager.Session do
   @moduledoc false
 
-  @keys [:username, :password, :state]
+  @keys [:id, :username, :password, :state]
   @enforce_keys @keys
   defstruct @keys
 
@@ -10,12 +10,13 @@ defmodule SessionManager.Session do
   @doc """
   Create a new structure
   """
-  @spec new(String.t(), String.t(), atom) :: __MODULE__.t()
-  def new(username, password, state \\ :logged)
-  def new(username, password, state) when is_nil(state), do: new(username, password)
+  @spec new(non_neg_integer, String.t(), String.t(), atom) :: __MODULE__.t()
+  def new(id, username, password, state \\ :logged)
+  def new(id, username, password, state) when is_nil(state), do: new(id, username, password)
 
-  def new(username, password, state) when not is_nil(username) do
+  def new(id, username, password, state) when not is_nil(username) do
     %__MODULE__{
+      id: id,
       username: username,
       password: password,
       state: state
