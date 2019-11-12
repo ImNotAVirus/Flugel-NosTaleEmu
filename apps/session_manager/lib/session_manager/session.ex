@@ -1,26 +1,24 @@
 defmodule SessionManager.Session do
   @moduledoc false
 
-  use Ecto.Schema
-  import Ecto.Changeset
+  @keys [:username, :password, :state]
+  @enforce_keys @keys
+  defstruct @keys
 
-  alias __MODULE__
+  @type t :: %__MODULE__{username: String.t(), password: String.t(), state: atom}
 
-  schema "sessions" do
-    field(:username, :string)
-    field(:password, :string)
+  @doc """
+  Create a new structure
+  """
+  @spec new(String.t(), String.t(), atom) :: __MODULE__.t()
+  def new(username, password, state \\ :logged)
+  def new(username, password, state) when is_nil(state), do: new(username, password)
 
-    # :logged -> :in_lobby -> in_game
-    field(:state, :string, default: "logged")
-
-    timestamps()
-  end
-
-  def changeset(%Session{} = user, attrs \\ %{}) do
-    user
-    |> cast(attrs, [:username, :password, :state])
-    |> unique_constraint(:username)
-    |> validate_required([:username, :password])
-    |> validate_inclusion(:state, ["logged", "in_lobby", "in_game"])
+  def new(username, password, state) when not is_nil(username) do
+    %__MODULE__{
+      username: username,
+      password: password,
+      state: state
+    }
   end
 end

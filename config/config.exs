@@ -29,13 +29,20 @@ config :world_server,
 # Session manager part
 #
 
-config :mnesia,
-  dir: 'priv/data/mnesia'
+# Multilevel Cache – wrapper for L1 and L2 caches
+config :session_manager, SessionManager.Cache,
+  cache_model: :inclusive,
+  levels: [SessionManager.Cache.L1, SessionManager.Cache.L2]
 
-config :session_manager, SessionManager.Repo,
-  adapter: EctoMnesia.Adapter,
-  host: {:system, :atom, "MNESIA_HOST", Kernel.node()},
-  storage_type: {:system, :atom, "MNESIA_STORAGE_TYPE", :ram_copies}
+# L1 Cache
+config :session_manager, SessionManager.Cache.L1,
+  gc_interval: 86_400
 
-config :session_manager,
-  ecto_repos: [SessionManager.Repo]
+# L2 Cache
+config :session_manager, SessionManager.Cache.L2,
+  local: SessionManager.Cache.L2.Primary,
+  hash_slot: SessionManager.Cache.JumpingHashSlot
+
+# Internal local cache used by SessionManager.Cache.L2
+config :session_manager, SessionManager.Cache.L2.Primary,
+  gc_interval: 86_400
