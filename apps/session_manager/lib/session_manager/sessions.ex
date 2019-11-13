@@ -8,13 +8,7 @@ defmodule SessionManager.Sessions do
   @doc false
   @spec get_by_username(String.t()) :: {:ok, Session.t()} | {:error, :not_found}
   def get_by_username(username) do
-    case Cache.get(username) do
-      nil ->
-        {:error, :not_found}
-
-      x ->
-        {:ok, x}
-    end
+    Cache.get(username)
   end
 
   @doc false

@@ -1,6 +1,8 @@
 defmodule SessionManager.Session do
   @moduledoc false
 
+  ## States are: :logged, :in_lobby, :in_game
+
   @keys [:id, :username, :password, :state]
   @enforce_keys @keys
   defstruct @keys

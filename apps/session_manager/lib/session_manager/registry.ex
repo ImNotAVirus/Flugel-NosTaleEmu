@@ -17,8 +17,14 @@ defmodule SessionManager.Registry do
   end
 
   @impl true
-  def handle_call({:register_player, data}, _from, state) do
-    res = Sessions.insert_if_not_exists(data)
-    {:reply, res, state}
+  def handle_call({:register_player, attrs}, _from, state) do
+    username = Map.fetch!(attrs, :username)
+    session = Sessions.get_by_username(username)
+
+    if is_nil(session) or session.state == :logged do
+      {:reply, Sessions.insert(attrs), state}
+    else
+      {:reply, {:error, :already_connected}, state}
+    end
   end
 end
