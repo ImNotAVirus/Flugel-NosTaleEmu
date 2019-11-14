@@ -13,7 +13,7 @@ defmodule SessionManager.Application do
       SessionManager.Cache.L2,
       SessionManager.Cache.L1,
       SessionManager.Cache,
-      SessionManager.Registry
+      SessionManager.Worker
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

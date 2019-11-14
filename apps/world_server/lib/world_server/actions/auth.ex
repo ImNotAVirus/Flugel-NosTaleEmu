@@ -34,6 +34,9 @@ defmodule WorldServer.Actions.Auth do
       |> Client.put_metadata(:auth_step, :done)
 
     # TODO: Check credentials and session_id here
+    username = Client.get_metadata(new_client, :username)
+    SessionManager.monitor_session(username)
+    SessionManager.set_player_state(username, :in_lobby)
 
     CharacterManagement.send_character_list(client, %{})
 
