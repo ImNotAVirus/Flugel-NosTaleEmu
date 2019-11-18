@@ -1,3 +1,0 @@
-# WorldManager
-
-**TODO: Add description**
