@@ -5,7 +5,8 @@ defmodule LoginServer.PacketHandler do
 
   use ElvenGard.Packet
 
-  alias LoginServer.Actions.Auth
+  alias LoginServer.Auth.Actions
+  alias LoginServer.Types
 
   @desc """
   The login packet
@@ -18,9 +19,8 @@ defmodule LoginServer.PacketHandler do
 
     field :username, :string
 
-    @desc "Crypted for NostaleSE and in SHA512 for others"
-    # field :password, :password_field
-    field :password, :string
+    @desc "Encrypted for NostaleSE and in SHA512 for others"
+    field :password, Types.Password
 
     @desc "A random string like `0039E3DC`. I don't known what it is"
     field :unknown, :string
@@ -28,7 +28,7 @@ defmodule LoginServer.PacketHandler do
     @desc "Something like `0.9.3.3071`"
     field :version, :string
 
-    resolve &Auth.player_connect/3
+    resolve &Actions.player_connect/3
   end
 
   default_packet do

@@ -9,8 +9,8 @@ defmodule SessionManager do
 
   @doc false
   @spec register_player(map) :: {:ok, Session.t()} | {:error, :already_connected}
-  def register_player(data) do
-    GenServer.call(@worker_name, {:register_player, data})
+  def register_player(attrs) do
+    GenServer.call(@worker_name, {:register_player, attrs})
   end
 
   @doc false

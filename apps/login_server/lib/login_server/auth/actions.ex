@@ -1,11 +1,10 @@
-defmodule LoginServer.Actions.Auth do
+defmodule LoginServer.Auth.Actions do
   @moduledoc """
   Manage the login pipe when a client connect to the Frontend
   """
 
   alias ElvenGard.Structures.Client
-  alias LoginServer.Crypto
-  alias LoginServer.Views.AuthViews
+  alias LoginServer.Auth.Views
 
   @type action_return :: {:ok, map} | {:halt, {:error, term}, Client.t()}
 
@@ -16,7 +15,6 @@ defmodule LoginServer.Actions.Auth do
     params
     |> normalize_params(client)
     |> check_version()
-    |> decrypt_password()
     |> get_account_id()
     |> create_session()
     |> get_server_list()
@@ -49,14 +47,6 @@ defmodule LoginServer.Actions.Auth do
   end
 
   @doc false
-  @spec decrypt_password(action_return) :: action_return
-  defp decrypt_password({:halt, _, _} = error), do: error
-
-  defp decrypt_password({:ok, %{password: password} = params}) do
-    {:ok, %{params | password: Crypto.decrypt_pass(password)}}
-  end
-
-  @doc false
   @spec get_account_id(action_return) :: action_return
   defp get_account_id({:halt, _, _} = error), do: error
 
@@ -80,10 +70,24 @@ defmodule LoginServer.Actions.Auth do
   defp create_session({:halt, _, _} = error), do: error
 
   defp create_session({:ok, params}) do
-    # TODO: Need to call the Auth or SessionManager service here
-    session_id = 1234
+    %{
+      username: username,
+      password: password,
+      client: client
+    } = params
 
-    {:ok, %{params | session_id: session_id}}
+    state = %{
+      username: username,
+      password: password
+    }
+
+    case SessionManager.register_player(state) do
+      {:ok, %SessionManager.Session{id: session_id}} ->
+        {:ok, %{params | session_id: session_id}}
+
+      {:error, error} ->
+        {:halt, {:error, error}, client}
+    end
   end
 
   @doc false
@@ -91,18 +95,7 @@ defmodule LoginServer.Actions.Auth do
   defp get_server_list({:halt, _, _} = error), do: error
 
   defp get_server_list({:ok, params}) do
-    # TODO: Need to call the WorldManager service here
-    server_list = [
-      %LoginServer.Structures.ChannelInfo{
-        world_name: "NostaleEx",
-        ip: "127.0.0.1",
-        port: 5000,
-        player_count: 0,
-        max_players: 100,
-        world_id: 1,
-        channel_id: 1
-      }
-    ]
+    server_list = WorldManager.channels()
 
     {:ok, %{params | server_list: server_list}}
   end
@@ -110,13 +103,13 @@ defmodule LoginServer.Actions.Auth do
   @doc false
   @spec send_response(action_return) :: action_return
   defp send_response({:halt, {:error, reason}, client} = error) do
-    render = AuthViews.render(:login_error, %{error: reason})
+    render = Views.render(:login_error, %{error: reason})
     Client.send(client, render)
     error
   end
 
   defp send_response({:ok, %{client: client} = params}) do
-    render = AuthViews.render(:login_succeed, params)
+    render = Views.render(:login_succeed, params)
     Client.send(client, render)
 
     {:halt, {:ok, :normal}, client}

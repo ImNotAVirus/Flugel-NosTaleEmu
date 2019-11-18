@@ -22,25 +22,24 @@ config :login_server,
   port: System.get_env("LOGIN_PORT", "4002") |> String.to_integer(),
   client_version: System.get_env("CLIENT_VERSION", "0.9.3.3086")
 
-config :world_server,
-  port: System.get_env("WORLD_PORT", "5000") |> String.to_integer()
-
 #
 # Session manager part
 #
 
-# Multilevel Cache – wrapper for L1 and L2 caches
-config :session_manager, SessionManager.Cache,
-  cache_model: :inclusive,
-  levels: [SessionManager.Cache.L1, SessionManager.Cache.L2]
+config :session_manager, redis_host: "localhost"
 
-# L1 Cache
-config :session_manager, SessionManager.Cache.L1, gc_interval: 86_400
+#
+# World manager part
+#
 
-# L2 Cache
-config :session_manager, SessionManager.Cache.L2,
-  local: SessionManager.Cache.L2.Primary,
-  hash_slot: SessionManager.Cache.JumpingHashSlot
+config :world_manager, redis_host: "localhost"
 
-# Internal local cache used by SessionManager.Cache.L2
-config :session_manager, SessionManager.Cache.L2.Primary, gc_interval: 86_400
+#
+# World server part
+#
+
+config :world_server,
+  world_name: "ElvenGard",
+  ip: "127.0.0.1",
+  port: 5000,
+  max_players: 500

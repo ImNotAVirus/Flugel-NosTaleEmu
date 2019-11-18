@@ -1,4 +1,4 @@
-defmodule LoginServer.Views.AuthViews do
+defmodule LoginServer.Auth.Views do
   @moduledoc """
   Define views (server to client packets) for the authentification part
   """

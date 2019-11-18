@@ -26,8 +26,7 @@ defmodule SessionManager.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:nebulex, "~> 1.1"},
-      {:jchash, "~> 0.1.1", app: false}
+      {:redix, "~> 0.10"}
     ]
   end
 end

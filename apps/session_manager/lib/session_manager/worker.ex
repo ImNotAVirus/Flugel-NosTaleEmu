@@ -17,16 +17,23 @@ defmodule SessionManager.Worker do
 
   @impl true
   def init(_) do
-    {:ok, nil}
+    {:ok, nil, {:continue, :init_redis}}
+  end
+
+  @impl true
+  def handle_continue(:init_redis, nil) do
+    redis_host = Application.get_env(:session_manager, :redis_host, "127.0.0.1")
+    {:ok, conn} = Redix.start_link(host: redis_host)
+    {:noreply, conn}
   end
 
   @impl true
   def handle_call({:register_player, attrs}, _from, state) do
     username = Map.fetch!(attrs, :username)
-    session = Sessions.get_by_username(username)
+    session = Sessions.get_by_username(state, username)
 
     if is_nil(session) or session.state == :logged do
-      {:reply, Sessions.insert(attrs), state}
+      {:reply, Sessions.insert(state, attrs), state}
     else
       {:reply, {:error, :already_connected}, state}
     end
@@ -35,13 +42,13 @@ defmodule SessionManager.Worker do
   @impl true
   def handle_call({:set_player_state, username, user_state}, _from, state)
       when is_valid_state(user_state) do
-    case Sessions.update_state(username, user_state) do
-      {nil, _} ->
-        {:reply, {:error, :unknown_user}, state}
+    case Sessions.update_state(state, username, user_state) do
+      {:error, _} = x ->
+        {:reply, x, state}
 
-      {_, x} ->
-        if user_state == :in_lobby, do: Sessions.set_ttl(username, :infinity)
-        {:reply, {:ok, x}, state}
+      {:ok, _} = x ->
+        if user_state == :in_lobby, do: {:ok, _} = Sessions.set_ttl(state, username, :infinity)
+        {:reply, x, state}
     end
   end
 
@@ -50,20 +57,19 @@ defmodule SessionManager.Worker do
     {pid, _} = from
     ref = Process.monitor(pid)
 
-    case Sessions.update_monitor(username, ref) do
-      {nil, _} ->
+    case Sessions.set_monitor(state, username, ref) do
+      {:error, _} = x ->
         Process.demonitor(ref)
-        {:reply, {:error, :unknown_user}, state}
+        {:reply, x, state}
 
-      {_, x} ->
-        {:reply, {:ok, x}, state}
+      {:ok, _} = x ->
+        {:reply, x, state}
     end
   end
 
   @impl true
   def handle_info({:DOWN, ref, :process, _object, reason}, state) do
-    session = Sessions.delete_monitor(ref)
-    username = Map.get(session || %{}, :username, "#unknown#")
+    {:ok, username} = Sessions.delete_monitored(state, ref)
 
     Logger.info("#{inspect(username)} is now disconnected (reason: #{inspect(reason)})")
     {:noreply, state}

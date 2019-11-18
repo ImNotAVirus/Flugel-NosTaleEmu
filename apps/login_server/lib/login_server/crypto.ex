@@ -60,7 +60,7 @@ defmodule LoginServer.Crypto do
     |> Stream.chunk_every(2)
     |> Stream.map(&Enum.join/1)
     |> Enum.map(&String.to_integer(&1, 16))
-    |> to_string
+    |> to_string()
   end
 
   #
