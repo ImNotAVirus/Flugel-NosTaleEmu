@@ -1,16 +1,16 @@
 defmodule WorldManager.Application do
-  @moduledoc """
-  Documentation for WorldManager.Application.
-  """
+  @moduledoc false
 
   use Application
 
   def start(_type, _args) do
-    # List all child processes to be supervised
+    # Define workers and child supervisors to be supervised
     children = [
-      {WorldManager.Service, name: WorldManager}
+      WorldManager.Worker
     ]
 
+    # See https://hexdocs.pm/elixir/Supervisor.html
+    # for other strategies and supported options
     opts = [strategy: :one_for_one, name: WorldManager.Supervisor]
     Supervisor.start_link(children, opts)
   end
