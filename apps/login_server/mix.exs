@@ -26,6 +26,8 @@ defmodule LoginServer.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:session_manager, in_umbrella: true},
+      {:world_manager, in_umbrella: true},
       {:elven_gard, github: "imnotavirus/elvengard_v2"}
     ]
   end
