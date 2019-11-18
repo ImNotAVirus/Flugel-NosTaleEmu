@@ -10,23 +10,20 @@ defmodule WorldServer.Frontend do
 
   require Logger
 
-  # alias ElvenGard.Service
   alias ElvenGard.Structures.Client
 
   #
   # `ElvenGard.Frontend` implementation
   #
 
-  @impl true
-  def handle_init(args) do
-    port = Keyword.get(args, :port)
-    Logger.info("World server started on port #{port}")
-
-    # Register in world_manager after 1 secs (ensure world_manager is started)
-    # TODO: Clean that
-    # Process.send_after(self(), :register_me, 1_000)
-
-    {:ok, nil}
+  if Mix.env() != :test do
+    @impl true
+    def handle_init(args) do
+      port = Keyword.get(args, :port)
+      Logger.info("World server started on port #{port}")
+      register_me()
+      {:ok, nil}
+    end
   end
 
   @impl true
@@ -55,12 +52,26 @@ defmodule WorldServer.Frontend do
   end
 
   #
-  # `GenServer` implementation
+  # Helpers
   #
 
-  # @impl true
-  # def handle_info(:register_me, state) do
-  #   :ok = Service.cast(:world_manager, {:add_world, self()})
-  #   {:noreply, state}
-  # end
+  @doc false
+  @spec register_me() :: term
+  defp register_me() do
+    channel_specs = %{
+      world_name: Application.get_env(:world_server, :world_name, "ElvenGard"),
+      ip: Application.get_env(:world_server, :ip, "127.0.0.1"),
+      port: Application.get_env(:world_server, :port, 5000),
+      max_players: Application.get_env(:world_server, :max_players, 100)
+    }
+
+    %{
+      world_id: world_id,
+      channel_id: channel_id
+    } = WorldManager.register_channel(channel_specs)
+
+    WorldManager.monitor_channel(world_id, channel_id)
+
+    Logger.info("Channel registered (#{world_id}:#{channel_id})")
+  end
 end

@@ -26,7 +26,7 @@ defmodule WorldManager.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:elven_gard, github: "imnotavirus/elvengard_v2"}
+      {:redix, "~> 0.10"}
     ]
   end
 end
