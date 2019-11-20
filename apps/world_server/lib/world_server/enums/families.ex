@@ -1,6 +1,6 @@
-defmodule WorldServer.Enums.Game.Families do
+defmodule WorldServer.Enums.Families do
   @moduledoc """
-  TODO: Documentation for WorldServer.Enums.Game.Families
+  TODO: Documentation for WorldServer.Enums.Families
   """
 
   @spec authority(atom) :: non_neg_integer

@@ -1,6 +1,6 @@
-defmodule WorldServer.Enums.Game.Character do
+defmodule WorldServer.Enums.Character do
   @moduledoc """
-  TODO: Documentation for WorldServer.Enums.Game.Character
+  TODO: Documentation for WorldServer.Enums.Character
   """
 
   @spec channel_color(atom) :: non_neg_integer

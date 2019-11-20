@@ -1,6 +1,6 @@
-defmodule WorldServer.Enums.Game.Visibility do
+defmodule WorldServer.Enums.Visibility do
   @moduledoc """
-  TODO: Documentation for WorldServer.Enums.Game.Visibility
+  TODO: Documentation for WorldServer.Enums.Visibility
   """
 
   @spec type(atom) :: non_neg_integer

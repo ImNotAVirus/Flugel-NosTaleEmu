@@ -1,6 +1,6 @@
-defmodule WorldServer.Enums.Game.Bcard do
+defmodule WorldServer.Enums.Bcard do
   @moduledoc """
-  TODO: Documentation for WorldServer.Enums.Game.Bcard
+  TODO: Documentation for WorldServer.Enums.Bcard
   """
 
   @spec relation_type(atom) :: non_neg_integer

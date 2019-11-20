@@ -1,6 +1,6 @@
-defmodule WorldServer.Enums.Game.Effects do
+defmodule WorldServer.Enums.Effects do
   @moduledoc """
-  TODO: Documentation for WorldServer.Enums.Game.Effects
+  TODO: Documentation for WorldServer.Enums.Effects
   """
 
   @spec emoji_type(atom) :: non_neg_integer

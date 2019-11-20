@@ -1,6 +1,6 @@
-defmodule WorldServer.Enums.Game.Portals do
+defmodule WorldServer.Enums.Portals do
   @moduledoc """
-  TODO: Documentation for WorldServer.Enums.Game.Portals
+  TODO: Documentation for WorldServer.Enums.Portals
   """
 
   @spec type(atom) :: integer

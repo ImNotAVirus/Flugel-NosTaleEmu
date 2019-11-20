@@ -1,6 +1,6 @@
-defmodule WorldServer.Enums.Game.Buffs do
+defmodule WorldServer.Enums.Buffs do
   @moduledoc """
-  TODO: Documentation for WorldServer.Enums.Game.Buffs
+  TODO: Documentation for WorldServer.Enums.Buffs
   """
 
   @spec type(atom) :: non_neg_integer

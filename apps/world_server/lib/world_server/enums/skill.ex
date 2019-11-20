@@ -1,6 +1,6 @@
-defmodule WorldServer.Enums.Game.Skill do
+defmodule WorldServer.Enums.Skill do
   @moduledoc """
-  TODO: Documentation for WorldServer.Enums.Game.Skill
+  TODO: Documentation for WorldServer.Enums.Skill
   """
 
   @spec target_type(atom) :: non_neg_integer

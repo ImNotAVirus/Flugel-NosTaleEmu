@@ -1,6 +1,6 @@
-defmodule WorldServer.Enums.Game.Items do
+defmodule WorldServer.Enums.Items do
   @moduledoc """
-  TODO: Documentation for WorldServer.Enums.Game.Items
+  TODO: Documentation for WorldServer.Enums.Items
   """
 
   @spec armor_option_type(atom) :: non_neg_integer

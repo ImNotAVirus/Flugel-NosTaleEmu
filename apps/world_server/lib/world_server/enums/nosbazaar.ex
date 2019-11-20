@@ -1,6 +1,6 @@
-defmodule WorldServer.Enums.Game.Nosbazaar do
+defmodule WorldServer.Enums.Nosbazaar do
   @moduledoc """
-  TODO: Documentation for WorldServer.Enums.Game.Nosbazaar
+  TODO: Documentation for WorldServer.Enums.Nosbazaar
   """
 
   @spec category_type(atom) :: non_neg_integer

@@ -1,6 +1,6 @@
-defmodule WorldServer.Enums.Game.Quicklist do
+defmodule WorldServer.Enums.Quicklist do
   @moduledoc """
-  TODO: Documentation for WorldServer.Enums.Game.Quicklist
+  TODO: Documentation for WorldServer.Enums.Quicklist
   """
 
   @spec item_slot_type(atom) :: non_neg_integer

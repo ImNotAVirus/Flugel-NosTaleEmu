@@ -1,6 +1,6 @@
-defmodule WorldServer.Enums.Game.Mates do
+defmodule WorldServer.Enums.Mates do
   @moduledoc """
-  TODO: Documentation for WorldServer.Enums.Game.Mates
+  TODO: Documentation for WorldServer.Enums.Mates
   """
 
   @spec sp_partner_rank(atom) :: non_neg_integer

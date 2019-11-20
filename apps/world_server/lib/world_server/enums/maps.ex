@@ -1,6 +1,6 @@
-defmodule WorldServer.Enums.Game.Maps do
+defmodule WorldServer.Enums.Maps do
   @moduledoc """
-  TODO: Documentation for WorldServer.Enums.Game.Maps
+  TODO: Documentation for WorldServer.Enums.Maps
   """
 
   @spec layer_type(atom) :: non_neg_integer

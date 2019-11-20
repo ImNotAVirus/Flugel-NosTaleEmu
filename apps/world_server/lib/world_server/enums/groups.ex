@@ -1,6 +1,6 @@
-defmodule WorldServer.Enums.Game.Groups do
+defmodule WorldServer.Enums.Groups do
   @moduledoc """
-  TODO: Documentation for WorldServer.Enums.Game.Groups
+  TODO: Documentation for WorldServer.Enums.Groups
   """
 
   @spec drop_type(atom) :: non_neg_integer

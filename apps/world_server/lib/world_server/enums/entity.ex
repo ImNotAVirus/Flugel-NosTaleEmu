@@ -1,6 +1,6 @@
-defmodule WorldServer.Enums.Game.Entity do
+defmodule WorldServer.Enums.Entity do
   @moduledoc """
-  TODO: Documentation for WorldServer.Enums.Game.Entity
+  TODO: Documentation for WorldServer.Enums.Entity
   """
 
   @spec direction_type(atom) :: non_neg_integer

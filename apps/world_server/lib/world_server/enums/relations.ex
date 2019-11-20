@@ -1,6 +1,6 @@
-defmodule WorldServer.Enums.Game.Relations do
+defmodule WorldServer.Enums.Relations do
   @moduledoc """
-  TODO: Documentation for WorldServer.Enums.Game.Relations
+  TODO: Documentation for WorldServer.Enums.Relations
   """
 
   @spec character_relation_type(atom) :: integer

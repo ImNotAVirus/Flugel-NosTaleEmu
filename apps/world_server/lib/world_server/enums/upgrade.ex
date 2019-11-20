@@ -1,6 +1,6 @@
-defmodule WorldServer.Enums.Game.Upgrade do
+defmodule WorldServer.Enums.Upgrade do
   @moduledoc """
-  TODO: Documentation for WorldServer.Enums.Game.Upgrade
+  TODO: Documentation for WorldServer.Enums.Upgrade
   """
 
   @spec fixed_up_mode_type(atom) :: non_neg_integer
