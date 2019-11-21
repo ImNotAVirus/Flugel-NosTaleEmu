@@ -4,11 +4,11 @@ defmodule WorldServer.Packets.CharacterSelection.Actions do
   """
 
   alias ElvenGard.Structures.Client
-  alias WorldServer.Enums.Character, as: EnumChar
   alias WorldServer.Structures.Character
-  alias WorldServer.Packets.CharacterSelection.Views
+  alias WorldServer.Enums.Character, as: EnumChar
+  alias WorldServer.Packets.CharacterSelection.Views, as: CharSelectViews
 
-  @spec process_session_id(Client.t(), String.t(), %{session_id: integer}) :: {:cont, Client.t()}
+  @spec process_session_id(Client.t(), String.t(), map) :: {:cont, Client.t()}
   def process_session_id(client, _header, params) do
     new_client =
       client
@@ -18,7 +18,7 @@ defmodule WorldServer.Packets.CharacterSelection.Actions do
     {:cont, new_client}
   end
 
-  @spec process_username(Client.t(), String.t(), %{username: String.t()}) :: {:cont, Client.t()}
+  @spec process_username(Client.t(), String.t(), map) :: {:cont, Client.t()}
   def process_username(client, _header, params) do
     new_client =
       client
@@ -28,7 +28,7 @@ defmodule WorldServer.Packets.CharacterSelection.Actions do
     {:cont, new_client}
   end
 
-  @spec verify_session(Client.t(), String.t(), %{password: String.t()}) :: {:cont, Client.t()}
+  @spec verify_session(Client.t(), String.t(), map) :: {:cont, Client.t()}
   def verify_session(client, _header, params) do
     %{password: _password} = params
 
@@ -44,21 +44,45 @@ defmodule WorldServer.Packets.CharacterSelection.Actions do
 
     # TODO: Load character from the DB Service
     character = %Character{
+      id: 1,
       slot: 1,
       name: "DarkyZ",
       gender: EnumChar.gender_type(:female),
-      hair_style: EnumChar.hair_style_type(:hair_style_b),
-      hair_color: EnumChar.hair_color_type(:dark_purple),
+      hair_style: EnumChar.hair_style_type(:hair_style_a),
+      hair_color: EnumChar.hair_color_type(:yellow),
       class: EnumChar.class_type(:wrestler),
       level: 92,
       hero_level: 25,
       job_level: 80
     }
 
-    Client.send(client, Views.render(:clist_start, nil))
-    Client.send(client, Views.render(:clist, character))
-    Client.send(client, Views.render(:clist_end, nil))
+    Client.send(client, CharSelectViews.render(:clist_start, nil))
+    Client.send(client, CharSelectViews.render(:clist, character))
+    Client.send(client, CharSelectViews.render(:clist_end, nil))
 
     {:cont, Client.put_metadata(client, :auth_step, :done)}
+  end
+
+  @spec select_character(Client.t(), String.t(), map) :: {:cont, Client.t()}
+  def select_character(client, _header, params) do
+    %{character_slot: _character__slot} = params
+
+    # TODO: Load character from the DB Service and cache it
+    character = %Character{
+      id: 1,
+      slot: 1,
+      name: "DarkyZ",
+      gender: EnumChar.gender_type(:female),
+      hair_style: EnumChar.hair_style_type(:hair_style_a),
+      hair_color: EnumChar.hair_color_type(:yellow),
+      class: EnumChar.class_type(:wrestler),
+      level: 92,
+      hero_level: 25,
+      job_level: 80
+    }
+
+    Client.send(client, CharSelectViews.render(:ok, character))
+
+    {:cont, client}
   end
 end

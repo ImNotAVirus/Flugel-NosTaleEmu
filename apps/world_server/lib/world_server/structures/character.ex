@@ -6,6 +6,7 @@ defmodule WorldServer.Structures.Character do
   alias WorldServer.Enums.Character, as: EnumChar
 
   @keys [
+    :id,
     :slot,
     :name,
     :gender,
@@ -24,6 +25,7 @@ defmodule WorldServer.Structures.Character do
   defstruct @keys ++ @additional_keys
 
   @type t :: %__MODULE__{
+          id: non_neg_integer,
           slot: non_neg_integer,
           name: String.t(),
           gender: non_neg_integer,
