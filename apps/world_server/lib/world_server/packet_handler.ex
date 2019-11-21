@@ -5,7 +5,7 @@ defmodule WorldServer.PacketHandler do
 
   use ElvenGard.Packet
 
-  alias WorldServer.Actions.Auth
+  alias WorldServer.Packets.CharacterSelection.Actions
 
   #
   # Useless packets
@@ -29,7 +29,7 @@ defmodule WorldServer.PacketHandler do
   """
   packet "session_id" do
     field :session_id, :integer
-    resolve &Auth.process_session_id/3
+    resolve &Actions.process_session_id/3
   end
 
   @desc """
@@ -40,7 +40,7 @@ defmodule WorldServer.PacketHandler do
   """
   packet "username" do
     field :username, :string
-    resolve &Auth.process_username/3
+    resolve &Actions.process_username/3
   end
 
   @desc """
@@ -51,6 +51,6 @@ defmodule WorldServer.PacketHandler do
   """
   packet "password" do
     field :password, :string
-    resolve &Auth.process_password/3
+    resolve &Actions.verify_session/3
   end
 end
