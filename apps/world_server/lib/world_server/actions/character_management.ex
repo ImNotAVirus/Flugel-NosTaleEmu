@@ -44,10 +44,14 @@ defmodule WorldServer.Actions.CharacterManagement do
     hero_level = 99
     equipments = "-1.-1.-1.-1.-1.-1.-1.-1"
     pets = "-1"
+    quest_completion = "1"
+    quest_part = "1"
+    design = "0"
 
     packet =
       "clist #{slot} #{name} 0 #{gender} #{hair_style} #{hair_color} 0 #{class}" <>
-        " #{level} #{hero_level} #{equipments} #{job_level} 1 1 #{pets} 0"
+        " #{level} #{hero_level} #{equipments} #{job_level} #{quest_completion} " <>
+        "#{quest_part} #{pets} #{design}"
 
     Client.send(client, packet)
   end
