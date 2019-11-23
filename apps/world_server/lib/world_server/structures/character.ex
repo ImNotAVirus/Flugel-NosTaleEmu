@@ -16,8 +16,13 @@ defmodule WorldServer.Structures.Character do
 
   @additional_keys [
     level: 1,
+    reputation: 0,
+    dignity: 0,
     job_level: 1,
     hero_level: 0,
+    level_xp: 0,
+    job_level_xp: 0,
+    hero_level_xp: 0,
     class: EnumChar.class_type(:adventurer)
   ]
 

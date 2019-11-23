@@ -44,16 +44,36 @@ defmodule WorldServer.Packets.Player.Views do
   end
 
   def render(:fd, %Character{} = character) do
-    %Character{id: _id} = character
-
-    # TODO: Get it from service
-    reput = 5_000_000
-    dignity = 100
+    %Character{
+      reputation: reputation,
+      dignity: dignity
+    } = character
 
     dignity_icon = dignity_icon(dignity)
-    reput_icon = reputation_icon(reput)
+    reput_icon = reputation_icon(reputation)
 
-    "fd #{reput} #{reput_icon} #{dignity} #{dignity_icon}"
+    "fd #{reputation} #{reput_icon} #{dignity} #{dignity_icon}"
+  end
+
+  def render(:lev, %Character{} = character) do
+    %Character{
+      level: level,
+      job_level: job_level,
+      hero_level: hero_level,
+      level_xp: level_xp,
+      job_level_xp: job_level_xp,
+      hero_level_xp: hero_level_xp,
+      reputation: reputation
+    } = character
+
+    # TODO: Get it from algo service
+    level_xp_max = 5_000
+    job_level_xp_max = 5_000
+    hero_level_xp_max = 5_000
+    cp = 50
+
+    "lev #{level} #{level_xp} #{job_level} #{job_level_xp} #{level_xp_max} #{job_level_xp_max} " <>
+      "#{reputation} #{cp} #{hero_level_xp} #{hero_level} #{hero_level_xp_max}"
   end
 
   #

@@ -7,6 +7,7 @@ defmodule WorldServer.Packets.Player.Actions do
   alias WorldServer.Structures.Character
   alias WorldServer.Enums.Character, as: EnumChar
   alias WorldServer.Packets.Player.Views, as: PlayerViews
+  # alias WorldServer.Packets.Inventory.Views, as: InventoryViews
   alias WorldServer.Packets.Entity.Views, as: EntityViews
   alias WorldServer.Packets.MiniMap.Views, as: MiniMapViews
   alias WorldServer.Packets.Chat.Views, as: ChatViews
@@ -25,8 +26,13 @@ defmodule WorldServer.Packets.Player.Actions do
       hair_color: EnumChar.hair_color_type(:yellow),
       class: EnumChar.class_type(:wrestler),
       level: 92,
+      job_level: 80,
       hero_level: 25,
-      job_level: 80
+      level_xp: 3_000,
+      job_level_xp: 4_500,
+      hero_level_xp: 1_000,
+      reputation: 5_000_000,
+      dignity: 100
     }
 
     # TODO: Get it from CharacterManagement Service
@@ -38,10 +44,12 @@ defmodule WorldServer.Packets.Player.Actions do
     Client.send(client, PlayerViews.render(:tit, character))
     Client.send(client, PlayerViews.render(:c_info, character))
     Client.send(client, PlayerViews.render(:fd, character))
+    Client.send(client, PlayerViews.render(:lev, character))
     Client.send(client, EntityViews.render(:stat, character))
     Client.send(client, MiniMapViews.render(:at, character))
     Client.send(client, MiniMapViews.render(:c_map, character))
     Client.send(client, SpecialistViews.render(:sp, sp_points_info))
+    # Client.send(client, InventoryViews.render(:equip, nil))
 
     Client.send(client, UserInterfaceViews.render(:info, %{message: "Welcome !"}))
 
