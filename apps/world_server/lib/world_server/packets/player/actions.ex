@@ -10,6 +10,7 @@ defmodule WorldServer.Packets.Player.Actions do
   alias WorldServer.Packets.MiniMap.Views, as: MiniMapViews
   alias WorldServer.Packets.Chat.Views, as: ChatViews
   alias WorldServer.Packets.Specialist.Views, as: SpecialistViews
+  alias WorldServer.Packets.UserInterface.Views, as: UserInterfaceViews
 
   @spec game_start(Client.t(), String.t(), map) :: {:cont, Client.t()}
   def game_start(client, _header, _params) do
@@ -35,9 +36,12 @@ defmodule WorldServer.Packets.Player.Actions do
 
     Client.send(client, PlayerViews.render(:tit, character))
     Client.send(client, PlayerViews.render(:c_info, character))
+    Client.send(client, PlayerViews.render(:fd, character))
     Client.send(client, MiniMapViews.render(:at, character))
     Client.send(client, MiniMapViews.render(:c_map, character))
     Client.send(client, SpecialistViews.render(:sp, sp_points_info))
+
+    Client.send(client, UserInterfaceViews.render(:info, %{message: "Welcome !"}))
 
     # UI skill list => Views.render(:ski, character)
     # UI Sp Points => Views.render(:ski, character)
