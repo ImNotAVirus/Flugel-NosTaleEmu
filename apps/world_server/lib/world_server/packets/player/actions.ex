@@ -50,6 +50,7 @@ defmodule WorldServer.Packets.Player.Actions do
     # ...
 
     send_bns(client)
+    send_hello(client)
 
     {:cont, client}
   end
@@ -59,6 +60,7 @@ defmodule WorldServer.Packets.Player.Actions do
   #
 
   @doc false
+  @spec send_bns(Client.t()) :: term
   defp send_bns(client) do
     # Get it from a service ???
     messages = Enum.map(1..10, fn x -> "ElvenGard ##{x}" end)
@@ -67,5 +69,24 @@ defmodule WorldServer.Packets.Player.Actions do
     |> Enum.with_index()
     |> Stream.map(fn {val, i} -> %{id: i, message: val} end)
     |> Enum.each(&Client.send(client, ChatViews.render(:bn, &1)))
+  end
+
+  @doc false
+  @spec send_hello(Client.t()) :: term
+  defp send_hello(client) do
+    prefix = String.duplicate("-", 31)
+    suffix = String.duplicate("-", 82)
+
+    messages = [
+      {:special_green, "#{prefix} [ ElvenGard ] #{prefix}"},
+      {:special_red, "Github: https://github.com/ImNotAVirus/Flugel-NostaleEmu"},
+      {:special_red, "Author: DarkyZ aka. ImNotAVirus"},
+      {:special_green, suffix}
+    ]
+
+    Enum.each(messages, fn {color, message} ->
+      attrs = %{color: color, message: message}
+      Client.send(client, ChatViews.render(:say, attrs))
+    end)
   end
 end
