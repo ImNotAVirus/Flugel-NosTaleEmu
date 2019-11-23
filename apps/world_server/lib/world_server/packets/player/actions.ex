@@ -7,6 +7,7 @@ defmodule WorldServer.Packets.Player.Actions do
   alias WorldServer.Structures.Character
   alias WorldServer.Enums.Character, as: EnumChar
   alias WorldServer.Packets.Player.Views, as: PlayerViews
+  alias WorldServer.Packets.Entity.Views, as: EntityViews
   alias WorldServer.Packets.MiniMap.Views, as: MiniMapViews
   alias WorldServer.Packets.Chat.Views, as: ChatViews
   alias WorldServer.Packets.Specialist.Views, as: SpecialistViews
@@ -37,6 +38,7 @@ defmodule WorldServer.Packets.Player.Actions do
     Client.send(client, PlayerViews.render(:tit, character))
     Client.send(client, PlayerViews.render(:c_info, character))
     Client.send(client, PlayerViews.render(:fd, character))
+    Client.send(client, EntityViews.render(:stat, character))
     Client.send(client, MiniMapViews.render(:at, character))
     Client.send(client, MiniMapViews.render(:c_map, character))
     Client.send(client, SpecialistViews.render(:sp, sp_points_info))
