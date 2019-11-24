@@ -6,15 +6,12 @@ defmodule WorldServer.Structures.Character do
   alias WorldServer.Enums.Character, as: EnumChar
 
   @keys [
-    :id,
-    :slot,
-    :name,
-    :gender,
-    :hair_style,
-    :hair_color
-  ]
-
-  @additional_keys [
+    id: 1,
+    slot: 1,
+    name: "DarkyZ",
+    gender: 1,
+    hair_style: 1,
+    hair_color: 1,
     level: 1,
     reputation: 0,
     dignity: 0,
@@ -26,8 +23,7 @@ defmodule WorldServer.Structures.Character do
     class: EnumChar.class_type(:adventurer)
   ]
 
-  @enforce_keys @keys
-  defstruct @keys ++ @additional_keys
+  defstruct @keys
 
   @type t :: %__MODULE__{
           id: non_neg_integer,

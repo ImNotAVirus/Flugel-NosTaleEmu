@@ -3,6 +3,14 @@ defmodule WorldServer.Enums.Entity do
   TODO: Documentation for WorldServer.Enums.Entity
   """
 
+  @spec type(atom) :: non_neg_integer
+  def type(:character), do: 1
+  def type(:npc), do: 2
+  def type(:monster), do: 3
+  def type(:map_object), do: 9
+  # unknown yet
+  def type(:portal), do: 1000
+
   @spec direction_type(atom) :: non_neg_integer
   def direction_type(:north), do: 0
   def direction_type(:east), do: 1
@@ -44,12 +52,4 @@ defmodule WorldServer.Enums.Entity do
   def req_info_type(:item_info), do: 12
   def req_info_type(:mate_info), do: 6
   def req_info_type(:npc_info), do: 5
-
-  @spec visual_type(atom) :: non_neg_integer
-  def visual_type(:character), do: 1
-  def visual_type(:npc), do: 2
-  def visual_type(:monster), do: 3
-  def visual_type(:map_object), do: 9
-  # unknown yet
-  def visual_type(:portal), do: 1000
 end

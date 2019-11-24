@@ -7,6 +7,7 @@ defmodule WorldServer.PacketHandler do
 
   alias WorldServer.Packets.CharacterSelection.Actions, as: CharSelectActions
   alias WorldServer.Packets.Player.Actions, as: PlayerActions
+  alias WorldServer.Packets.UserInterface.Actions, as: UIActions
 
   #
   # Useless packets
@@ -69,5 +70,16 @@ defmodule WorldServer.PacketHandler do
   """
   packet "game_start" do
     resolve &PlayerActions.game_start/3
+  end
+
+  @desc """
+  TODO: Description for this packet
+  """
+  packet "guri" do
+    field :type, :integer
+    field :unknown, :integer
+    field :entity_id, :integer
+    field :value, :integer
+    resolve &UIActions.guri_handler/3
   end
 end

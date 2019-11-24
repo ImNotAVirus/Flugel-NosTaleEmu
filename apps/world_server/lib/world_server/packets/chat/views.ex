@@ -31,10 +31,10 @@ defmodule WorldServer.Packets.Chat.Views do
   # TODO: Move this function inside Entity module and get sender_id from attrs
   def render(:say, attrs) do
     %{message: message} = attrs
-    visual_type = EnumsEntity.visual_type(:character)
+    entity_type = EnumsEntity.type(:character)
     color = Map.get(attrs, :color, EnumsSay.color_type(:default))
     sender_id = 1
 
-    "say #{visual_type} #{sender_id} #{color} #{message}"
+    "say #{entity_type} #{sender_id} #{color} #{message}"
   end
 end

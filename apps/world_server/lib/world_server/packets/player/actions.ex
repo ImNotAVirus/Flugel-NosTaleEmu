@@ -42,8 +42,8 @@ defmodule WorldServer.Packets.Player.Actions do
     }
 
     Client.send(client, PlayerViews.render(:tit, character))
-    Client.send(client, PlayerViews.render(:c_info, character))
     Client.send(client, PlayerViews.render(:fd, character))
+    Client.send(client, PlayerViews.render(:c_info, character))
     Client.send(client, PlayerViews.render(:lev, character))
     Client.send(client, PlayerViews.render(:sc, character))
     Client.send(client, EntityViews.render(:stat, character))
