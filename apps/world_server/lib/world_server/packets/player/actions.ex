@@ -41,6 +41,12 @@ defmodule WorldServer.Packets.Player.Actions do
       additional_points: 500_000
     }
 
+    player_condition = %{
+      target: character,
+      no_attack: false,
+      no_move: false
+    }
+
     Client.send(client, PlayerViews.render(:tit, character))
     Client.send(client, PlayerViews.render(:fd, character))
     Client.send(client, PlayerViews.render(:c_info, character))
@@ -48,6 +54,7 @@ defmodule WorldServer.Packets.Player.Actions do
     Client.send(client, PlayerViews.render(:sc, character))
     Client.send(client, PlayerViews.render(:ski, character))
     Client.send(client, EntityViews.render(:stat, character))
+    Client.send(client, EntityViews.render(:cond, player_condition))
     Client.send(client, MiniMapViews.render(:at, character))
     Client.send(client, MiniMapViews.render(:c_map, character))
     Client.send(client, SpecialistViews.render(:sp, sp_points_info))
