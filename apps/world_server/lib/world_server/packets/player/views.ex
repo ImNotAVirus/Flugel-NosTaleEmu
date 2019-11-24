@@ -173,6 +173,14 @@ defmodule WorldServer.Packets.Player.Views do
     "ski #{skills_str}"
   end
 
+  def render(:fs, %Character{} = character) do
+    %Character{
+      faction: faction
+    } = character
+
+    "fs #{faction}"
+  end
+
   #
   # Core functions
   # TODO: Move it inside 'Core' app

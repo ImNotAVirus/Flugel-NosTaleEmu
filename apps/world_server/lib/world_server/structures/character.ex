@@ -13,6 +13,7 @@ defmodule WorldServer.Structures.Character do
     hair_style: 1,
     hair_color: 1,
     level: 1,
+    faction: 1,
     reputation: 0,
     dignity: 0,
     job_level: 1,

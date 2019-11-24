@@ -25,6 +25,7 @@ defmodule WorldServer.Packets.Player.Actions do
       hair_style: EnumChar.hair_style_type(:hair_style_a),
       hair_color: EnumChar.hair_color_type(:yellow),
       class: EnumChar.class_type(:wrestler),
+      faction: EnumChar.faction_type(:demon),
       level: 92,
       job_level: 80,
       hero_level: 25,
@@ -53,6 +54,7 @@ defmodule WorldServer.Packets.Player.Actions do
     Client.send(client, PlayerViews.render(:lev, character))
     Client.send(client, PlayerViews.render(:sc, character))
     Client.send(client, PlayerViews.render(:ski, character))
+    Client.send(client, PlayerViews.render(:fs, character))
     Client.send(client, EntityViews.render(:stat, character))
     Client.send(client, EntityViews.render(:cond, player_condition))
     Client.send(client, MiniMapViews.render(:at, character))
@@ -61,35 +63,6 @@ defmodule WorldServer.Packets.Player.Actions do
     # Client.send(client, InventoryViews.render(:equip, nil))
 
     Client.send(client, UserInterfaceViews.render(:info, %{message: "Welcome !"}))
-
-    # Missing packets (road map):
-    #   - equip
-    #   - ski
-    #   - cond
-    #   - pairy
-    #   - rsfi
-    #   - rank_cool
-    #   - scr
-    #   - exts
-    #   - gidx
-    #   - mlinfo
-    #   - p_clear
-    #   - sc_p
-    #   - sc_n
-    #   - sc_p_stc
-    #   - npinfo
-    #   - pinit
-    #   - blinit
-    #   - post
-    #   - zzim
-    #   - twk
-    #   - qstlist
-    #   - sqst
-    #   - bf
-    #   - ginfo
-    #   - gmbr
-    #   - in
-    #   - out
 
     send_bns(client)
     send_hello(client)
