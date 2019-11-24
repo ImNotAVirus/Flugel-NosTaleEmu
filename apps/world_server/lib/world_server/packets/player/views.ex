@@ -129,6 +129,32 @@ defmodule WorldServer.Packets.Player.Views do
       " #{water_resistance} #{light_resistance} #{dark_resistance}"
   end
 
+  def render(:ski, %Character{} = character) do
+    %Character{
+      id: _id
+    } = character
+
+    # TODO: Get player skills from a service
+    skill_ids = [
+      1525, 1529, 1525, 1529, 1526, 1527, 1528, 1530, 1531, 1532, 1533, 1534, 1535, 1536,
+      1537, 1538, 1539, 1565, 21, 25, 29, 37, 41, 45, 49, 53, 57, 1540, 1543, 1544
+    ]
+
+    skills_str = serialize_list(skill_ids, " ")
+
+    "ski #{skills_str}"
+  end
+
+  #
+  # Core functions
+  # TODO: Move it inside 'Core' app
+  #
+
+  @spec serialize_list([term, ...], String.t()) :: String.t()
+  defp serialize_list(enumerable, joiner \\ ".")
+  defp serialize_list([], _), do: "-1"
+  defp serialize_list([_ | _] = enumerable, joiner), do: Enum.join(enumerable, joiner)
+
   #
   # Function Helpers
   #
