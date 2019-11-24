@@ -13,7 +13,7 @@ defmodule WorldServer.Packets.Specialist.Views do
     } = attrs
 
     # Get it from conf files
-    max_additional_points = 500_000
+    max_additional_points = 1_000_000
     max_daily_points = 10_000
 
     "sp #{additional_points} #{max_additional_points} #{points} #{max_daily_points}"

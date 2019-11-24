@@ -14,10 +14,10 @@ defmodule WorldServer.Packets.Entity.Views do
     } = character
 
     # TODO: Load it from CharacterManagement Service
-    hp = 25000
-    hp_max = 25000
-    mp = 10000
-    mp_max = 10000
+    hp = 25_000
+    hp_max = 25_000
+    mp = 10_000
+    mp_max = 10_000
 
     "stat #{hp} #{hp_max} #{mp} #{mp_max} 0 0"
   end

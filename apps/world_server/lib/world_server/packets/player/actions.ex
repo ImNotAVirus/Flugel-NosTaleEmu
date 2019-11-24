@@ -37,7 +37,7 @@ defmodule WorldServer.Packets.Player.Actions do
 
     # TODO: Get it from CharacterManagement Service
     sp_points_info = %{
-      points: 10000,
+      points: 10_000,
       additional_points: 500_000
     }
 
@@ -45,6 +45,7 @@ defmodule WorldServer.Packets.Player.Actions do
     Client.send(client, PlayerViews.render(:c_info, character))
     Client.send(client, PlayerViews.render(:fd, character))
     Client.send(client, PlayerViews.render(:lev, character))
+    Client.send(client, PlayerViews.render(:sc, character))
     Client.send(client, EntityViews.render(:stat, character))
     Client.send(client, MiniMapViews.render(:at, character))
     Client.send(client, MiniMapViews.render(:c_map, character))
@@ -53,9 +54,34 @@ defmodule WorldServer.Packets.Player.Actions do
 
     Client.send(client, UserInterfaceViews.render(:info, %{message: "Welcome !"}))
 
-    # UI skill list => Views.render(:ski, character)
-    # UI Sp Points => Views.render(:ski, character)
-    # ...
+    # Missing packets (road map):
+    #   - equip
+    #   - ski
+    #   - cond
+    #   - pairy
+    #   - rsfi
+    #   - rank_cool
+    #   - scr
+    #   - exts
+    #   - gidx
+    #   - mlinfo
+    #   - p_clear
+    #   - sc_p
+    #   - sc_n
+    #   - sc_p_stc
+    #   - npinfo
+    #   - pinit
+    #   - blinit
+    #   - post
+    #   - zzim
+    #   - twk
+    #   - qstlist
+    #   - sqst
+    #   - bf
+    #   - ginfo
+    #   - gmbr
+    #   - in
+    #   - out
 
     send_bns(client)
     send_hello(client)
