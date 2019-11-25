@@ -61,8 +61,9 @@ defmodule WorldServer.Packets.Player.Actions do
     Client.send(client, MiniMapViews.render(:c_map, character))
     Client.send(client, SpecialistViews.render(:sp, sp_points_info))
     # Client.send(client, InventoryViews.render(:equip, nil))
-
     Client.send(client, UserInterfaceViews.render(:info, %{message: "Welcome !"}))
+    Client.send(client, UserInterfaceViews.render(:qslot, %{target: character, slot_id: 0}))
+    Client.send(client, UserInterfaceViews.render(:qslot, %{target: character, slot_id: 1}))
 
     send_bns(client)
     send_hello(client)

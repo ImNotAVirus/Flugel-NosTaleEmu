@@ -256,6 +256,7 @@ defmodule WorldServer.Packets.Player.Views do
     end)
   end
 
+  # TODO: Transform Enums into macros (can be used in guards)
   @type_adventurer EnumsChar.class_type(:adventurer)
   @type_swordman EnumsChar.class_type(:swordman)
   @type_archer EnumsChar.class_type(:archer)
