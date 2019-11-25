@@ -60,6 +60,7 @@ defmodule WorldServer.Packets.Player.Actions do
     Client.send(client, PlayerViews.render(:rsfi, character))
     Client.send(client, EntityViews.render(:stat, character))
     Client.send(client, EntityViews.render(:cond, player_condition))
+    Client.send(client, EntityViews.render(:pairy, character))
     Client.send(client, MiniMapViews.render(:at, character))
     Client.send(client, MiniMapViews.render(:c_map, character))
     Client.send(client, SpecialistViews.render(:sp, sp_points_info))

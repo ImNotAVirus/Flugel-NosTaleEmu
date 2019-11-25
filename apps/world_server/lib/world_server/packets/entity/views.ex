@@ -55,6 +55,20 @@ defmodule WorldServer.Packets.Entity.Views do
     "cond #{entity_type} #{character_id} #{no_attack_str} #{no_move_str} #{speed}"
   end
 
+  # TODO: Later, add clauses for mobs, npc, mates, ...
+  def render(:pairy, %Character{} = character) do
+    %Character{id: character_id} = character
+    entity_type = EnumsEntity.type(:character)
+
+    # TODO: Get fairy from InventoryService
+    fairy_move_type = 1
+    element = EnumsEntity.element_type(:darkness)
+    element_rate = 255
+    morph = 13
+
+    "pairy #{entity_type} #{character_id} #{fairy_move_type} #{element} #{element_rate} #{morph}"
+  end
+
   #
   # Helper function
   # TODO: Move it inside 'Core' app

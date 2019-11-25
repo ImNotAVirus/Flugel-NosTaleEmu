@@ -26,7 +26,7 @@ defmodule WorldServer.Enums.Entity do
   def element_type(:fire), do: 1
   def element_type(:water), do: 2
   def element_type(:light), do: 3
-  def element_type(:dark), do: 4
+  def element_type(:darkness), do: 4
 
   @spec mate_type(atom) :: non_neg_integer
   def mate_type(:partner), do: 0
