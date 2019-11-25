@@ -33,7 +33,8 @@ defmodule WorldServer.Packets.Player.Actions do
       job_level_xp: 4_500,
       hero_level_xp: 1_000,
       reputation: 5_000_000,
-      dignity: 100
+      dignity: 100,
+      rage_points: 150_000
     }
 
     # TODO: Get it from CharacterManagement Service
@@ -55,6 +56,7 @@ defmodule WorldServer.Packets.Player.Actions do
     Client.send(client, PlayerViews.render(:sc, character))
     Client.send(client, PlayerViews.render(:ski, character))
     Client.send(client, PlayerViews.render(:fs, character))
+    Client.send(client, PlayerViews.render(:rage, character))
     Client.send(client, EntityViews.render(:stat, character))
     Client.send(client, EntityViews.render(:cond, player_condition))
     Client.send(client, MiniMapViews.render(:at, character))

@@ -181,6 +181,16 @@ defmodule WorldServer.Packets.Player.Views do
     "fs #{faction}"
   end
 
+  def render(:rage, %Character{} = character) do
+    %Character{
+      rage_points: rage_points
+    } = character
+
+    max_rage_point = 250_000
+
+    "rage #{rage_points} #{max_rage_point}"
+  end
+
   #
   # Core functions
   # TODO: Move it inside 'Core' app

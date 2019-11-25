@@ -21,6 +21,7 @@ defmodule WorldServer.Structures.Character do
     level_xp: 0,
     job_level_xp: 0,
     hero_level_xp: 0,
+    rage_points: 0,
     class: EnumChar.class_type(:adventurer)
   ]
 
