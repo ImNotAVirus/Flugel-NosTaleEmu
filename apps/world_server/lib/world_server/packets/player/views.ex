@@ -191,6 +191,16 @@ defmodule WorldServer.Packets.Player.Views do
     "rage #{rage_points} #{max_rage_point}"
   end
 
+  # Not really usefull for me currently
+  def render(:rsfi, %Character{} = _character) do
+    act = 1
+    act_part = 1
+    ts = 0
+    ts_max = 0
+
+    "rsfi #{act} #{act_part} 0 0 #{ts} #{ts_max}"
+  end
+
   #
   # Core functions
   # TODO: Move it inside 'Core' app
