@@ -3,8 +3,6 @@ defmodule WorldServer.Packets.UserInterface.Actions do
   TODO: Documentation for WorldServer.Packets.UserInterface.Actions
   """
 
-  import WorldServer.Enums.Packets.Guri, only: [guri_type: 1]
-
   alias ElvenGard.Structures.Client
   alias WorldServer.Structures.Character
   alias WorldServer.Packets.Entity.Views, as: EntityViews
@@ -12,8 +10,8 @@ defmodule WorldServer.Packets.UserInterface.Actions do
 
   @emoji_offset 4099
 
-  @spec guri_handler(Client.t(), String.t(), map) :: {:cont, Client.t()}
-  def guri_handler(client, _, %{type: t} = params) when t == guri_type(:emoji) do
+  @spec show_emoji(Client.t(), String.t(), map) :: {:cont, Client.t()}
+  def show_emoji(client, _, params) do
     %{
       entity_id: entity_id,
       value: value
@@ -33,6 +31,12 @@ defmodule WorldServer.Packets.UserInterface.Actions do
       Client.send(client, UserInterfaceViews.render(:info, data))
     end
 
+    {:cont, client}
+  end
+
+  @spec show_scene(Client.t(), String.t(), map) :: {:cont, Client.t()}
+  def show_scene(client, _, params) do
+    Client.send(client, UserInterfaceViews.render(:scene, params))
     {:cont, client}
   end
 end

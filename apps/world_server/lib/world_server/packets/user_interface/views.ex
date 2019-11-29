@@ -31,6 +31,15 @@ defmodule WorldServer.Packets.UserInterface.Views do
     "qslot #{slot_id} #{quick_list_str}"
   end
 
+  def render(:scene, attrs) do
+    %{scene_id: scene_id} = attrs
+
+    cancellable = true
+    cancellable_str = serialize_boolean(cancellable)
+
+    "scene #{scene_id} #{cancellable_str}"
+  end
+
   #
   # Core functions
   # TODO: Move it inside 'Core' app
@@ -40,4 +49,7 @@ defmodule WorldServer.Packets.UserInterface.Views do
   defp serialize_list(enumerable, joiner \\ ".")
   defp serialize_list([], _), do: "-1"
   defp serialize_list([_ | _] = enumerable, joiner), do: Enum.join(enumerable, joiner)
+
+  @spec serialize_boolean(boolean) :: String.t()
+  defp serialize_boolean(bool), do: if(bool, do: "1", else: "0")
 end

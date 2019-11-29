@@ -5,6 +5,8 @@ defmodule WorldServer.PacketHandler do
 
   use ElvenGard.Packet
 
+  import WorldServer.Enums.Packets.Guri, only: [guri_type: 1]
+
   alias WorldServer.Packets.CharacterSelection.Actions, as: CharSelectActions
   alias WorldServer.Packets.Player.Actions, as: PlayerActions
   alias WorldServer.Packets.UserInterface.Actions, as: UIActions
@@ -76,10 +78,50 @@ defmodule WorldServer.PacketHandler do
   TODO: Description for this packet
   """
   packet "guri" do
-    field :type, :integer
+    field :type, :integer, using: guri_type(:emoji)
     field :unknown, :integer
     field :entity_id, :integer
     field :value, :integer
-    resolve &UIActions.guri_handler/3
+    resolve &UIActions.show_emoji/3
+  end
+
+  @desc """
+  TODO: Description for this packet
+  """
+  packet "guri" do
+    field :scene_id, :integer, using: guri_type(:scene_req_atc1)
+    resolve &UIActions.show_scene/3
+  end
+
+  @desc """
+  TODO: Description for this packet
+  """
+  packet "guri" do
+    field :scene_id, :integer, using: guri_type(:scene_req_atc2)
+    resolve &UIActions.show_scene/3
+  end
+
+  @desc """
+  TODO: Description for this packet
+  """
+  packet "guri" do
+    field :scene_id, :integer, using: guri_type(:scene_req_atc3)
+    resolve &UIActions.show_scene/3
+  end
+
+  @desc """
+  TODO: Description for this packet
+  """
+  packet "guri" do
+    field :scene_id, :integer, using: guri_type(:scene_req_atc4)
+    resolve &UIActions.show_scene/3
+  end
+
+  @desc """
+  TODO: Description for this packet
+  """
+  packet "guri" do
+    field :scene_id, :integer, using: guri_type(:scene_req_atc5)
+    resolve &UIActions.show_scene/3
   end
 end
