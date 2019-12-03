@@ -89,7 +89,7 @@ defmodule WorldServer.PacketHandler do
   TODO: Description for this packet
   """
   packet "guri" do
-    field :scene_id, :integer, using: guri_type(:scene_req_atc1)
+    field :scene_id, :integer, using: guri_type(:scene_req_act1)
     resolve &UIActions.show_scene/3
   end
 
@@ -97,7 +97,7 @@ defmodule WorldServer.PacketHandler do
   TODO: Description for this packet
   """
   packet "guri" do
-    field :scene_id, :integer, using: guri_type(:scene_req_atc2)
+    field :scene_id, :integer, using: guri_type(:scene_req_act2)
     resolve &UIActions.show_scene/3
   end
 
@@ -105,7 +105,7 @@ defmodule WorldServer.PacketHandler do
   TODO: Description for this packet
   """
   packet "guri" do
-    field :scene_id, :integer, using: guri_type(:scene_req_atc3)
+    field :scene_id, :integer, using: guri_type(:scene_req_act3)
     resolve &UIActions.show_scene/3
   end
 
@@ -113,7 +113,7 @@ defmodule WorldServer.PacketHandler do
   TODO: Description for this packet
   """
   packet "guri" do
-    field :scene_id, :integer, using: guri_type(:scene_req_atc4)
+    field :scene_id, :integer, using: guri_type(:scene_req_act4)
     resolve &UIActions.show_scene/3
   end
 
@@ -121,7 +121,7 @@ defmodule WorldServer.PacketHandler do
   TODO: Description for this packet
   """
   packet "guri" do
-    field :scene_id, :integer, using: guri_type(:scene_req_atc5)
+    field :scene_id, :integer, using: guri_type(:scene_req_act5)
     resolve &UIActions.show_scene/3
   end
 end
