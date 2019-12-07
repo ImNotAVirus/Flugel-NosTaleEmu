@@ -5,6 +5,7 @@
     add: 2,
     add: 3,
     defenum: 3,
-    defbitfield: 2
+    defbitfield: 2,
+    field: 2
   ]
 ]

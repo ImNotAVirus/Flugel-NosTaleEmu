@@ -11,7 +11,8 @@ defmodule DatabaseService.MixProject do
       lockfile: "../../mix.lock",
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      aliases: aliases()
     ]
   end
 
@@ -32,6 +33,13 @@ defmodule DatabaseService.MixProject do
       {:postgrex, "~> 0.15"},
       {:ecto_enum, "~> 1.4"},
       {:ecto_bitfield, "~> 0.1.0"}
+    ]
+  end
+
+  defp aliases do
+    [
+      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+      "ecto.reset": ["ecto.drop", "ecto.setup"]
     ]
   end
 end
