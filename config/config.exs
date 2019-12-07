@@ -18,6 +18,23 @@ config :elven_gard,
   num_acceptors: 5,
   response_timeout: 3000
 
+#
+# Database configs
+#
+
+config :database_service, ecto_repos: [DatabaseService.Repo]
+
+config :database_service, DatabaseService.Repo,
+  database: "elvengard_dev",
+  username: "postgres",
+  password: "postgres",
+  hostname: "localhost",
+  template: "template0"
+
+#
+# Login server part
+#
+
 config :login_server,
   port: System.get_env("LOGIN_PORT", "4002") |> String.to_integer(),
   client_version: System.get_env("CLIENT_VERSION", "0.9.3.3086")
