@@ -10,23 +10,20 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-alias DatabaseService.Repo
-alias DatabaseService.Player.Account
+alias DatabaseService.Player.Accounts
 
 #
 # Accounts
 #
 
-{:ok, admin_authority} = Account.AuthorityType.cast([:game_master, :administrator])
-
-Repo.insert!(%Account{
+Accounts.create_account!(%{
   username: "admin",
   password: :crypto.hash(:sha512, "admin") |> Base.encode16(),
-  authority: admin_authority,
+  authority: [:game_master, :administrator],
   language: :fr
 })
 
-Repo.insert!(%Account{
+Accounts.create_account!(%{
   username: "user",
   password: :crypto.hash(:sha512, "user") |> Base.encode16()
 })
