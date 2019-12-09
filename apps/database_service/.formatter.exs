@@ -4,6 +4,7 @@
   locals_without_parens: [
     add: 2,
     add: 3,
+    defenum: 2,
     defenum: 3,
     defbitfield: 2,
     field: 2
