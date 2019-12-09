@@ -14,6 +14,11 @@ defmodule DatabaseService.Enums do
     angel: 1,
     demon: 2
 
+  defenum MinilandState,
+    open: 0,
+    private: 1,
+    lock: 2
+
   defenum CharacterClassType,
     adventurer: 0,
     swordman: 1,

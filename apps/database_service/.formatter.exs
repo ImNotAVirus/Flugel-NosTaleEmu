@@ -7,6 +7,7 @@
     defenum: 2,
     defenum: 3,
     defbitfield: 2,
-    field: 2
+    field: 2,
+    belongs_to: 2
   ]
 ]

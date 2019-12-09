@@ -30,7 +30,7 @@ defmodule DatabaseService.Repo.Migrations.CreateCharacters do
       add :hero_level_xp, :int4, default: 0, null: false
 
       add :sp_point, :int4, default: 10_000, null: false
-      add :sp_addition_point, :int4, default: 50_000, null: false
+      add :sp_additional_point, :int4, default: 50_000, null: false
       add :rage_point, :int4, default: 0, null: false
       add :max_mate_count, :int2, default: 10, null: false
 
@@ -52,7 +52,7 @@ defmodule DatabaseService.Repo.Migrations.CreateCharacters do
       add :miniland_state, :int2, default: 0, null: false
       add :miniland_makepoints, :int2, default: 2000, null: false
 
-      add :game_params, :int8, default: 0, null: false
+      add :game_options, :int8, default: 0, null: false
 
 			timestamps()
 		end

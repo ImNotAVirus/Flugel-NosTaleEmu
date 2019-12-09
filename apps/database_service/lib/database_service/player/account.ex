@@ -7,7 +7,6 @@ defmodule DatabaseService.Player.Account do
   import EctoBitfield
 
   alias DatabaseService.Enums.LanguageKey
-  alias DatabaseService.Player.Account
 
   #
   # GameMaster: can ban, kick, mute, customs commands, etc....
@@ -18,7 +17,7 @@ defmodule DatabaseService.Player.Account do
   schema "accounts" do
     field :username, :string
     field :password, :string
-    field :authority, Account.AuthorityType
+    field :authority, __MODULE__.AuthorityType
     field :language, LanguageKey
 
     timestamps()
