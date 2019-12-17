@@ -3,6 +3,7 @@ defmodule LoginServer.Auth.Actions do
   Manage the login pipe when a client connect to the Frontend
   """
 
+  alias DatabaseService.Player.{Account, Accounts}
   alias ElvenGard.Structures.Client
   alias LoginServer.Auth.Views
 
@@ -57,11 +58,12 @@ defmodule LoginServer.Auth.Actions do
       client: client
     } = params
 
-    # TODO: Need to call the Auth service here
-    if username == "admin" and password == "admin" do
-      {:ok, %{params | account_id: 1}}
-    else
-      {:halt, {:error, :BAD_CREDENTIALS}, client}
+    case Accounts.get_by_name(username) do
+      %Account{id: id, password: ^password} ->
+        {:ok, %{params | account_id: id}}
+
+      _ ->
+        {:halt, {:error, :BAD_CREDENTIALS}, client}
     end
   end
 
@@ -76,12 +78,12 @@ defmodule LoginServer.Auth.Actions do
       client: client
     } = params
 
-    state = %{
+    player_attrs = %{
       username: username,
       password: password
     }
 
-    case SessionManager.register_player(state) do
+    case SessionManager.register_player(player_attrs) do
       {:ok, %SessionManager.Session{id: session_id}} ->
         {:ok, %{params | session_id: session_id}}
 
@@ -96,7 +98,6 @@ defmodule LoginServer.Auth.Actions do
 
   defp get_server_list({:ok, params}) do
     server_list = WorldManager.channels()
-
     {:ok, %{params | server_list: server_list}}
   end
 
@@ -111,7 +112,6 @@ defmodule LoginServer.Auth.Actions do
   defp send_response({:ok, %{client: client} = params}) do
     render = Views.render(:login_succeed, params)
     Client.send(client, render)
-
     {:halt, {:ok, :normal}, client}
   end
 end

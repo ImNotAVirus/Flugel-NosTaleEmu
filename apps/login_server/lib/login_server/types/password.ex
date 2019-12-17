@@ -8,10 +8,11 @@ defmodule LoginServer.Types.Password do
   alias LoginServer.Crypto
 
   @impl true
-  def encode(_val, _opts), do: :unimplemented
+  def encode(_val, _opts), do: raise("unimplemented function")
 
   @impl true
   def decode(str, _opts) do
-    Crypto.decrypt_pass(str)
+    decoded = Crypto.decrypt_pass(str)
+    :crypto.hash(:sha512, decoded) |> Base.encode16()
   end
 end

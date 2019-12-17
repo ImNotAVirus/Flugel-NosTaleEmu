@@ -7,27 +7,22 @@ defmodule DatabaseService.Player.Accounts do
   alias DatabaseService.Player.Account
 
   @doc false
-  @spec get_by_id(non_neg_integer) :: Ecto.Schema.t() | nil
-  def get_by_id(id), do: Repo.get(Account, id)
-
-  @doc false
-  @spec authentificate(String.t(), String.t()) :: Ecto.Schema.t() | nil
-  def authentificate(username, password) do
-    from(u in Account, where: u.username == ^username and u.password == ^password)
-    |> Repo.one()
+  @spec get_by_name(String.t()) :: Ecto.Schema.t() | nil
+  def get_by_name(username) do
+    Repo.get_by(Account, username: username)
   end
 
   @doc false
-  @spec create_account(map) :: {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
-  def create_account(attrs) do
+  @spec create(map) :: {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
+  def create(attrs) do
     %Account{}
     |> Account.changeset(attrs)
     |> Repo.insert()
   end
 
   @doc false
-  @spec create_account!(map) :: Ecto.Schema.t()
-  def create_account!(attrs) do
+  @spec create!(map) :: Ecto.Schema.t()
+  def create!(attrs) do
     %Account{}
     |> Account.changeset(attrs)
     |> Repo.insert!()
