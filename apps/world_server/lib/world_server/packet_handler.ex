@@ -5,7 +5,11 @@ defmodule WorldServer.PacketHandler do
 
   use ElvenGard.Packet
 
-  alias WorldServer.Actions.Auth
+  import WorldServer.Enums.Packets.Guri, only: [guri_type: 1]
+
+  alias WorldServer.Packets.CharacterSelection.Actions, as: CharSelectActions
+  alias WorldServer.Packets.Player.Actions, as: PlayerActions
+  alias WorldServer.Packets.UserInterface.Actions, as: UIActions
 
   #
   # Useless packets
@@ -16,6 +20,7 @@ defmodule WorldServer.PacketHandler do
 
   useless_packet "c_close"
   useless_packet "f_stash_end"
+  useless_packet "lbs"
 
   #
   # Usefull packets
@@ -29,7 +34,7 @@ defmodule WorldServer.PacketHandler do
   """
   packet "session_id" do
     field :session_id, :integer
-    resolve &Auth.process_session_id/3
+    resolve &CharSelectActions.process_session_id/3
   end
 
   @desc """
@@ -40,7 +45,7 @@ defmodule WorldServer.PacketHandler do
   """
   packet "username" do
     field :username, :string
-    resolve &Auth.process_username/3
+    resolve &CharSelectActions.process_username/3
   end
 
   @desc """
@@ -51,6 +56,72 @@ defmodule WorldServer.PacketHandler do
   """
   packet "password" do
     field :password, :string
-    resolve &Auth.process_password/3
+    resolve &CharSelectActions.verify_session/3
+  end
+
+  @desc """
+  Select a character
+  """
+  packet "select" do
+    field :character_slot, :integer
+    resolve &CharSelectActions.select_character/3
+  end
+
+  @desc """
+  Character will enter on the game
+  """
+  packet "game_start" do
+    resolve &PlayerActions.game_start/3
+  end
+
+  @desc """
+  TODO: Description for this packet
+  """
+  packet "guri" do
+    field :type, :integer, using: guri_type(:emoji)
+    field :unknown, :integer
+    field :entity_id, :integer
+    field :value, :integer
+    resolve &UIActions.show_emoji/3
+  end
+
+  @desc """
+  TODO: Description for this packet
+  """
+  packet "guri" do
+    field :scene_id, :integer, using: guri_type(:scene_req_act1)
+    resolve &UIActions.show_scene/3
+  end
+
+  @desc """
+  TODO: Description for this packet
+  """
+  packet "guri" do
+    field :scene_id, :integer, using: guri_type(:scene_req_act2)
+    resolve &UIActions.show_scene/3
+  end
+
+  @desc """
+  TODO: Description for this packet
+  """
+  packet "guri" do
+    field :scene_id, :integer, using: guri_type(:scene_req_act3)
+    resolve &UIActions.show_scene/3
+  end
+
+  @desc """
+  TODO: Description for this packet
+  """
+  packet "guri" do
+    field :scene_id, :integer, using: guri_type(:scene_req_act4)
+    resolve &UIActions.show_scene/3
+  end
+
+  @desc """
+  TODO: Description for this packet
+  """
+  packet "guri" do
+    field :scene_id, :integer, using: guri_type(:scene_req_act5)
+    resolve &UIActions.show_scene/3
   end
 end
