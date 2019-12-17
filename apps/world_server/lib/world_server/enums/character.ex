@@ -15,7 +15,13 @@ defmodule WorldServer.Enums.Character do
   def class_type(:archer), do: 2
   def class_type(:magician), do: 3
   def class_type(:wrestler), do: 4
-  def class_type(:unknown), do: 5
+
+  @spec class_str(non_neg_integer) :: String.t()
+  def class_str(0), do: "Adventurer"
+  def class_str(1), do: "Swordman"
+  def class_str(2), do: "Archer"
+  def class_str(3), do: "Mage"
+  def class_str(4), do: "Martial"
 
   @spec dignity(atom) :: non_neg_integer
   # Basic Dignity ( Dignity are not changed )
@@ -54,83 +60,83 @@ defmodule WorldServer.Enums.Character do
   def option(:buff_blocked), do: 14
   def option(:miniland_invite_blocked), do: 15
 
-  @spec rep(atom) :: integer
+  @spec reputation(atom) :: integer
   # Stupid minded RANK (Dignity: -801 ~ -1.000)
-  def rep(:stupid_minded), do: -6
+  def reputation(:stupid_minded), do: -6
   # Useless RANK (Dignity: -601 ~ -800)
-  def rep(:useless), do: -5
+  def reputation(:useless), do: -5
   # Not qualified for RANK (Dignity: -401 ~ -600)
-  def rep(:not_qualified_for), do: -4
+  def reputation(:not_qualified_for), do: -4
   # Bluffed name only RANK (Dignity: -201 ~ -400)
-  def rep(:bluffed_name_only), do: -3
+  def reputation(:bluffed_name_only), do: -3
   # Suspected RANK  (Dignity: -100 ~ -200)
-  def rep(:suspected), do: -2
+  def reputation(:suspected), do: -2
   # Basic Dignity ( Dignity are not changed )
-  def rep(:basic), do: -1
+  def reputation(:basic), do: -1
   # (0 ~ 250 Reputation)
-  def rep(:beginner), do: 1
+  def reputation(:beginner), do: 1
   # IDK ?
-  def rep(:i_dk), do: 2
+  def reputation(:i_dk), do: 2
   # IDK ?
-  def rep(:i_dk2), do: 3
+  def reputation(:i_dk2), do: 3
   # (Reputation: 251 ~ 500)
-  def rep(:trainee_g), do: 4
+  def reputation(:trainee_g), do: 4
   # (Reputation:501 ~ 750)
-  def rep(:trainee_b), do: 5
+  def reputation(:trainee_b), do: 5
   # (Reputation: 750 ~ 1.000)
-  def rep(:trainee_r), do: 6
+  def reputation(:trainee_r), do: 6
   # (Reputation: 1.001 ~ 2.250)
-  def rep(:the_experienced_g), do: 7
+  def reputation(:the_experienced_g), do: 7
   # (Reputation: 2.251 ~ 3.500)
-  def rep(:the_experienced_b), do: 8
+  def reputation(:the_experienced_b), do: 8
   # (Reputation: 3.501 ~ 5.000)
-  def rep(:the_experienced_r), do: 9
+  def reputation(:the_experienced_r), do: 9
   # (Reputation: 5 001 ~ 9.500)
-  def rep(:battle_soldier_g), do: 10
+  def reputation(:battle_soldier_g), do: 10
   # (Reputation: 9.501 ~ 19.000)
-  def rep(:battle_soldier_b), do: 11
+  def reputation(:battle_soldier_b), do: 11
   # (Reputation: 19.001 ~ 25.000)
-  def rep(:battle_soldier_r), do: 12
+  def reputation(:battle_soldier_r), do: 12
   # (Reputation: 25.001 ~ 40.000)
-  def rep(:expert_g), do: 13
+  def reputation(:expert_g), do: 13
   # (Reputation: 40.001 ~ 60.000)
-  def rep(:expert_b), do: 14
+  def reputation(:expert_b), do: 14
   # (Reputation: 60.001 ~ 85.000)
-  def rep(:expert_r), do: 15
+  def reputation(:expert_r), do: 15
   # (Reputation: 85.001 ~ 115.000)
-  def rep(:leader_g), do: 16
+  def reputation(:leader_g), do: 16
   # (Reputation: 115.001 ~ 150.000)
-  def rep(:leader_b), do: 17
+  def reputation(:leader_b), do: 17
   # (Reputation: 150.001 ~ 190.000)
-  def rep(:leader_r), do: 18
+  def reputation(:leader_r), do: 18
   # (Reputation: 190.001 ~ 235.000)
-  def rep(:master_g), do: 19
+  def reputation(:master_g), do: 19
   # (Reputation: 235.001 ~ 185.000)
-  def rep(:master_b), do: 20
+  def reputation(:master_b), do: 20
   # (Reputation: 285.001 ~ 350.000)
-  def rep(:master_r), do: 21
+  def reputation(:master_r), do: 21
   # (Reputation: 350.001 ~ 500.000)
-  def rep(:nos_g), do: 22
+  def reputation(:nos_g), do: 22
   # (Reputation: 500.001 ~ 1.500.000)
-  def rep(:nos_b), do: 23
+  def reputation(:nos_b), do: 23
   # (Reputation: 1.500.001 ~ 2.500.000)
-  def rep(:nos_r), do: 24
+  def reputation(:nos_r), do: 24
   # (Reputation: 2.500.001 ~ 3.750.000)
-  def rep(:elite_g), do: 25
+  def reputation(:elite_g), do: 25
   # (Reputation: 3.750.001 ~ 5.000.000)
-  def rep(:elite_b), do: 26
+  def reputation(:elite_b), do: 26
   # (Reputation: 5.000.001 and more )
-  def rep(:elite_r), do: 27
+  def reputation(:elite_r), do: 27
   # (43 th to 14 th place at the reputation ranking : 5.000.000 and more)
-  def rep(:legend_g), do: 28
+  def reputation(:legend_g), do: 28
   # (14 th to 4 th place at the reputation ranking : 5.000.000 and more)
-  def rep(:legend_b), do: 29
+  def reputation(:legend_b), do: 29
   # (3 rd place at the reputation ranking : 5.000.000 and more)
-  def rep(:ancien_heros), do: 30
+  def reputation(:ancien_heros), do: 30
   # (2 nd place in the reputation ranking : 5.000.000 and more)
-  def rep(:mysterious_heros), do: 31
+  def reputation(:mysterious_heros), do: 31
   # (1 st place in the reputation ranking : 5.000.000 and more)
-  def rep(:legendary_heros), do: 32
+  def reputation(:legendary_heros), do: 32
 
   @spec state(atom) :: non_neg_integer
   def state(:unknown), do: 0

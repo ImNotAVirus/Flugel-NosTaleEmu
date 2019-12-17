@@ -4,7 +4,7 @@ defmodule WorldServer.Crypto do
   """
 
   ###
-  ### THIS MODULE NEED REFACTORING !
+  ### TODO: THIS MODULE NEED REFACTORING !
   ###
 
   use Bitwise, only_operators: true

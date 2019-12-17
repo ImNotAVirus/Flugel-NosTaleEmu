@@ -55,23 +55,25 @@ defmodule WorldServer.Frontend do
   # Helpers
   #
 
-  @doc false
-  @spec register_me() :: term
-  defp register_me() do
-    channel_specs = %{
-      world_name: Application.get_env(:world_server, :world_name, "ElvenGard"),
-      ip: Application.get_env(:world_server, :ip, "127.0.0.1"),
-      port: Application.get_env(:world_server, :port, 5000),
-      max_players: Application.get_env(:world_server, :max_players, 100)
-    }
+  if Mix.env() != :test do
+    @doc false
+    @spec register_me() :: term
+    defp register_me() do
+      channel_specs = %{
+        world_name: Application.get_env(:world_server, :world_name, "ElvenGard"),
+        ip: Application.get_env(:world_server, :ip, "127.0.0.1"),
+        port: Application.get_env(:world_server, :port, 5000),
+        max_players: Application.get_env(:world_server, :max_players, 100)
+      }
 
-    %{
-      world_id: world_id,
-      channel_id: channel_id
-    } = WorldManager.register_channel(channel_specs)
+      %{
+        world_id: world_id,
+        channel_id: channel_id
+      } = WorldManager.register_channel(channel_specs)
 
-    WorldManager.monitor_channel(world_id, channel_id)
+      WorldManager.monitor_channel(world_id, channel_id)
 
-    Logger.info("Channel registered (#{world_id}:#{channel_id})")
+      Logger.info("Channel registered (#{world_id}:#{channel_id})")
+    end
   end
 end
