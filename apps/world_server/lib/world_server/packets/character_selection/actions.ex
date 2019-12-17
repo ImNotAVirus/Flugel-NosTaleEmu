@@ -4,6 +4,7 @@ defmodule WorldServer.Packets.CharacterSelection.Actions do
   """
 
   alias ElvenGard.Structures.Client
+  alias SessionManager.Session
   alias WorldServer.Structures.Character
   alias WorldServer.Enums.Character, as: EnumChar
   alias WorldServer.Packets.CharacterSelection.Views, as: CharSelectViews
@@ -30,14 +31,20 @@ defmodule WorldServer.Packets.CharacterSelection.Actions do
 
   @spec verify_session(Client.t(), String.t(), map) :: {:cont, Client.t()}
   def verify_session(client, _header, params) do
-    %{password: _password} = params
+    %{password: password} = params
 
     %{
-      session_id: _session_id,
+      session_id: session_id,
       username: username
     } = client.metadata
 
-    # TODO: Check credentials and session_id here
+    password_sha512 = :crypto.hash(:sha512, password) |> Base.encode16()
+
+    %Session{
+      id: ^session_id,
+      username: ^username,
+      password: ^password_sha512
+    } = SessionManager.get_by_name(username)
 
     {:ok, _} = SessionManager.monitor_session(username)
     {:ok, _} = SessionManager.set_player_state(username, :in_lobby)
@@ -65,7 +72,7 @@ defmodule WorldServer.Packets.CharacterSelection.Actions do
 
   @spec select_character(Client.t(), String.t(), map) :: {:cont, Client.t()}
   def select_character(client, _header, params) do
-    %{character_slot: _character__slot} = params
+    %{character_slot: _character_slot} = params
 
     # TODO: Load character from the DB Service and cache it
     character = %Character{

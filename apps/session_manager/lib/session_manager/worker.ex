@@ -28,6 +28,11 @@ defmodule SessionManager.Worker do
   end
 
   @impl true
+  def handle_call({:get_by_name, username}, _from, state) do
+    {:reply, Sessions.get_by_username(state, username), state}
+  end
+
+  @impl true
   def handle_call({:register_player, attrs}, _from, state) do
     username = Map.fetch!(attrs, :username)
     session = Sessions.get_by_username(state, username)

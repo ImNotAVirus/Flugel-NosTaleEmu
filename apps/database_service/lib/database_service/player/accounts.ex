@@ -1,8 +1,6 @@
 defmodule DatabaseService.Player.Accounts do
   @moduledoc false
 
-  import Ecto.Query, only: [from: 2]
-
   alias DatabaseService.Repo
   alias DatabaseService.Player.Account
 
