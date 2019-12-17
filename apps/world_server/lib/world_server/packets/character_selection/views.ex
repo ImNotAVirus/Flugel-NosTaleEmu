@@ -5,7 +5,8 @@ defmodule WorldServer.Packets.CharacterSelection.Views do
 
   use ElvenGard.View
 
-  alias WorldServer.Structures.Character
+  alias DatabaseService.Player.Character
+  alias WorldServer.Enums.Character, as: EnumChar
 
   @spec render(atom, term) :: String.t()
   def render(:ok, _) do
@@ -41,10 +42,15 @@ defmodule WorldServer.Packets.CharacterSelection.Views do
     design = 0
     quest_completion = 1
     quest_part = 1
+
     petlist = serialize_list(pets)
     equipmentlist = serialize_list(equipments)
+    gender_int = EnumChar.gender_type(gender)
+    hair_style_int = EnumChar.hair_style_type(hair_style)
+    hair_color_int = EnumChar.hair_color_type(hair_color)
+    class_int = EnumChar.class_type(class)
 
-    "clist #{slot} #{name} 0 #{gender} #{hair_style} #{hair_color} 0 #{class}" <>
+    "clist #{slot} #{name} 0 #{gender_int} #{hair_style_int} #{hair_color_int} 0 #{class_int}" <>
       " #{level} #{hero_level} #{equipmentlist} #{job_level} #{quest_completion} " <>
       "#{quest_part} #{petlist} #{design}"
   end

@@ -16,20 +16,20 @@ defmodule DatabaseService.Player.Character do
   }
 
   defbitfield GameOptions,
-    exchange_blocked: :math.pow(2, 1),
-    friend_request_blocked: :math.pow(2, 2),
-    family_request_blocked: :math.pow(2, 3),
-    whisper_blocked: :math.pow(2, 4),
-    group_request_blocked: :math.pow(2, 5),
-    mouse_aim_lock: :math.pow(2, 9),
-    global_chat_blocked: :math.pow(2, 10),
-    quick_get_up: :math.pow(2, 11),
-    emoticons_blocked: :math.pow(2, 12),
-    hp_stat_blocked: :math.pow(2, 13),
-    buff_counter_blocked: :math.pow(2, 14),
-    miniland_invite_blocked: :math.pow(2, 15),
-    hats_hidden: :math.pow(2, 16),
-    ui_locked: :math.pow(2, 17)
+    exchange_blocked: round(:math.pow(2, 1)),
+    friend_request_blocked: round(:math.pow(2, 2)),
+    family_request_blocked: round(:math.pow(2, 3)),
+    whisper_blocked: round(:math.pow(2, 4)),
+    group_request_blocked: round(:math.pow(2, 5)),
+    mouse_aim_lock: round(:math.pow(2, 9)),
+    global_chat_blocked: round(:math.pow(2, 10)),
+    quick_get_up: round(:math.pow(2, 11)),
+    emoticons_blocked: round(:math.pow(2, 12)),
+    hp_stat_blocked: round(:math.pow(2, 13)),
+    buff_counter_blocked: round(:math.pow(2, 14)),
+    miniland_invite_blocked: round(:math.pow(2, 15)),
+    hats_hidden: round(:math.pow(2, 16)),
+    ui_locked: round(:math.pow(2, 17))
 
   schema "characters" do
     belongs_to :account, DatabaseService.Player.Account
@@ -87,6 +87,7 @@ defmodule DatabaseService.Player.Character do
   end
 
   @required_fields [
+    :account_id,
     :name,
     :slot,
     :gender,

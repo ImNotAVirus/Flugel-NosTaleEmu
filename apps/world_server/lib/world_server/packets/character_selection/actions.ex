@@ -3,6 +3,7 @@ defmodule WorldServer.Packets.CharacterSelection.Actions do
   TODO: Documentation for WorldServer.Packets.CharacterSelection.Actions
   """
 
+  alias DatabaseService.Player.{Account, Accounts, Characters}
   alias ElvenGard.Structures.Client
   alias SessionManager.Session
   alias WorldServer.Structures.Character
@@ -30,14 +31,9 @@ defmodule WorldServer.Packets.CharacterSelection.Actions do
   end
 
   @spec verify_session(Client.t(), String.t(), map) :: {:cont, Client.t()}
-  def verify_session(client, _header, params) do
-    %{password: password} = params
-
-    %{
-      session_id: session_id,
-      username: username
-    } = client.metadata
-
+  def verify_session(client, _header, %{password: password}) do
+    session_id = Client.get_metadata(client, :session_id)
+    username = Client.get_metadata(client, :username)
     password_sha512 = :crypto.hash(:sha512, password) |> Base.encode16()
 
     %Session{
@@ -46,28 +42,23 @@ defmodule WorldServer.Packets.CharacterSelection.Actions do
       password: ^password_sha512
     } = SessionManager.get_by_name(username)
 
+    %Account{
+      id: account_id,
+      username: ^username,
+      password: ^password_sha512
+    } = account = Accounts.get_by_name(username)
+
     {:ok, _} = SessionManager.monitor_session(username)
     {:ok, _} = SessionManager.set_player_state(username, :in_lobby)
+    new_state = Client.put_metadata(client, :account, account)
 
-    # TODO: Load character from the DB Service
-    character = %Character{
-      id: 1,
-      slot: 1,
-      name: "DarkyZ",
-      gender: EnumChar.gender_type(:female),
-      hair_style: EnumChar.hair_style_type(:hair_style_a),
-      hair_color: EnumChar.hair_color_type(:yellow),
-      class: EnumChar.class_type(:wrestler),
-      level: 92,
-      hero_level: 25,
-      job_level: 80
-    }
+    character_list = Characters.all_by_account(account_id)
 
     Client.send(client, CharSelectViews.render(:clist_start, nil))
-    Client.send(client, CharSelectViews.render(:clist, character))
+    Enum.each(character_list, &Client.send(client, CharSelectViews.render(:clist, &1)))
     Client.send(client, CharSelectViews.render(:clist_end, nil))
 
-    {:cont, Client.put_metadata(client, :auth_step, :done)}
+    {:cont, Client.put_metadata(new_state, :auth_step, :done)}
   end
 
   @spec select_character(Client.t(), String.t(), map) :: {:cont, Client.t()}
