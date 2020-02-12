@@ -32,7 +32,8 @@ defmodule DatabaseService.MixProject do
       {:ecto_sql, "~> 3.2"},
       {:postgrex, "~> 0.15"},
       {:ecto_enum, "~> 1.4"},
-      {:ecto_bitfield, "~> 0.1.0"}
+      {:ecto_bitfield, "~> 0.1.0"},
+      {:confex, "~> 3.4"}
     ]
   end
 

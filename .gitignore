@@ -3,6 +3,7 @@
 
 # Github files
 !/.gitignore
+!/.dockerignore
 !/.travis.yml
 !/.editorconfig
 !/CODE_OF_CONDUCT.md
@@ -18,6 +19,8 @@
 !/apps/**/*.exs
 
 # Additionals files
-!/.deliver/*
-!/.deploy/*
+!/.deliver/*.example
+!/.deploy/*.example
+!/.k8s/**/Dockerfile
+!/.k8s/**/*.yaml
 !/.rel/*.eex

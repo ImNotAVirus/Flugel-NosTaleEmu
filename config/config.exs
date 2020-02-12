@@ -36,8 +36,8 @@ config :database_service, DatabaseService.Repo,
 #
 
 config :login_server,
-  port: System.get_env("LOGIN_PORT", "4002") |> String.to_integer(),
-  client_version: System.get_env("CLIENT_VERSION", "0.9.3.3086")
+  port: {:system, :integer, "PORT", 4002},
+  client_version: {:system, :string, "CLIENT_VERSION", "0.9.3.3086"}
 
 #
 # Session manager part
@@ -60,3 +60,6 @@ config :world_server,
   ip: "127.0.0.1",
   port: 5000,
   max_players: 500
+
+# Override configs if prod
+if Mix.env() == :prod, do: import_config("#{Mix.env()}.exs")

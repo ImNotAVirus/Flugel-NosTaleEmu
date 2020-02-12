@@ -38,6 +38,29 @@ You can also deploy a cluster using docker-compose.
     nano .deploy/docker-compose.yml
     docker-compose up --build
 
+### Deploy on Kubernetes (with Minikube)
+
+    # Build all images
+    docker build --build-arg APP_NAME=login_service -t login_service -f .k8s/Dockerfile .
+    docker build --build-arg APP_NAME=channel_service -t channel_service -f .k8s/Dockerfile .
+    docker build --build-arg APP_NAME=session_manager -t session_manager -f .k8s/Dockerfile .
+    docker build --build-arg APP_NAME=world_manager -t world_manager -f .k8s/Dockerfile .
+
+    # Add them to minikube's cache
+    minikube cache add login_service
+    minikube cache add channel_service
+    minikube cache add session_manager
+    minikube cache add world_manager
+
+    # Deploy staging
+    kustomize build .k8s/staging | kubectl apply -f -
+
+    # Deploy production
+    kustomize build .k8s/production | kubectl apply -f -
+
+    # Deploy both
+    kustomize build .k8s | kubectl apply -f -
+
 ## Contributing
 
 Currently developing this project, I will often open pull-requests. Any review is welcome.

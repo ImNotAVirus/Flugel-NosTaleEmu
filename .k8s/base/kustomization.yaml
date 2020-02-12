@@ -1,0 +1,6 @@
+resources:
+- configmaps.yaml
+- redis.yaml
+- postgres.yaml
+- private-svc.yaml
+- login-service.yaml

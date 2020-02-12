@@ -28,20 +28,48 @@ defmodule Flugel.MixProject do
       flugel: [
         include_executables_for: [:unix],
         include_erts: Mix.env() == :prod,
+        quiet: true,
         applications: [
+          database_service: :permanent,
           login_server: :permanent,
           world_server: :permanent
         ]
       ],
-      login_server: [
+      login_service: [
         include_executables_for: [:unix],
         include_erts: Mix.env() == :prod,
-        applications: [login_server: :permanent]
+        quiet: true,
+        applications: [
+          login_server: :permanent,
+          database_service: :permanent
+        ]
       ],
-      world_server: [
+      channel_service: [
         include_executables_for: [:unix],
         include_erts: Mix.env() == :prod,
-        applications: [world_server: :permanent]
+        quiet: true,
+        applications: [
+          world_server: :permanent,
+          database_service: :permanent
+        ]
+      ],
+      session_manager: [
+        include_executables_for: [:unix],
+        include_erts: Mix.env() == :prod,
+        quiet: true,
+        applications: [session_manager: :permanent]
+      ],
+      world_manager: [
+        include_executables_for: [:unix],
+        include_erts: Mix.env() == :prod,
+        quiet: true,
+        applications: [world_manager: :permanent]
+      ],
+      database_service: [
+        include_executables_for: [:unix],
+        include_erts: Mix.env() == :prod,
+        quiet: true,
+        applications: [database_service: :permanent]
       ]
     ]
   end

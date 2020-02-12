@@ -1,0 +1,10 @@
+*
+
+!/config/**/
+!/apps/**/
+
+!/mix.exs
+!/mix.lock
+!/config/**/*.exs
+!/apps/**/*.{ex,exs}
+!/rel/*.eex

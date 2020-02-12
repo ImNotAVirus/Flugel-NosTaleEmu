@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: login-frontend-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: login-frontend
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: login-frontend
+        tier: frontend
+    spec:
+      containers:
+      - name: login-frontend
+        image: login_service
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 4002
+        envFrom:
+        - configMapRef:
+            name: postgres-config
+        env:
+        - name: PORT
+          value: "4002"
+        - name: CLIENT_VERSION
+          value: "0.9.3.3086"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: login-frontend-node-port
+spec:
+  ports:
+  - port: 4002
+    targetPort: 4002
+    protocol: TCP
+  selector:
+    app: login-frontend-deployment
+  type: NodePort
