@@ -17,6 +17,7 @@ install:
   - mix deps.get
 
 services:
+  - postgresql
   - redis-server
 
 before_script:
