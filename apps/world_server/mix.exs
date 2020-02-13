@@ -27,7 +27,9 @@ defmodule WorldServer.MixProject do
   defp deps do
     [
       {:world_manager, in_umbrella: true},
-      {:elven_gard, github: "imnotavirus/elvengard_v2"}
+      # {:core, in_umbrella: true},
+      {:elven_gard, github: "imnotavirus/elvengard_v2"},
+      {:peerage, "~> 1.0"}
     ]
   end
 end

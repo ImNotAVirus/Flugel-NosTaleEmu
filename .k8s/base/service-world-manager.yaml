@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: world-manager-deployment
+  namespace: default
+  labels:
+    app.kubernetes.io/name: world-manager-svc
+    app.kubernetes.io/instance: flugel
+    app.kubernetes.io/version: 0.1.0
+    app.kubernetes.io/component: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flugel
+      name: world-manager
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: flugel
+        name: world-manager
+        tier: backend
+    spec:
+      containers:
+      - name: world-manager
+        image: world_manager
+        imagePullPolicy: Never
+        envFrom:
+        - configMapRef:
+            name: core-config
+        env:
+        - name: HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP

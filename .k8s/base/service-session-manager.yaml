@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: session-manager-deployment
+  namespace: default
+  labels:
+    app.kubernetes.io/name: session-manager-svc
+    app.kubernetes.io/instance: flugel
+    app.kubernetes.io/version: 0.1.0
+    app.kubernetes.io/component: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flugel
+      name: session-manager
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: flugel
+        name: session-manager
+        tier: backend
+    spec:
+      containers:
+      - name: session-manager
+        image: session_manager
+        imagePullPolicy: Never
+        envFrom:
+        - configMapRef:
+            name: core-config
+        env:
+        - name: HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP

@@ -1,21 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: login-service-public
+spec:
+  ports:
+  - name: login-port
+    port: 4002
+    targetPort: 4002
+  selector:
+    matchLabels:
+      app: flugel
+      name: login-service
+      tier: frontend
+  type: LoadBalancer
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: login-frontend-deployment
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
-      app: login-frontend
+      app: flugel
+      name: login-service
       tier: frontend
   template:
     metadata:
       labels:
-        app: login-frontend
+        app: flugel
+        name: login-service
         tier: frontend
     spec:
       containers:
-      - name: login-frontend
+      - name: login-service
         image: login_service
         imagePullPolicy: Never
         ports:
@@ -28,16 +46,3 @@ spec:
           value: "4002"
         - name: CLIENT_VERSION
           value: "0.9.3.3086"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: login-frontend-node-port
-spec:
-  ports:
-  - port: 4002
-    targetPort: 4002
-    protocol: TCP
-  selector:
-    app: login-frontend-deployment
-  type: NodePort

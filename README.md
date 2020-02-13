@@ -47,10 +47,7 @@ You can also deploy a cluster using docker-compose.
     docker build --build-arg APP_NAME=world_manager -t world_manager -f .k8s/Dockerfile .
 
     # Add them to minikube's cache
-    minikube cache add login_service
-    minikube cache add channel_service
-    minikube cache add session_manager
-    minikube cache add world_manager
+    minikube cache add login_service channel_service session_manager world_manager
 
     # Deploy staging
     kustomize build .k8s/staging | kubectl apply -f -

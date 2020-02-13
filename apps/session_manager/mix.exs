@@ -26,7 +26,9 @@ defmodule SessionManager.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:redix, "~> 0.10"}
+      {:redix, "~> 0.10"},
+      {:confex, "~> 3.4"},
+      {:peerage, "~> 1.0"}
     ]
   end
 end

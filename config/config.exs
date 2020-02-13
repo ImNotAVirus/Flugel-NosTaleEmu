@@ -62,4 +62,4 @@ config :world_server,
   max_players: 500
 
 # Override configs if prod
-if Mix.env() == :prod, do: import_config("#{Mix.env()}.exs")
+if Mix.env() != :test, do: import_config("#{Mix.env()}.exs")

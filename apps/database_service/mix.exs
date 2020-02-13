@@ -33,7 +33,8 @@ defmodule DatabaseService.MixProject do
       {:postgrex, "~> 0.15"},
       {:ecto_enum, "~> 1.4"},
       {:ecto_bitfield, "~> 0.1.0"},
-      {:confex, "~> 3.4"}
+      {:confex, "~> 3.4"},
+      {:peerage, "~> 1.0"}
     ]
   end
 

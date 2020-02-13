@@ -16,6 +16,13 @@ install:
   - mix local.rebar --force
   - mix deps.get
 
+services:
+  - redis-server
+
+before_script:
+  - psql -c "CREATE DATABASE elvengard_dev;" -U postgres
+  - psql -c "ALTER USER postgres PASSWORD 'postgres';"
+
 script:
   # Check that code is formatted
   - "mix format --dry-run --check-formatted"

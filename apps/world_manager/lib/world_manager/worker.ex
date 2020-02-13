@@ -26,7 +26,7 @@ defmodule WorldManager.Worker do
 
   @impl true
   def handle_continue(:init_redis, nil) do
-    redis_host = Application.get_env(:world_manager, :redis_host, "127.0.0.1")
+    redis_host = Confex.fetch_env!(:world_manager, :redis_host)
     {:ok, conn} = Redix.start_link(host: redis_host)
     {:noreply, conn}
   end

@@ -1,3 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql
+  labels:
+    app: postgres
+spec:
+  ports:
+  - name: postgresql
+    port: 5432
+    targetPort: 5432
+  selector:
+    app: postgres
+---
 kind: PersistentVolume
 apiVersion: v1
 metadata:
@@ -27,7 +41,6 @@ spec:
   resources:
     requests:
       storage: 1Gi
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -44,7 +57,7 @@ spec:
       labels:
         app: postgres
     spec:
-      hostname: db
+      # hostname: postgres
       restartPolicy: Always
       containers:
       - name: postgres
@@ -61,17 +74,3 @@ spec:
       - name: postgredb
         persistentVolumeClaim:
           claimName: postgres-pv-claim
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: postgresql
-  labels:
-    app: postgres
-spec:
-  ports:
-  - name: postgresql
-    port: 5432
-    targetPort: 5432
-  selector:
-    app: postgres
