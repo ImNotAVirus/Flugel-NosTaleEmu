@@ -3,14 +3,16 @@ defmodule WorldManager.Application do
 
   use Application
 
+  require Logger
+
+  @spec start(any, any) :: {:error, any} | {:ok, pid}
   def start(_type, _args) do
-    # Define workers and child supervisors to be supervised
+    Logger.info("Starting #{__MODULE__}...")
+
     children = [
       WorldManager.Worker
     ]
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
     opts = [strategy: :one_for_one, name: WorldManager.Supervisor]
     Supervisor.start_link(children, opts)
   end

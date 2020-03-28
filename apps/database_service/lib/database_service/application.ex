@@ -3,7 +3,12 @@ defmodule DatabaseService.Application do
 
   use Application
 
+  require Logger
+
+  @spec start(any, any) :: {:error, any} | {:ok, pid}
   def start(_type, _args) do
+    Logger.info("Starting #{__MODULE__}...")
+
     children = [
       DatabaseService.Repo
     ]

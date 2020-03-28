@@ -3,5 +3,9 @@ resources:
 - postgres.yaml
 - redis.yaml
 - private-svc.yaml
-- service-session-manager.yaml
-- service-world-manager.yaml
+- deployment-session-manager.yaml
+- deployment-world-manager.yaml
+- deployment-login-svc.yaml
+- deployment-channel1-svc.yaml
+- deployment-channel2-svc.yaml
+- deployment-channel3-svc.yaml

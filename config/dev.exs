@@ -9,6 +9,11 @@
 # move said applications out of the umbrella.
 import Config
 
+config :logger, :console,
+  level: :debug,
+  format: "[$time] $metadata[$level] $levelpad$message\n",
+  metadata: [:application]
+
 config :peerage,
   via: Peerage.Via.Self,
   log_results: false

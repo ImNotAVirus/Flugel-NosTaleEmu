@@ -6,7 +6,7 @@ defmodule WorldServer.Frontend do
   use ElvenGard.Frontend,
     packet_protocol: WorldServer.PacketEncoder,
     packet_handler: WorldServer.PacketHandler,
-    port: Application.get_env(:world_server, :port)
+    port: Confex.get_env(:world_server, :port)
 
   require Logger
 
@@ -60,10 +60,10 @@ defmodule WorldServer.Frontend do
     @spec register_me() :: term
     defp register_me() do
       channel_specs = %{
-        world_name: Application.get_env(:world_server, :world_name, "ElvenGard"),
-        ip: Application.get_env(:world_server, :ip, "127.0.0.1"),
-        port: Application.get_env(:world_server, :port, 5000),
-        max_players: Application.get_env(:world_server, :max_players, 100)
+        world_name: Confex.get_env(:world_server, :world_name, "ElvenGard"),
+        ip: Confex.get_env(:world_server, :ip, "127.0.0.1"),
+        port: Confex.get_env(:world_server, :port, 5000),
+        max_players: Confex.get_env(:world_server, :max_players, 100)
       }
 
       %{

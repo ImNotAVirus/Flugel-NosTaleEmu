@@ -10,8 +10,8 @@
 import Config
 
 config :logger, :console,
-  level: :debug,
-  format: "$time $metadata[$level] $message\n",
+  level: :info,
+  format: "[$time] $metadata[$level] $levelpad$message\n",
   metadata: [:application]
 
 config :elven_gard,

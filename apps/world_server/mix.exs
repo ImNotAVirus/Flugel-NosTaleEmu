@@ -26,10 +26,12 @@ defmodule WorldServer.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:world_manager, in_umbrella: true},
-      # {:core, in_umbrella: true},
+      {:session_manager, in_umbrella: true, runtime: false},
+      {:world_manager, in_umbrella: true, runtime: false},
+      {:database_service, in_umbrella: true},
       {:elven_gard, github: "imnotavirus/elvengard_v2"},
-      {:peerage, "~> 1.0"}
+      {:peerage, "~> 1.0"},
+      {:confex, "~> 3.4"}
     ]
   end
 end

@@ -6,7 +6,7 @@ defmodule LoginServer.Frontend do
   use ElvenGard.Frontend,
     packet_protocol: LoginServer.PacketEncoder,
     packet_handler: LoginServer.PacketHandler,
-    port: Application.get_env(:login_server, :port)
+    port: Confex.get_env(:login_server, :port)
 
   require Logger
   alias ElvenGard.Structures.Client

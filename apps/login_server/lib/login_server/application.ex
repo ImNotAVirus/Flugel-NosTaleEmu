@@ -5,8 +5,12 @@ defmodule LoginServer.Application do
 
   use Application
 
+  require Logger
+
+  @spec start(any, any) :: {:error, any} | {:ok, pid}
   def start(_type, _args) do
-    # List all child processes to be supervised
+    Logger.info("Starting #{__MODULE__}...")
+
     children = [
       {LoginServer.Frontend, name: LoginServer.Frontend}
     ]

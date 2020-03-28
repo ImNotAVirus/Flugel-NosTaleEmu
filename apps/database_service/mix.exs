@@ -29,6 +29,8 @@ defmodule DatabaseService.MixProject do
     [
       # Nedded for ecto_bitfield (force Ecto 3)
       {:ecto, "~> 3.2", override: true},
+      # Nedded for postgrex
+      {:db_connection, "~> 2.1", override: true},
       {:ecto_sql, "~> 3.2"},
       {:postgrex, "~> 0.15"},
       {:ecto_enum, "~> 1.4"},

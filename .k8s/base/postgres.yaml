@@ -57,7 +57,7 @@ spec:
       labels:
         app: postgres
     spec:
-      # hostname: postgres
+      hostname: postgres
       restartPolicy: Always
       containers:
       - name: postgres

@@ -9,11 +9,6 @@
 # move said applications out of the umbrella.
 import Config
 
-config :logger, :console,
-  level: :info,
-  format: "$time $metadata[$level] $message\n",
-  metadata: [:application]
-
 config :elven_gard,
   num_acceptors: 15,
   response_timeout: 1500

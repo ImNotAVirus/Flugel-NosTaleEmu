@@ -8,16 +8,22 @@ spec:
     port: 4002
     targetPort: 4002
   selector:
-    matchLabels:
-      app: flugel
-      name: login-service
-      tier: frontend
-  type: LoadBalancer
+    app: flugel
+    name: login-service
+    tier: frontend
+  type: NodePort
+  # type: LoadBalancer
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: login-frontend-deployment
+  namespace: default
+  labels:
+    app.kubernetes.io/name: login-svc
+    app.kubernetes.io/instance: flugel
+    app.kubernetes.io/version: 0.1.0
+    app.kubernetes.io/component: frontend
 spec:
   replicas: 2
   selector:
@@ -40,9 +46,19 @@ spec:
         - containerPort: 4002
         envFrom:
         - configMapRef:
+            name: core-config
+        - configMapRef:
             name: postgres-config
         env:
         - name: PORT
           value: "4002"
         - name: CLIENT_VERSION
           value: "0.9.3.3086"
+        - name: HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace

@@ -40,14 +40,15 @@ You can also deploy a cluster using docker-compose.
 
 ### Deploy on Kubernetes (with Minikube)
 
+    # Run Minikube
+    minikube start
+
     # Build all images
+    eval $(minikube docker-env)
     docker build --build-arg APP_NAME=login_service -t login_service -f .k8s/Dockerfile .
     docker build --build-arg APP_NAME=channel_service -t channel_service -f .k8s/Dockerfile .
     docker build --build-arg APP_NAME=session_manager -t session_manager -f .k8s/Dockerfile .
     docker build --build-arg APP_NAME=world_manager -t world_manager -f .k8s/Dockerfile .
-
-    # Add them to minikube's cache
-    minikube cache add login_service channel_service session_manager world_manager
 
     # Deploy staging
     kustomize build .k8s/staging | kubectl apply -f -
