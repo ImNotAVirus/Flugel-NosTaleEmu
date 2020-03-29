@@ -23,4 +23,5 @@
 !/.deploy/*.example
 !/.k8s/**/Dockerfile
 !/.k8s/**/*.yaml
+!/.k8s/proxy/*
 !/.rel/*.eex

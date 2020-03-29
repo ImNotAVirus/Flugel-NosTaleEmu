@@ -62,3 +62,16 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
+      initContainers:
+      - name: init-login-service
+        image: login_service
+        imagePullPolicy: Never
+        command: ['sh', '-c', "bin/login_service eval :release_tasks.migrate"]
+        envFrom:
+        - configMapRef:
+            name: postgres-config
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace

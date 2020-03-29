@@ -1,0 +1,11 @@
+SOURCE="${BASH_SOURCE[0]}"
+DIR=$(dirname "$SOURCE")
+REAL_DIR=$(realpath "$DIR")
+
+docker run --name elven-proxy -d --rm \
+    -p 4002:30402 \
+    -p 5001:30501 \
+    -p 5002:30502 \
+    -p 5003:30503 \
+    -v $REAL_DIR/nginx.conf:/etc/nginx/nginx.conf \
+    nginx:1.17.9
