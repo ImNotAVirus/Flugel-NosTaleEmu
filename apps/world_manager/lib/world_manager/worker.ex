@@ -15,6 +15,8 @@ defmodule WorldManager.Worker do
 
   @impl true
   def init(_) do
+    :ok = :pg2.create({:svc, WorldManager})
+    :ok = :pg2.join({:svc, WorldManager}, self())
     Process.flag(:trap_exit, true)
     {:ok, nil, {:continue, :init_redis}}
   end
@@ -42,8 +44,9 @@ defmodule WorldManager.Worker do
   end
 
   @impl true
-  def handle_call({:monitor_channel, world_id, channel_id}, from, state) do
-    {pid, _} = from
+  def handle_call({:monitor_channel, pid, world_id, channel_id}, _from, state) do
+    # TODO: Use `from` variable when ElvenGard will be fixed
+    # {pid, _} = from
 
     ref = Process.monitor(pid)
     res = Channels.set_monitor(state, world_id, channel_id, ref)

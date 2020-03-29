@@ -19,9 +19,20 @@ defmodule WorldServer.Frontend do
   if Mix.env() != :test do
     @impl true
     def handle_init(args) do
+      :ok = :pg2.create({:svc, WorldFrontend})
+      :ok = :pg2.join({:svc, WorldFrontend}, self())
+
       port = Keyword.get(args, :port)
       Logger.info("World server started on port #{port}")
-      register_me()
+
+      # FIXME: Nedd to rewrite a part of ElvenGard lib to fix it
+      parent = self()
+
+      Task.start(fn ->
+        :timer.sleep(1000)
+        register_me(parent)
+      end)
+
       {:ok, nil}
     end
   end
@@ -57,8 +68,8 @@ defmodule WorldServer.Frontend do
 
   if Mix.env() != :test do
     @doc false
-    @spec register_me() :: term
-    defp register_me() do
+    @spec register_me(pid) :: term
+    defp register_me(process) do
       channel_specs = %{
         world_name: Confex.get_env(:world_server, :world_name, "ElvenGard"),
         ip: Confex.get_env(:world_server, :ip, "127.0.0.1"),
@@ -71,7 +82,7 @@ defmodule WorldServer.Frontend do
         channel_id: channel_id
       } = WorldManager.register_channel(channel_specs)
 
-      WorldManager.monitor_channel(world_id, channel_id)
+      WorldManager.monitor_channel(process, world_id, channel_id)
 
       Logger.info("Channel registered (#{world_id}:#{channel_id})")
     end

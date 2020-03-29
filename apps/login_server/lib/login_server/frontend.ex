@@ -13,6 +13,9 @@ defmodule LoginServer.Frontend do
 
   @impl true
   def handle_init(args) do
+    :ok = :pg2.create({:svc, LoginFrontend})
+    :ok = :pg2.join({:svc, LoginFrontend}, self())
+
     port = get_in(args, [:port])
     Logger.info("Login server started on port #{port}")
     {:ok, nil}

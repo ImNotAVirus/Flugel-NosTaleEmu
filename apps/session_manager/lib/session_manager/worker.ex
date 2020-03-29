@@ -17,6 +17,8 @@ defmodule SessionManager.Worker do
 
   @impl true
   def init(_) do
+    :ok = :pg2.create({:svc, SessionManager})
+    :ok = :pg2.join({:svc, SessionManager}, self())
     {:ok, nil, {:continue, :init_redis}}
   end
 
