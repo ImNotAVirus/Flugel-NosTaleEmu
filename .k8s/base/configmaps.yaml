@@ -21,5 +21,5 @@ metadata:
 data:
   # TODO: Use secret
   RELEASE_COOKIE: eXB6dGZmQlhwOUtaTk94bU83MXRwMFpIYnlhRlozQkNQTm5EUFkxNQ==
-  REDIS_HOST: redis
+  REDIS_HOST: redis-master
   SERVICE_NAME: elven-private

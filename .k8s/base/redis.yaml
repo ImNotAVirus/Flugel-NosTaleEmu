@@ -19,7 +19,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis-master
-  namespace: default
   labels:
     app: redis
 spec:

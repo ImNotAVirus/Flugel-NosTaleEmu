@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: world-manager-deployment
-  namespace: default
   labels:
     app.kubernetes.io/name: world-manager-svc
     app.kubernetes.io/instance: flugel
