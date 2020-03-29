@@ -62,6 +62,14 @@ config :world_manager,
   redis_host: redis_host
 
 #
+# Login server part
+#
+
+config :login_server,
+  port: {:system, :integer, "PORT", 4002},
+  client_version: {:system, :string, "CLIENT_VERSION", "0.9.3.3086"}
+
+#
 # Channel server part
 #
 

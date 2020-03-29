@@ -9,8 +9,6 @@ defmodule LoginServer.Auth.Actions do
 
   @type action_return :: {:ok, map} | {:halt, {:error, term}, Client.t()}
 
-  @client_version Application.get_env(:login_server, :client_version)
-
   @spec player_connect(Client.t(), String.t(), map) :: action_return
   def player_connect(client, _header, params) do
     params
@@ -42,7 +40,9 @@ defmodule LoginServer.Auth.Actions do
   @doc false
   @spec check_version(map) :: action_return
   defp check_version(%{version: version, client: client} = params) do
-    if version == @client_version,
+    client_version = Confex.get_env(:login_server, :client_version)
+
+    if version == client_version,
       do: {:ok, params},
       else: {:halt, {:error, :TOO_OLD}, client}
   end

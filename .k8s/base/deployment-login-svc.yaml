@@ -7,6 +7,7 @@ spec:
   - name: login-port
     port: 4002
     targetPort: 4002
+    nodePort: 30402
   selector:
     app: flugel
     name: login-service

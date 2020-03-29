@@ -5,9 +5,9 @@ metadata:
 spec:
   ports:
   - name: channel-port
-    port: 30501
+    port: 5001
+    targetPort: 5001
     nodePort: 30501
-    targetPort: 30501
   selector:
     app: flugel
     name: channel-service1
@@ -43,7 +43,7 @@ spec:
         image: channel_service
         imagePullPolicy: Never
         ports:
-        - containerPort: 30501
+        - containerPort: 5001
         envFrom:
         - configMapRef:
             name: core-config
@@ -55,7 +55,7 @@ spec:
         - name: CHANNEL_MAX_PLAYERS
           value: "50"
         - name: CHANNEL_PORT
-          value: "30501"
+          value: "5001"
         - name: HOSTNAME
           valueFrom:
             fieldRef:
