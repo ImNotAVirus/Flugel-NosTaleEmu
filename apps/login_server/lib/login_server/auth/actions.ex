@@ -11,20 +11,32 @@ defmodule LoginServer.Auth.Actions do
 
   @client_version Application.get_env(:login_server, :client_version)
 
-  @spec player_connect(Client.t(), String.t(), map) :: action_return
-  def player_connect(client, _header, params) do
+  @spec player_connect_se(Client.t(), String.t(), map) :: action_return
+  def player_connect_se(client, _header, params) do
+    client
+    |> player_connect_base(params)
+    |> send_response(:se)
+  end
+
+  @spec player_connect_gf_old(Client.t(), String.t(), map) :: action_return
+  def player_connect_gf_old(client, _header, params) do
+    client
+    |> player_connect_base(params)
+    |> send_response(:gf)
+  end
+
+  ## Private functions
+
+  @doc false
+  @spec player_connect_base(Client.t(), map) :: action_return
+  defp player_connect_base(client, params) do
     params
     |> normalize_params(client)
     |> check_version()
     |> get_account_id()
     |> create_session()
     |> get_server_list()
-    |> send_response()
   end
-
-  #
-  # Private function
-  #
 
   @doc false
   @spec normalize_params(map, Client.t()) :: map
@@ -102,15 +114,21 @@ defmodule LoginServer.Auth.Actions do
   end
 
   @doc false
-  @spec send_response(action_return) :: action_return
-  defp send_response({:halt, {:error, reason}, client} = error) do
+  @spec send_response(action_return, atom) :: action_return
+  defp send_response({:halt, {:error, reason}, client} = error, _) do
     render = Views.render(:login_error, %{error: reason})
     Client.send(client, render)
     error
   end
 
-  defp send_response({:ok, %{client: client} = params}) do
-    render = Views.render(:login_succeed, params)
+  defp send_response({:ok, %{client: client} = params}, :se) do
+    render = Views.render(:login_succeed, {:se, params})
+    Client.send(client, render)
+    {:halt, {:ok, :normal}, client}
+  end
+
+  defp send_response({:ok, %{client: client} = params}, :gf) do
+    render = Views.render(:login_succeed, {:gf, params})
     Client.send(client, render)
     {:halt, {:ok, :normal}, client}
   end

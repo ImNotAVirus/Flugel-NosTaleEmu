@@ -8,27 +8,36 @@ defmodule LoginServer.PacketHandler do
   alias LoginServer.Auth.Actions
   alias LoginServer.Types
 
-  @desc """
-  The login packet
+  # @desc """
+  # The login packet (NostaleSE version)
 
-  TODO: Would be cool to have a custom field "password_field" to decryt pass
+  # Example: "NoS0575 6799404 admin 4126414674161D56B9367E 00913DCD\v0.9.3.3086"
+  # """
+  # packet "NoS0575" do
+  #   field :session, :integer, desc: "I thinks it's a session_id but is it really usefull ?"
+  #   field :username, :string
+  #   field :password, Types.Password, desc: "Encrypted for NostaleSE and in SHA512 for others"
+  #   field :unknown, :string
+  #   field :version, :string, desc: "Client version"
+
+  #   resolve &Actions.player_connect_se/3
+  # end
+
+  @desc """
+  The login packet (GameForge old version)
+
+  Example: "NoS0575 4745632 admin [sha512_hash] 0047BA11\v0.9.3.3086 0 [md5_hash]"
   """
   packet "NoS0575" do
-    @desc "I thinks it's a session_id but is it really usefull ?"
-    field :session, :integer
-
+    field(:session, :integer, desc: "I thinks it's a session_id but is it really usefull ?")
     field :username, :string
-
-    @desc "Encrypted for NostaleSE and in SHA512 for others"
-    field :password, Types.Password
-
-    @desc "A random string like `0039E3DC`. I don't known what it is"
+    field :password, :string
     field :unknown, :string
+    field(:version, :string, desc: "Client version")
+    field(:unknown2, :string, using: "0")
+    field(:checksum, :string, desc: "Client hash: md5(NostaleClientX.exe + NostaleClient.exe)")
 
-    @desc "Something like `0.9.3.3071`"
-    field :version, :string
-
-    resolve &Actions.player_connect/3
+    resolve &Actions.player_connect_gf_old/3
   end
 
   default_packet do

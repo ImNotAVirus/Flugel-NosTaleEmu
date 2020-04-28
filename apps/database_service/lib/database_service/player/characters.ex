@@ -20,8 +20,8 @@ defmodule DatabaseService.Player.Characters do
   end
 
   @doc false
-  @spec get_by_account_and_slot(non_neg_integer, String.t()) :: Ecto.Schema.t() | nil
-  def get_by_account_and_slot(account_id, slot) do
+  @spec get_by_account_id_and_slot(non_neg_integer, String.t()) :: Ecto.Schema.t() | nil
+  def get_by_account_id_and_slot(account_id, slot) do
     from(a in Character, where: a.account_id == ^account_id and a.slot == ^slot)
     |> Repo.one()
   end
