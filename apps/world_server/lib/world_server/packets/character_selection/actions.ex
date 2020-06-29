@@ -10,21 +10,21 @@ defmodule WorldServer.Packets.CharacterSelection.Actions do
   alias WorldServer.Enums.Character, as: EnumChar
   alias WorldServer.Packets.CharacterSelection.Views, as: CharSelectViews
 
+  @spec process_encryption_key(Client.t(), String.t(), map) :: {:cont, Client.t()}
+  def process_encryption_key(client, _header, params) do
+    new_client =
+      client
+      |> Client.put_metadata(:encryption_key, params.encryption_key)
+      |> Client.put_metadata(:auth_step, :waiting_session)
+
+    {:cont, new_client}
+  end
+
   @spec process_session_id(Client.t(), String.t(), map) :: {:cont, Client.t()}
   def process_session_id(client, _header, params) do
     new_client =
       client
       |> Client.put_metadata(:session_id, params.session_id)
-      |> Client.put_metadata(:auth_step, :waiting_username)
-
-    {:cont, new_client}
-  end
-
-  @spec process_username(Client.t(), String.t(), map) :: {:cont, Client.t()}
-  def process_username(client, _header, params) do
-    new_client =
-      client
-      |> Client.put_metadata(:username, params.username)
       |> Client.put_metadata(:auth_step, :waiting_password)
 
     {:cont, new_client}
@@ -33,14 +33,13 @@ defmodule WorldServer.Packets.CharacterSelection.Actions do
   @spec verify_session(Client.t(), String.t(), map) :: {:cont, Client.t()}
   def verify_session(client, _header, %{password: password}) do
     session_id = Client.get_metadata(client, :session_id)
-    username = Client.get_metadata(client, :username)
     password_sha512 = :crypto.hash(:sha512, password) |> Base.encode16()
 
     %Session{
       id: ^session_id,
-      username: ^username,
+      username: username,
       password: ^password_sha512
-    } = SessionManager.get_by_name(username)
+    } = SessionManager.get_by_id(session_id)
 
     %Account{
       id: account_id,

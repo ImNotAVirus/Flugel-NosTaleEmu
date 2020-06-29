@@ -14,6 +14,12 @@ defmodule SessionManager do
   end
 
   @doc false
+  @spec get_by_id(String.t()) :: Session.t() | nil
+  def get_by_id(id) do
+    GenServer.call(@worker_name, {:get_by_id, id})
+  end
+
+  @doc false
   @spec register_player(map) :: {:ok, Session.t()} | {:error, :already_connected}
   def register_player(attrs) do
     GenServer.call(@worker_name, {:register_player, attrs})

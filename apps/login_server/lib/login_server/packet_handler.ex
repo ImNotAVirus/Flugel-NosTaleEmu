@@ -29,13 +29,13 @@ defmodule LoginServer.PacketHandler do
   Example: "NoS0575 4745632 admin [sha512_hash] 0047BA11\v0.9.3.3086 0 [md5_hash]"
   """
   packet "NoS0575" do
-    field(:session, :integer, desc: "I thinks it's a session_id but is it really usefull ?")
+    field :session, :integer, desc: "I thinks it's a session_id but is it really usefull ?"
     field :username, :string
     field :password, :string
     field :unknown, :string
-    field(:version, :string, desc: "Client version")
-    field(:unknown2, :string, using: "0")
-    field(:checksum, :string, desc: "Client hash: md5(NostaleClientX.exe + NostaleClient.exe)")
+    field :version, :string, desc: "Client version"
+    field :unknown2, :string, using: "0"
+    field :checksum, :string, desc: "Client hash: md5(NostaleClientX.exe + NostaleClient.exe)"
 
     resolve &Actions.player_connect_gf_old/3
   end

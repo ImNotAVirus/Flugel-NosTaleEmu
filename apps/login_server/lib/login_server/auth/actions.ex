@@ -6,6 +6,7 @@ defmodule LoginServer.Auth.Actions do
   alias DatabaseService.Player.{Account, Accounts}
   alias ElvenGard.Structures.Client
   alias LoginServer.Auth.Views
+  alias SessionManager.Session
 
   @type action_return :: {:ok, map} | {:halt, {:error, term}, Client.t()}
 
@@ -33,7 +34,7 @@ defmodule LoginServer.Auth.Actions do
     params
     |> normalize_params(client)
     |> check_version()
-    |> get_account_id()
+    |> check_account()
     |> create_session()
     |> get_server_list()
   end
@@ -43,7 +44,6 @@ defmodule LoginServer.Auth.Actions do
   defp normalize_params(params, client) do
     other_params = %{
       client: client,
-      account_id: nil,
       session_id: nil,
       server_list: nil
     }
@@ -60,22 +60,36 @@ defmodule LoginServer.Auth.Actions do
   end
 
   @doc false
-  @spec get_account_id(action_return) :: action_return
-  defp get_account_id({:halt, _, _} = error), do: error
+  @spec check_account(action_return) :: action_return
+  defp check_account({:halt, _, _} = error), do: error
 
-  defp get_account_id({:ok, params}) do
+  defp check_account({:ok, params}) do
     %{
       username: username,
       password: password,
       client: client
     } = params
 
+    # TODO: Rewrite this part
+    # `username` can be the real username or a session id
     case Accounts.get_by_name(username) do
-      %Account{id: id, password: ^password} ->
-        {:ok, %{params | account_id: id}}
+      %Account{password: ^password} ->
+        {:ok, params}
 
       _ ->
-        {:halt, {:error, :BAD_CREDENTIALS}, client}
+        case Integer.parse(username) do
+          {session_id, ""} ->
+            case SessionManager.get_by_id(session_id) do
+              %Session{username: username, password: ^password} ->
+                {:ok, %{params | username: username}}
+
+              _ ->
+                {:halt, {:error, :BAD_CREDENTIALS}, client}
+            end
+
+          _ ->
+            {:halt, {:error, :BAD_CREDENTIALS}, client}
+        end
     end
   end
 
@@ -115,20 +129,14 @@ defmodule LoginServer.Auth.Actions do
 
   @doc false
   @spec send_response(action_return, atom) :: action_return
-  defp send_response({:halt, {:error, reason}, client} = error, _) do
-    render = Views.render(:login_error, %{error: reason})
+  defp send_response({:halt, {:error, reason}, client} = error, client_type) do
+    render = Views.render(:login_error, {client_type, %{error: reason}})
     Client.send(client, render)
     error
   end
 
-  defp send_response({:ok, %{client: client} = params}, :se) do
-    render = Views.render(:login_succeed, {:se, params})
-    Client.send(client, render)
-    {:halt, {:ok, :normal}, client}
-  end
-
-  defp send_response({:ok, %{client: client} = params}, :gf) do
-    render = Views.render(:login_succeed, {:gf, params})
+  defp send_response({:ok, %{client: client} = params}, client_type) do
+    render = Views.render(:login_succeed, {client_type, params})
     Client.send(client, render)
     {:halt, {:ok, :normal}, client}
   end

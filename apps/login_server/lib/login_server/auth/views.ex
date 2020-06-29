@@ -5,7 +5,7 @@ defmodule LoginServer.Auth.Views do
 
   use ElvenGard.View
 
-  @spec render(atom, {atom, map}) :: String.t()
+  @spec render(atom(), {:gf, map()} | {:se, map()}) :: String.t()
   def render(:login_succeed, {:se, params}) do
     %{
       session_id: session_id,
@@ -26,12 +26,12 @@ defmodule LoginServer.Auth.Views do
   end
 
   # TODO: Fix login errors for GF clients (use failc)
-  def render(:login_error, %{error: error}) when is_binary(error) do
+  def render(:login_error, {:se, %{error: error}}) do
     "fail #{error}"
   end
 
-  def render(:login_error, %{error: error}) do
-    render(:login_error, %{error: to_string(error)})
+  def render(:login_error, {:gf, %{error: error}}) do
+    "failc #{login_error_type(error)}"
   end
 
   ## Private functions
@@ -46,4 +46,13 @@ defmodule LoginServer.Auth.Views do
 
     "#{str_server_list} -1:-1:-1:10000.10000.1"
   end
+
+  ## Enums
+
+  @doc false
+  @spec login_error_type(atom()) :: pos_integer()
+  defp login_error_type(:TOO_OLD), do: 1
+  defp login_error_type(:already_connected), do: 4
+  defp login_error_type(:BAD_CREDENTIALS), do: 5
+  defp login_error_type(_), do: 2
 end

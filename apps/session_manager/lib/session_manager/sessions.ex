@@ -3,150 +3,150 @@ defmodule SessionManager.Sessions do
 
   alias SessionManager.Session
 
+  @type expiration_time :: :infinity | integer()
+
   @default_ttl 120
 
   @doc false
-  @spec get_by_username(pid, String.t()) :: Session.t() | nil
-  def get_by_username(conn, username) do
-    keyname = "session:#{username}"
-
-    case Redix.command(conn, ["HGETALL", keyname]) do
-      {:ok, []} ->
-        nil
-
-      {:ok, attrs} ->
-        Session.from_redis_hash(attrs)
-    end
-  end
-
-  @doc false
-  @spec exists?(pid, String.t()) :: boolean
-  def exists?(conn, username) do
-    query_get = ["EXISTS", "session:#{username}"]
-    Redix.command!(conn, query_get) == 1
-  end
-
-  @doc false
-  @spec insert(pid, map, keyword) :: {:ok, Session.t()} | {:error, term}
-  def insert(conn, attrs, opts \\ []) do
-    ttl = Keyword.get(opts, :ttl, @default_ttl)
-    session = create_session(conn, attrs)
-
-    keyname = "session:#{session.username}"
-
-    query_insert =
-      session
-      |> Session.to_redis_hash()
-      |> List.insert_at(0, keyname)
-      |> List.insert_at(0, "HMSET")
-
-    query_expire = ["EXPIRE", keyname, ttl]
-
-    res = Redix.transaction_pipeline(conn, [query_insert, query_expire])
+  @spec get_by_username(String.t()) :: Session.t() | nil
+  def get_by_username(username) do
+    table = Session.mnesia_table_name()
+    res = :mnesia.transaction(fn -> :mnesia.read(table, username) end)
 
     case res do
-      {:ok, _} ->
-        {:ok, session}
-
-      {:error, _} = x ->
-        x
+      {:atomic, []} -> nil
+      {:atomic, [attrs]} -> Session.from_mnesia_value(attrs)
     end
   end
 
   @doc false
-  @spec update_state(pid, String.t(), atom) :: {:ok, term} | {:error, term}
-  def update_state(conn, username, new_state) do
-    keyname = "session:#{username}"
-    query_update = ["HSET", keyname, "state", new_state]
+  @spec get_by_id(pos_integer()) :: Session.t() | nil
+  def get_by_id(id) do
+    table = Session.mnesia_table_name()
+    res = :mnesia.transaction(fn -> :mnesia.index_read(table, id, :id) end)
 
-    if exists?(conn, username) do
-      Redix.command(conn, query_update)
-    else
-      {:error, :unknown_user}
+    case res do
+      {:atomic, []} -> nil
+      {:atomic, [attrs]} -> Session.from_mnesia_value(attrs)
     end
   end
 
   @doc false
-  @spec set_monitor(pid, String.t(), reference) ::
-          {:ok, term} | {:error, term} | {:error, :unknown_user}
-  def set_monitor(conn, username, ref) do
-    if exists?(conn, username) do
-      keyname = "session_monitor#{inspect(ref)}"
-      Redix.command(conn, ["SET", keyname, username])
-    else
-      {:error, :unknown_user}
+  @spec exists?(String.t() | pos_integer()) :: boolean()
+  def exists?(value) do
+    table = Session.mnesia_table_name()
+
+    query =
+      cond do
+        is_integer(value) -> fn -> :mnesia.index_read(table, value, :id) end
+        is_binary(value) -> fn -> :mnesia.read(table, value) end
+      end
+
+    case :mnesia.transaction(query) do
+      {:atomic, []} -> false
+      {:atomic, [_]} -> true
     end
   end
 
   @doc false
-  @spec delete_monitored(pid, reference) :: {:ok, term} | {:error, term} | {:error, :unknown_user}
-  def delete_monitored(conn, ref) do
-    keyname = "session_monitor#{inspect(ref)}"
-    query_get = ["GET", keyname]
+  @spec insert(map, keyword) :: {:ok, Session.t()} | {:error, term}
+  def insert(attrs, opts \\ []) do
+    table = Session.mnesia_table_name()
 
-    case Redix.command(conn, query_get) do
-      {:ok, nil} ->
-        {:error, :unknown_user}
+    ttl = Keyword.get(opts, :ttl, @default_ttl)
 
-      {:ok, username} ->
-        do_delete_monitored(conn, ref, username)
-    end
-  end
-
-  @doc false
-  @spec set_ttl(pid, String.t(), non_neg_integer | :infinity) :: {:ok, term} | {:error, term}
-  def set_ttl(conn, username, :infinity) do
-    query_ttl = ["PERSIST", "session:#{username}"]
-    Redix.command(conn, query_ttl)
-  end
-
-  def set_ttl(conn, username, ttl) do
-    query_ttl = ["EXPIRE", "session:#{username}", ttl]
-    Redix.command(conn, query_ttl)
-  end
-
-  #
-  # Private functions
-  #
-
-  @spec create_session(pid, map) :: Session.t()
-  defp create_session(conn, attrs) do
     username = Map.fetch!(attrs, :username)
     password = Map.get(attrs, :password)
     state = Map.get(attrs, :state)
-    id = next_id!(conn)
+    expire = ttl_to_expire(ttl)
 
-    Session.new(id, username, password, state)
+    id = :mnesia.dirty_update_counter(:auto_increment_counter, table, 1)
+    session = Session.new(id, username, password, state, expire)
+
+    write_session(session)
   end
 
   @doc false
-  @spec next_id!(pid) :: integer
-  defp next_id!(conn) do
-    Redix.command!(conn, ["INCR", "session:__count__"])
+  @spec update_state(String.t(), Session.state()) :: {:ok, term} | {:error, term}
+  def update_state(username, new_state) do
+    update_by_username(username, :state, new_state)
   end
 
   @doc false
-  @spec do_delete_monitored(pid, reference, String.t()) ::
-          {:ok, String.t()} | {:error, term}
-  defp do_delete_monitored(conn, ref, username) do
-    mon_keyname = "session_monitor#{inspect(ref)}"
-    usr_keyname = "session:#{username}"
+  @spec set_monitor(String.t(), reference) :: {:ok, term} | {:error, term}
+  def set_monitor(username, ref) do
+    update_by_username(username, :monitor, ref)
+  end
 
-    query_del_ref = ["DEL", mon_keyname]
-    query_del_user = ["DEL", usr_keyname]
+  @doc false
+  @spec delete_monitored(reference) :: {:ok, String.t()} | {:error, term}
+  def delete_monitored(ref) do
+    table = Session.mnesia_table_name()
 
-    res =
-      Redix.transaction_pipeline(conn, [
-        query_del_ref,
-        query_del_user
-      ])
+    query = fn ->
+      case :mnesia.index_read(table, ref, :monitor) do
+        [] ->
+          {:error, :unknown_user}
 
-    case res do
-      {:ok, _} ->
-        {:ok, username}
+        [attrs] ->
+          session = attrs |> Session.from_mnesia_value()
+          expire = ttl_to_expire(@default_ttl)
 
-      {:error, _} = x ->
-        x
+          write_session(%Session{session | state: :disconnected, monitor: nil, expire: expire})
+
+          %Session{username: username} = session
+          {:ok, username}
+      end
+    end
+
+    case :mnesia.transaction(query) do
+      {:atomic, {:ok, username}} -> {:ok, username}
+      {:atomic, {:error, error}} -> {:error, error}
+      {_, x} -> {:error, x}
+    end
+  end
+
+  @doc false
+  @spec set_ttl(String.t(), expiration_time) :: {:ok, term} | {:error, term}
+  def set_ttl(username, ttl) do
+    expire = ttl_to_expire(ttl)
+    update_by_username(username, :expire, expire)
+  end
+
+  ## Private functions
+
+  @doc false
+  @spec ttl_to_expire(expiration_time) :: expiration_time
+  defp ttl_to_expire(ttl) do
+    case ttl do
+      :infinity -> :infinity
+      _ -> DateTime.to_unix(DateTime.utc_now()) + ttl
+    end
+  end
+
+  @doc false
+  @spec update_by_username(String.t(), atom(), any()) :: {:ok, Session.t()} | {:error, any()}
+  defp update_by_username(username, key, value) do
+    # FIXME: Race condition (need to wrap everything into a transaction)
+    case get_by_username(username) do
+      nil ->
+        {:error, :unknown_user}
+
+      session ->
+        new_session = Map.replace!(session, key, value)
+        write_session(new_session)
+    end
+  end
+
+  @doc false
+  @spec write_session(Session.t()) :: {:ok, Session.t()} | {:error, any()}
+  defp write_session(%Session{} = session) do
+    mnesia_tuple = Session.to_mnesia_value(session)
+    query = fn -> :mnesia.write(mnesia_tuple) end
+
+    case :mnesia.transaction(query) do
+      {:atomic, :ok} -> {:ok, session}
+      {:aborted, x} -> {:error, x}
     end
   end
 end

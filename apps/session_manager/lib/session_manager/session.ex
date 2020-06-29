@@ -1,35 +1,36 @@
 defmodule SessionManager.Session do
   @moduledoc false
 
-  @states [:logged, :in_lobby, :in_game]
+  @mnesia_table_name :session
+  @states [:logged, :in_lobby, :in_game, :disconnected]
 
-  @integer_keys [:id]
-  @atom_keys [:state]
+  @enforce_keys [:username, :id, :password, :state, :expire]
+  @additional_keys [:monitor]
+  @all_keys @enforce_keys ++ @additional_keys
+  defstruct @all_keys
 
-  @keys [:username, :password] ++ @integer_keys ++ @atom_keys
-  @enforce_keys @keys
-  defstruct @keys
+  @type state :: :logged | :in_lobby | :in_game
 
   @type t :: %__MODULE__{
           id: integer,
           username: String.t(),
           password: String.t(),
-          state: atom
+          state: state,
+          expire: pos_integer(),
+          monitor: reference()
         }
 
   @doc """
   Create a new structure
   """
-  @spec new(non_neg_integer, String.t(), String.t(), atom) :: __MODULE__.t()
-  def new(id, username, password, state \\ :logged)
-  def new(id, username, password, state) when is_nil(state), do: new(id, username, password)
-
-  def new(id, username, password, state) when not is_nil(username) do
+  @spec new(pos_integer(), String.t(), String.t(), atom(), pos_integer()) :: __MODULE__.t()
+  def new(id, username, password, state \\ :logged, expire \\ :infinity) do
     %__MODULE__{
       id: id,
       username: username,
       password: password,
-      state: state
+      state: state || :logged,
+      expire: expire
     }
   end
 
@@ -41,33 +42,43 @@ defmodule SessionManager.Session do
     @states
   end
 
-  @integer_keys_str Enum.map(@integer_keys, &to_string/1)
-  @atom_keys_str Enum.map(@atom_keys, &to_string/1)
-
   @doc false
-  @spec from_redis_hash([String.t(), ...], map) :: __MODULE__.t()
-  def from_redis_hash(val, acc \\ %{})
-  def from_redis_hash([], acc), do: Kernel.struct(__MODULE__, acc)
-
-  def from_redis_hash([key, val | tail], acc) when key in @integer_keys_str do
-    from_redis_hash(tail, Map.put(acc, String.to_atom(key), String.to_integer(val)))
-  end
-
-  def from_redis_hash([key, val | tail], acc) when key in @atom_keys_str do
-    from_redis_hash(tail, Map.put(acc, String.to_atom(key), String.to_atom(val)))
-  end
-
-  def from_redis_hash([key, val | tail], acc) do
-    from_redis_hash(tail, Map.put(acc, String.to_atom(key), val))
+  @spec mnesia_table_name() :: atom()
+  def mnesia_table_name() do
+    @mnesia_table_name
   end
 
   @doc false
-  @spec to_redis_hash(__MODULE__.t()) :: [String.t(), ...]
-  def to_redis_hash(session) do
-    session
-    |> Map.from_struct()
-    |> Enum.reduce([], fn {key, val}, acc -> [val, key | acc] end)
-    |> Enum.reverse()
+  @spec mnesia_attributes() :: [atom(), ...]
+  def mnesia_attributes() do
+    @all_keys
+  end
+
+  @doc false
+  def from_mnesia_value({table_name, username, id, password, state, expire, monitor})
+      when table_name == @mnesia_table_name do
+    %__MODULE__{
+      id: id,
+      username: username,
+      password: password,
+      state: state,
+      expire: expire,
+      monitor: monitor
+    }
+  end
+
+  @doc false
+  def to_mnesia_value(%__MODULE__{} = session) do
+    %__MODULE__{
+      id: id,
+      username: username,
+      password: password,
+      state: state,
+      expire: expire,
+      monitor: monitor
+    } = session
+
+    {@mnesia_table_name, username, id, password, state, expire, monitor}
   end
 
   @doc """

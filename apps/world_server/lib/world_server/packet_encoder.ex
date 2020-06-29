@@ -29,8 +29,8 @@ defmodule WorldServer.PacketEncoder do
   @impl true
   def pre_decode(data, %Client{} = client) do
     auth_step = Client.get_metadata(client, :auth_step)
-    session_id = Client.get_metadata(client, :session_id)
-    {auth_step, data, session_id}
+    encryption_key = Client.get_metadata(client, :encryption_key)
+    {auth_step, data, encryption_key}
   end
 
   @impl true
@@ -51,33 +51,32 @@ defmodule WorldServer.PacketEncoder do
   end
 
   @impl true
-  def decode({:waiting_session, data, nil}) do
-    # Place fake packet header
-    {"session_id", Crypto.decrypt_session(data)}
+  def decode({:waiting_encryption_key, data, nil}) do
+    {"encryption_key", Crypto.decrypt_session(data)}
   end
 
   @impl true
-  def decode({:waiting_username, data, session_id}) do
-    data = Crypto.decrypt(data, session_id, true)
-
-    case data do
-      [{_last_live, username}] ->
+  def decode({:waiting_session, data, encryption_key}) do
+    case Crypto.decrypt(data, encryption_key, true) do
+      [{_last_live, session_id}] ->
         # Place fake packet header
-        {"username", username}
+        {"session_id", session_id}
 
-      [{_last_live, username}, {_last_live2, password}] ->
+      [{_last_live, session_id}, {_last_live2, password}] ->
         # Place fake packet header
-        [{"username", username}, {"password", password}]
+        [{"session_id", session_id}, {"password", password}]
     end
   end
 
   @impl true
-  def decode({:waiting_password, data, session_id}) do
-    [{_last_live, password}] = Crypto.decrypt(data, session_id, true)
+  def decode({:waiting_password, data, encryption_key}) do
+    [{_last_live, password}] = Crypto.decrypt(data, encryption_key, true)
 
     # Place fake packet header
     {"password", password}
   end
+
+  ## Private functions
 
   @doc false
   @spec normalize_list(list) :: list

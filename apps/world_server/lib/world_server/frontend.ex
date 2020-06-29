@@ -28,7 +28,7 @@ defmodule WorldServer.Frontend do
 
   @impl true
   def handle_connection(socket, transport) do
-    client = Client.new(socket, transport, %{auth_step: :waiting_session})
+    client = Client.new(socket, transport, %{auth_step: :waiting_encryption_key})
     Logger.info("New connection: #{client.id}")
     {:ok, client}
   end
