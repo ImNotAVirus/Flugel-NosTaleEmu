@@ -16,12 +16,13 @@ alias DatabaseService.Player.{Account, Accounts, Characters}
 # Accounts
 #
 
-%Account{id: admin_id} = Accounts.create!(%{
-  username: "admin",
-  password: :crypto.hash(:sha512, "admin") |> Base.encode16(),
-  authority: [:game_master, :administrator],
-  language: :fr
-})
+%Account{id: admin_id} =
+  Accounts.create!(%{
+    username: "admin",
+    password: :crypto.hash(:sha512, "admin") |> Base.encode16(),
+    authority: [:game_master, :administrator],
+    language: :fr
+  })
 
 Accounts.create!(%{
   username: "user",

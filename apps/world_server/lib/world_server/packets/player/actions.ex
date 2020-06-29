@@ -4,15 +4,15 @@ defmodule WorldServer.Packets.Player.Actions do
   """
 
   alias ElvenGard.Structures.Client
-  alias WorldServer.Structures.Character
   alias WorldServer.Enums.Character, as: EnumChar
-  alias WorldServer.Packets.Player.Views, as: PlayerViews
-  # alias WorldServer.Packets.Inventory.Views, as: InventoryViews
-  alias WorldServer.Packets.Entity.Views, as: EntityViews
-  alias WorldServer.Packets.MiniMap.Views, as: MiniMapViews
   alias WorldServer.Packets.Chat.Views, as: ChatViews
+  alias WorldServer.Packets.Entity.Views, as: EntityViews
+  # alias WorldServer.Packets.Inventory.Views, as: InventoryViews
+  alias WorldServer.Packets.MiniMap.Views, as: MiniMapViews
+  alias WorldServer.Packets.Player.Views, as: PlayerViews
   alias WorldServer.Packets.Specialist.Views, as: SpecialistViews
   alias WorldServer.Packets.UserInterface.Views, as: UserInterfaceViews
+  alias WorldServer.Structures.Character
 
   @spec game_start(Client.t(), String.t(), map) :: {:cont, Client.t()}
   def game_start(client, _header, _params) do

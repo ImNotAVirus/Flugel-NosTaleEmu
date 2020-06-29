@@ -4,9 +4,9 @@ defmodule WorldServer.Packets.UserInterface.Actions do
   """
 
   alias ElvenGard.Structures.Client
-  alias WorldServer.Structures.Character
   alias WorldServer.Packets.Entity.Views, as: EntityViews
   alias WorldServer.Packets.UserInterface.Views, as: UserInterfaceViews
+  alias WorldServer.Structures.Character
 
   @emoji_offset 4099
 

@@ -1,8 +1,8 @@
 defmodule DatabaseService.Player.Accounts do
   @moduledoc false
 
-  alias DatabaseService.Repo
   alias DatabaseService.Player.Account
+  alias DatabaseService.Repo
 
   @doc false
   @spec get_by_name(String.t()) :: Ecto.Schema.t() | nil

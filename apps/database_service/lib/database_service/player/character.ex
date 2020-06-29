@@ -7,11 +7,11 @@ defmodule DatabaseService.Player.Character do
   import EctoBitfield
 
   alias DatabaseService.Enums.{
-    GenderType,
-    FactionType,
     CharacterClassType,
-    HairStyleType,
+    FactionType,
+    GenderType,
     HairColorType,
+    HairStyleType,
     MinilandState
   }
 

@@ -3,8 +3,8 @@ defmodule DatabaseService.Player.Characters do
 
   import Ecto.Query, only: [from: 2]
 
-  alias DatabaseService.Repo
   alias DatabaseService.Player.Character
+  alias DatabaseService.Repo
 
   @doc false
   @spec all_by_account(non_neg_integer) :: [Ecto.Schema.t(), ...]

@@ -6,9 +6,9 @@ defmodule WorldServer.Packets.CharacterSelection.Actions do
   alias DatabaseService.Player.{Account, Accounts, Characters}
   alias ElvenGard.Structures.Client
   alias SessionManager.Session
-  alias WorldServer.Structures.Character
   alias WorldServer.Enums.Character, as: EnumChar
   alias WorldServer.Packets.CharacterSelection.Views, as: CharSelectViews
+  alias WorldServer.Structures.Character
 
   @spec process_encryption_key(Client.t(), String.t(), map) :: {:cont, Client.t()}
   def process_encryption_key(client, _header, params) do

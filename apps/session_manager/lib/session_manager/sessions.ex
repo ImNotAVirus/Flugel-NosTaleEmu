@@ -40,6 +40,7 @@ defmodule SessionManager.Sessions do
       cond do
         is_integer(value) -> fn -> :mnesia.index_read(table, value, :id) end
         is_binary(value) -> fn -> :mnesia.read(table, value) end
+        true -> raise "`value` must be an username or a session id"
       end
 
     case :mnesia.transaction(query) do

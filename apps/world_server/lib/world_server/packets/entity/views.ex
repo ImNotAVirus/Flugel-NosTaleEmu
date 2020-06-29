@@ -5,8 +5,8 @@ defmodule WorldServer.Packets.Entity.Views do
 
   use ElvenGard.View
 
-  alias WorldServer.Structures.Character
   alias WorldServer.Enums.Entity, as: EnumsEntity
+  alias WorldServer.Structures.Character
 
   @spec render(atom, term) :: String.t()
   def render(:stat, %Character{} = character) do

@@ -3,13 +3,13 @@ defmodule DatabaseService.Repo.Migrations.CreateCharacters do
 
   def change do
     create table(:characters) do
-			add :account_id, references(:accounts), null: false
+      add :account_id, references(:accounts), null: false
       add :name, :string, size: 14, null: false
-			add :slot, :int2, null: false
+      add :slot, :int2, null: false
 
       add :class, :int2, default: 0, null: false
       add :faction, :int2, default: 0, null: false
-			add :gender, :int2, null: false
+      add :gender, :int2, null: false
       add :hair_color, :int2, null: false
       add :hair_style, :int2, null: false
 
@@ -54,8 +54,8 @@ defmodule DatabaseService.Repo.Migrations.CreateCharacters do
 
       add :game_options, :int8, default: 0, null: false
 
-			timestamps()
-		end
+      timestamps()
+    end
 
     create unique_index(:characters, [:name])
   end
