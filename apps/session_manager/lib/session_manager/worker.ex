@@ -5,7 +5,7 @@ defmodule SessionManager.Worker do
 
   require Logger
 
-  import SessionManager.Session, only: [is_valid_state: 1]
+  import SessionManager.Session
 
   alias SessionManager.{Session, Sessions}
 
@@ -57,9 +57,9 @@ defmodule SessionManager.Worker do
   @impl true
   def handle_call({:register_player, attrs}, _from, state) do
     username = Map.fetch!(attrs, :username)
-    session = Sessions.get_by_username(username)
+    record = Sessions.get_by_username(username)
 
-    if is_nil(session) or session.state in [:logged, :disconnected] do
+    if is_nil(record) or session(record, :state) in [:logged, :disconnected] do
       {:reply, Sessions.insert(attrs), state}
     else
       {:reply, {:error, :already_connected}, state}
@@ -67,8 +67,7 @@ defmodule SessionManager.Worker do
   end
 
   @impl true
-  def handle_call({:set_player_state, username, user_state}, _from, state)
-      when is_valid_state(user_state) do
+  def handle_call({:set_player_state, username, user_state}, _from, state) do
     case Sessions.update_state(username, user_state) do
       {:error, _} = x ->
         {:reply, x, state}

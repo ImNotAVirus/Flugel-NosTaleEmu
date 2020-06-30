@@ -1,37 +1,40 @@
 defmodule SessionManager.Session do
   @moduledoc false
 
-  @mnesia_table_name :session
+  import Record, only: [defrecord: 2]
+
   @states [:logged, :in_lobby, :in_game, :disconnected]
 
-  @enforce_keys [:username, :id, :password, :state, :expire]
-  @additional_keys [:monitor]
-  @all_keys @enforce_keys ++ @additional_keys
-  defstruct @all_keys
+  @record_name :session
+  @keys [:username, :id, :password, :state, :expire, :monitor]
+  defrecord @record_name, @keys
 
-  @type state :: :logged | :in_lobby | :in_game
+  @type state :: :logged | :in_lobby | :in_game | :disconnected
 
-  @type t :: %__MODULE__{
-          id: integer,
-          username: String.t(),
-          password: String.t(),
-          state: state,
-          expire: pos_integer(),
-          monitor: reference()
-        }
+  @type t ::
+          record(
+            :session,
+            id: pos_integer(),
+            username: String.t(),
+            password: String.t(),
+            state: state,
+            expire: :infinity | pos_integer(),
+            monitor: reference() | nil
+          )
 
   @doc """
   Create a new structure
   """
-  @spec new(pos_integer(), String.t(), String.t(), atom(), pos_integer()) :: __MODULE__.t()
+  @spec new(pos_integer(), String.t(), String.t(), state, :infinity | pos_integer()) ::
+          __MODULE__.t()
   def new(id, username, password, state \\ :logged, expire \\ :infinity) do
-    %__MODULE__{
+    session(
       id: id,
       username: username,
       password: password,
       state: state || :logged,
       expire: expire
-    }
+    )
   end
 
   @doc """
@@ -45,40 +48,13 @@ defmodule SessionManager.Session do
   @doc false
   @spec mnesia_table_name() :: atom()
   def mnesia_table_name() do
-    @mnesia_table_name
+    @record_name
   end
 
   @doc false
   @spec mnesia_attributes() :: [atom(), ...]
   def mnesia_attributes() do
-    @all_keys
-  end
-
-  @doc false
-  def from_mnesia_value({table_name, username, id, password, state, expire, monitor})
-      when table_name == @mnesia_table_name do
-    %__MODULE__{
-      id: id,
-      username: username,
-      password: password,
-      state: state,
-      expire: expire,
-      monitor: monitor
-    }
-  end
-
-  @doc false
-  def to_mnesia_value(%__MODULE__{} = session) do
-    %__MODULE__{
-      id: id,
-      username: username,
-      password: password,
-      state: state,
-      expire: expire,
-      monitor: monitor
-    } = session
-
-    {@mnesia_table_name, username, id, password, state, expire, monitor}
+    @keys
   end
 
   @doc """

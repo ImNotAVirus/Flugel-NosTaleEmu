@@ -3,9 +3,10 @@ defmodule WorldServer.Packets.CharacterSelection.Actions do
   TODO: Documentation for WorldServer.Packets.CharacterSelection.Actions
   """
 
+  import SessionManager.Session
+
   alias DatabaseService.Player.{Account, Accounts, Characters}
   alias ElvenGard.Structures.Client
-  alias SessionManager.Session
   alias WorldServer.Enums.Character, as: EnumChar
   alias WorldServer.Packets.CharacterSelection.Views, as: CharSelectViews
   alias WorldServer.Structures.Character
@@ -35,11 +36,10 @@ defmodule WorldServer.Packets.CharacterSelection.Actions do
     session_id = Client.get_metadata(client, :session_id)
     password_sha512 = :crypto.hash(:sha512, password) |> Base.encode16()
 
-    %Session{
-      id: ^session_id,
-      username: username,
-      password: ^password_sha512
-    } = SessionManager.get_by_id(session_id)
+    record = SessionManager.get_by_id(session_id)
+    ^session_id = session(record, :id)
+    ^password_sha512 = session(record, :password)
+    username = session(record, :username)
 
     %Account{
       id: account_id,

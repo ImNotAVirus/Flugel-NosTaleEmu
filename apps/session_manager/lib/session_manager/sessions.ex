@@ -1,11 +1,34 @@
 defmodule SessionManager.Sessions do
   @moduledoc false
 
+  import Record, only: [is_record: 1]
+  import SessionManager.Session
+
   alias SessionManager.Session
 
   @type expiration_time :: :infinity | integer()
 
   @default_ttl 120
+
+  ## Helpers
+
+  @doc false
+  @spec update_by_username(String.t(), atom(), any()) :: {:ok, Session.t()} | {:error, any()}
+  defmacrop update_by_username(username, key, value) do
+    # FIXME: Race condition (need to wrap everything into a transaction)
+    quote do
+      case get_by_username(unquote(username)) do
+        nil ->
+          {:error, :unknown_user}
+
+        record ->
+          new_session = session(record, [{unquote(key), unquote(value)}])
+          write_session(new_session)
+      end
+    end
+  end
+
+  ## Public API
 
   @doc false
   @spec get_by_username(String.t()) :: Session.t() | nil
@@ -15,7 +38,7 @@ defmodule SessionManager.Sessions do
 
     case res do
       {:atomic, []} -> nil
-      {:atomic, [attrs]} -> Session.from_mnesia_value(attrs)
+      {:atomic, [attrs]} -> attrs
     end
   end
 
@@ -27,7 +50,7 @@ defmodule SessionManager.Sessions do
 
     case res do
       {:atomic, []} -> nil
-      {:atomic, [attrs]} -> Session.from_mnesia_value(attrs)
+      {:atomic, [attrs]} -> attrs
     end
   end
 
@@ -69,7 +92,7 @@ defmodule SessionManager.Sessions do
 
   @doc false
   @spec update_state(String.t(), Session.state()) :: {:ok, term} | {:error, term}
-  def update_state(username, new_state) do
+  def update_state(username, new_state) when is_valid_state(new_state) do
     update_by_username(username, :state, new_state)
   end
 
@@ -89,22 +112,20 @@ defmodule SessionManager.Sessions do
         [] ->
           {:error, :unknown_user}
 
-        [attrs] ->
-          session = attrs |> Session.from_mnesia_value()
+        [record] ->
           expire = ttl_to_expire(@default_ttl)
 
-          write_session(%Session{session | state: :disconnected, monitor: nil, expire: expire})
+          {:ok, _} =
+            record
+            |> session(state: :disconnected, monitor: nil, expire: expire)
+            |> write_session()
 
-          %Session{username: username} = session
-          {:ok, username}
+          {:ok, session(record, :username)}
       end
     end
 
-    case :mnesia.transaction(query) do
-      {:atomic, {:ok, username}} -> {:ok, username}
-      {:atomic, {:error, error}} -> {:error, error}
-      {_, x} -> {:error, x}
-    end
+    {:atomic, res} = :mnesia.transaction(query)
+    res
   end
 
   @doc false
@@ -126,27 +147,12 @@ defmodule SessionManager.Sessions do
   end
 
   @doc false
-  @spec update_by_username(String.t(), atom(), any()) :: {:ok, Session.t()} | {:error, any()}
-  defp update_by_username(username, key, value) do
-    # FIXME: Race condition (need to wrap everything into a transaction)
-    case get_by_username(username) do
-      nil ->
-        {:error, :unknown_user}
-
-      session ->
-        new_session = Map.replace!(session, key, value)
-        write_session(new_session)
-    end
-  end
-
-  @doc false
   @spec write_session(Session.t()) :: {:ok, Session.t()} | {:error, any()}
-  defp write_session(%Session{} = session) do
-    mnesia_tuple = Session.to_mnesia_value(session)
+  defp write_session(mnesia_tuple) when is_record(mnesia_tuple) do
     query = fn -> :mnesia.write(mnesia_tuple) end
 
     case :mnesia.transaction(query) do
-      {:atomic, :ok} -> {:ok, session}
+      {:atomic, :ok} -> {:ok, mnesia_tuple}
       {:aborted, x} -> {:error, x}
     end
   end

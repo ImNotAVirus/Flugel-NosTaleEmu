@@ -3,10 +3,11 @@ defmodule LoginServer.Auth.Actions do
   Manage the login pipe when a client connect to the Frontend
   """
 
+  import SessionManager.Session
+
   alias DatabaseService.Player.{Account, Accounts}
   alias ElvenGard.Structures.Client
   alias LoginServer.Auth.Views
-  alias SessionManager.Session
 
   @type action_return :: {:ok, map} | {:halt, {:error, term}, Client.t()}
 
@@ -70,25 +71,20 @@ defmodule LoginServer.Auth.Actions do
       client: client
     } = params
 
-    # TODO: Rewrite this part
-    # `username` can be the real username or a session id
     case Accounts.get_by_name(username) do
       %Account{password: ^password} ->
         {:ok, params}
 
       _ ->
-        case Integer.parse(username) do
-          {session_id, ""} ->
-            case SessionManager.get_by_id(session_id) do
-              %Session{username: username, password: ^password} ->
-                {:ok, %{params | username: username}}
-
-              _ ->
-                {:halt, {:error, :BAD_CREDENTIALS}, client}
-            end
-
-          _ ->
-            {:halt, {:error, :BAD_CREDENTIALS}, client}
+        with {session_id, ""} <- Integer.parse(username),
+             record <- SessionManager.get_by_id(session_id),
+             false <- is_nil(record),
+             record_password <- session(record, :password),
+             true <- match?(^password, record_password),
+             record_username <- session(record, :username) do
+          {:ok, %{params | username: record_username}}
+        else
+          _ -> {:halt, {:error, :BAD_CREDENTIALS}, client}
         end
     end
   end
@@ -110,7 +106,8 @@ defmodule LoginServer.Auth.Actions do
     }
 
     case SessionManager.register_player(player_attrs) do
-      {:ok, %SessionManager.Session{id: session_id}} ->
+      {:ok, record} ->
+        session_id = session(record, :id)
         {:ok, %{params | session_id: session_id}}
 
       {:error, error} ->
