@@ -40,18 +40,6 @@ config :login_server,
   client_version: System.get_env("CLIENT_VERSION", "0.9.3.3086")
 
 #
-# Session manager part
-#
-
-config :session_manager, redis_host: "localhost"
-
-#
-# World manager part
-#
-
-config :world_manager, redis_host: "localhost"
-
-#
 # World server part
 #
 

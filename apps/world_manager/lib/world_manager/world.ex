@@ -1,53 +1,45 @@
 defmodule WorldManager.World do
   @moduledoc false
 
-  @integer_keys [:id]
+  import Record, only: [defrecord: 2]
 
-  @keys [:name] ++ @integer_keys
-  @enforce_keys @keys
-  defstruct @keys
+  @record_name :world
+  @keys [:name, :id]
+  defrecord @record_name, @keys
 
-  @type t :: %__MODULE__{
-          name: String.t(),
-          id: integer
-        }
+  @type t ::
+          record(
+            :world,
+            name: String.t(),
+            id: pos_integer()
+          )
+
+  ## Public API
 
   @doc false
-  @spec new(%{id: integer, name: String.t()}) :: __MODULE__.t()
+  @spec new(%{id: pos_integer(), name: String.t()}) :: __MODULE__.t()
   def new(%{id: id, name: name}) do
-    __MODULE__.new(id, name)
+    new(id, name)
   end
 
   @doc false
-  @spec new(integer, String.t()) :: __MODULE__.t()
+  @spec new(pos_integer(), String.t()) :: __MODULE__.t()
   def new(id, name) do
-    %__MODULE__{
-      id: id,
-      name: name
-    }
+    world(id: id, name: name)
   end
 
-  @integer_keys_str Enum.map(@integer_keys, &to_string/1)
+  ## Mnesia Helpers
+  ## TODO: Make `using` macro and inject theses 2 functions
 
   @doc false
-  @spec from_redis_hash([String.t(), ...], map) :: __MODULE__.t()
-  def from_redis_hash(val, acc \\ %{})
-  def from_redis_hash([], acc), do: Kernel.struct(__MODULE__, acc)
-
-  def from_redis_hash([key, val | tail], acc) when key in @integer_keys_str do
-    from_redis_hash(tail, Map.put(acc, String.to_atom(key), String.to_integer(val)))
-  end
-
-  def from_redis_hash([key, val | tail], acc) do
-    from_redis_hash(tail, Map.put(acc, String.to_atom(key), val))
+  @spec mnesia_table_name() :: atom()
+  def mnesia_table_name() do
+    @record_name
   end
 
   @doc false
-  @spec to_redis_hash(__MODULE__.t()) :: [String.t(), ...]
-  def to_redis_hash(world) do
-    world
-    |> Map.from_struct()
-    |> Enum.reduce([], fn {key, val}, acc -> [val, key | acc] end)
-    |> Enum.reverse()
+  @spec mnesia_attributes() :: [atom(), ...]
+  def mnesia_attributes() do
+    @keys
   end
 end

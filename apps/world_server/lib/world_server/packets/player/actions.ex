@@ -16,7 +16,7 @@ defmodule WorldServer.Packets.Player.Actions do
 
   @spec game_start(Client.t(), String.t(), map) :: {:cont, Client.t()}
   def game_start(client, _header, _params) do
-    # TODO: Load character from Redis
+    # TODO: Load character from Cache
     character = %Character{
       id: 1,
       slot: 1,

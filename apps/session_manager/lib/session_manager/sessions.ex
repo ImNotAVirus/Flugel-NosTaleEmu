@@ -73,7 +73,7 @@ defmodule SessionManager.Sessions do
   end
 
   @doc false
-  @spec insert(map, keyword) :: {:ok, Session.t()} | {:error, term}
+  @spec insert(map, keyword) :: {:ok, Session.t()} | {:error, term()}
   def insert(attrs, opts \\ []) do
     table = Session.mnesia_table_name()
 
@@ -85,25 +85,25 @@ defmodule SessionManager.Sessions do
     expire = ttl_to_expire(ttl)
 
     id = :mnesia.dirty_update_counter(:auto_increment_counter, table, 1)
-    session = Session.new(id, username, password, state, expire)
+    record = Session.new(id, username, password, state, expire)
 
-    write_session(session)
+    write_session(record)
   end
 
   @doc false
-  @spec update_state(String.t(), Session.state()) :: {:ok, term} | {:error, term}
+  @spec update_state(String.t(), Session.state()) :: {:ok, Session.t()} | {:error, any()}
   def update_state(username, new_state) when is_valid_state(new_state) do
     update_by_username(username, :state, new_state)
   end
 
   @doc false
-  @spec set_monitor(String.t(), reference) :: {:ok, term} | {:error, term}
+  @spec set_monitor(String.t(), reference()) :: {:ok, Session.t()} | {:error, any()}
   def set_monitor(username, ref) do
     update_by_username(username, :monitor, ref)
   end
 
   @doc false
-  @spec delete_monitored(reference) :: {:ok, String.t()} | {:error, term}
+  @spec delete_monitored(reference()) :: {:ok, Session.t()} | {:error, term()}
   def delete_monitored(ref) do
     table = Session.mnesia_table_name()
 
@@ -129,7 +129,7 @@ defmodule SessionManager.Sessions do
   end
 
   @doc false
-  @spec set_ttl(String.t(), expiration_time) :: {:ok, term} | {:error, term}
+  @spec set_ttl(String.t(), expiration_time()) :: {:ok, Session.t()} | {:error, any()}
   def set_ttl(username, ttl) do
     expire = ttl_to_expire(ttl)
     update_by_username(username, :expire, expire)
@@ -138,7 +138,7 @@ defmodule SessionManager.Sessions do
   ## Private functions
 
   @doc false
-  @spec ttl_to_expire(expiration_time) :: expiration_time
+  @spec ttl_to_expire(expiration_time()) :: expiration_time()
   defp ttl_to_expire(ttl) do
     case ttl do
       :infinity -> :infinity
@@ -148,11 +148,11 @@ defmodule SessionManager.Sessions do
 
   @doc false
   @spec write_session(Session.t()) :: {:ok, Session.t()} | {:error, any()}
-  defp write_session(mnesia_tuple) when is_record(mnesia_tuple) do
-    query = fn -> :mnesia.write(mnesia_tuple) end
+  defp write_session(record) when is_record(record) do
+    query = fn -> :mnesia.write(record) end
 
     case :mnesia.transaction(query) do
-      {:atomic, :ok} -> {:ok, mnesia_tuple}
+      {:atomic, :ok} -> {:ok, record}
       {:aborted, x} -> {:error, x}
     end
   end

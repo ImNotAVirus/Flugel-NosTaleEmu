@@ -22,6 +22,8 @@ defmodule SessionManager.Session do
             monitor: reference() | nil
           )
 
+  ## Public API
+
   @doc """
   Create a new structure
   """
@@ -44,6 +46,9 @@ defmodule SessionManager.Session do
   def states() do
     @states
   end
+
+  ## Mnesia Helpers
+  ## TODO: Make `using` macro and inject theses 2 functions
 
   @doc false
   @spec mnesia_table_name() :: atom()

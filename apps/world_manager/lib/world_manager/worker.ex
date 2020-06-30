@@ -3,10 +3,14 @@ defmodule WorldManager.Worker do
 
   use GenServer
 
+  import WorldManager.Channel, only: [channel: 2]
+
   require Logger
 
-  alias WorldManager.Channels
+  alias WorldManager.{Channel, Channels, World}
 
+  @doc false
+  @spec start_link(any) :: :ignore | {:error, any} | {:ok, pid}
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -16,29 +20,45 @@ defmodule WorldManager.Worker do
   @impl true
   def init(_) do
     Process.flag(:trap_exit, true)
-    {:ok, nil, {:continue, :init_redis}}
+    {:ok, nil, {:continue, :init_mnesia}}
   end
 
   @impl true
-  def terminate(_, _) do
-    :timer.sleep(1000)
-  end
+  def handle_continue(:init_mnesia, nil) do
+    :ok = :mnesia.start()
 
-  @impl true
-  def handle_continue(:init_redis, nil) do
-    redis_host = Application.get_env(:world_manager, :redis_host, "127.0.0.1")
-    {:ok, conn} = Redix.start_link(host: redis_host)
-    {:noreply, conn}
+    world_table_name = World.mnesia_table_name()
+    world_attributes = World.mnesia_attributes()
+    {:atomic, :ok} = :mnesia.create_table(world_table_name, attributes: world_attributes)
+
+    channel_table_name = Channel.mnesia_table_name()
+    channel_attributes = Channel.mnesia_attributes()
+    {:atomic, :ok} = :mnesia.create_table(channel_table_name, attributes: channel_attributes)
+    {:atomic, :ok} = :mnesia.add_table_index(channel_table_name, :monitor)
+
+    ai_attributes = [:table, :value]
+
+    case :mnesia.create_table(:auto_increment_counter, attributes: ai_attributes) do
+      {:atomic, :ok} -> :ok
+      {:aborted, {:already_exists, :auto_increment_counter}} -> :ok
+      _ -> raise "unable to create the `auto_increment_counter` table"
+    end
+
+    # Init counter table
+    :mnesia.dirty_update_counter(:auto_increment_counter, world_table_name, 0)
+    :mnesia.dirty_update_counter(:auto_increment_counter, channel_table_name, 0)
+
+    {:noreply, nil}
   end
 
   @impl true
   def handle_call({:register_channel, attrs}, _from, state) do
-    {:reply, Channels.insert(state, attrs), state}
+    {:reply, Channels.insert(attrs), state}
   end
 
   @impl true
   def handle_call({:all_channels}, _from, state) do
-    {:reply, Channels.all(state), state}
+    {:reply, Channels.all(), state}
   end
 
   @impl true
@@ -46,18 +66,18 @@ defmodule WorldManager.Worker do
     {pid, _} = from
 
     ref = Process.monitor(pid)
-    res = Channels.set_monitor(state, world_id, channel_id, ref)
+    result = Channels.set_monitor(world_id, channel_id, ref)
 
-    {:reply, res, state}
+    {:reply, result, state}
   end
 
   @impl true
   def handle_info({:DOWN, ref, :process, _object, reason}, state) do
-    {:ok, channel_key} = Channels.delete_monitored(state, ref)
+    {:ok, record} = Channels.delete_monitored(ref)
+    id = channel(record, :id)
 
-    Logger.info(
-      "Channel #{inspect(channel_key)} is now disconnected (reason: #{inspect(reason)})"
-    )
+    Logger.info("Channel #{inspect(id)} is now disconnected\
+     (reason: #{inspect(reason)})")
 
     {:noreply, state}
   end

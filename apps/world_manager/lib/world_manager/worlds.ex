@@ -1,85 +1,69 @@
 defmodule WorldManager.Worlds do
   @moduledoc false
 
+  import Record, only: [is_record: 1]
+
   alias WorldManager.World
 
-  @doc false
-  @spec all(pid) :: [World.t(), ...]
-  def all(conn) do
-    conn
-    |> Redix.command!(["SMEMBERS", "world:__index__"])
-    |> Stream.map(&Redix.command!(conn, ["HGETALL", &1]))
-    |> Enum.map(&World.from_redis_hash/1)
+  ## Public API
+
+  @doc """
+  Returns all existing worlds
+  """
+  @spec all() :: [World.t(), ...]
+  def all() do
+    table = World.mnesia_table_name()
+    :mnesia.dirty_match_object({table, :_, :_})
   end
 
   @doc """
   Returns the created world or the existing one
-
-  TODO: FIX RACE CONDITION on append and get id !!!
   """
-  @spec insert(pid, map) :: {:ok, integer} | {:error, term}
-  def insert(conn, world_name) do
-    case get_by_name(conn, world_name) do
-      %World{} = x ->
-        x
-
+  @spec insert_if_not_exists(String.t()) :: {:ok, World.t()} | {:error, any()}
+  def insert_if_not_exists(world_name) do
+    # FIXME: Race condition (need to wrap everything into a transaction)
+    case get_by_name(world_name) do
       nil ->
-        id = next_id!(conn)
-        do_insert(conn, id, world_name)
+        table = World.mnesia_table_name()
+        id = :mnesia.dirty_update_counter(:auto_increment_counter, table, 1)
+        record = World.new(id, world_name)
+        write_world(record)
+
+      record ->
+        {:ok, record}
     end
   end
 
-  @doc false
-  @spec get_by_name(pid, String.t()) :: World.t() | nil
-  def get_by_name(conn, world_name) do
-    key_name = world_name_as_key(world_name)
-    keyname = "world:#{key_name}"
+  @doc """
+  Get a world record by name
+  """
+  @spec get_by_name(String.t()) :: World.t() | nil
+  def get_by_name(world_name) do
+    table = World.mnesia_table_name()
+    key_name = normalize_name(world_name)
 
-    case Redix.command(conn, ["HGETALL", keyname]) do
-      {:ok, []} ->
-        nil
-
-      {:ok, attrs} ->
-        World.from_redis_hash(attrs)
+    case :mnesia.dirty_read(table, key_name) do
+      [] -> nil
+      [attrs] -> attrs
     end
   end
 
-  #
-  # Helpers
-  #
-
-  @doc false
-  @spec world_name_as_key(String.t()) :: String.t()
-  defp world_name_as_key(name) do
-    name
-    |> normalize_name()
-    |> String.downcase()
-  end
+  ## Helpers
 
   @doc false
   @spec normalize_name(String.t()) :: String.t()
   defp normalize_name(name) do
-    name
-    |> String.trim()
-    |> String.replace(" ", "")
+    String.replace(name, " ", "")
   end
 
   @doc false
-  @spec next_id!(pid) :: integer
-  defp next_id!(conn) do
-    Redix.command!(conn, ["INCR", "world:__count__"])
-  end
+  @spec write_world(World.t()) :: {:ok, World.t()} | {:error, any()}
+  defp write_world(record) when is_record(record) do
+    query = fn -> :mnesia.write(record) end
 
-  @doc false
-  @spec do_insert(pid, integer, String.t()) :: {:ok, list} | {:error, term}
-  defp do_insert(conn, id, world_name) do
-    key_name = world_name_as_key(world_name)
-    norm_name = normalize_name(world_name)
-    keyname = "world:#{key_name}"
-    query_insert = ["HMSET", keyname, "id", id, "name", norm_name]
-    query_index = ["SADD", "world:__index__", keyname]
-
-    Redix.transaction_pipeline!(conn, [query_insert, query_index])
-    World.new(id, world_name)
+    case :mnesia.transaction(query) do
+      {:atomic, :ok} -> {:ok, record}
+      {:aborted, x} -> {:error, x}
+    end
   end
 end

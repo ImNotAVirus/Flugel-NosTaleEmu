@@ -5,6 +5,8 @@ defmodule LoginServer.Auth.Views do
 
   use ElvenGard.View
 
+  alias WorldManager.Channel
+
   @spec render(atom(), {:gf, map()} | {:se, map()}) :: String.t()
   def render(:login_succeed, {:se, params}) do
     %{
@@ -41,7 +43,7 @@ defmodule LoginServer.Auth.Views do
   defp build_server_list(server_list) do
     str_server_list =
       server_list
-      |> Stream.map(&to_string/1)
+      |> Stream.map(&Channel.to_string/1)
       |> Enum.join(" ")
 
     "#{str_server_list} -1:-1:-1:10000.10000.1"

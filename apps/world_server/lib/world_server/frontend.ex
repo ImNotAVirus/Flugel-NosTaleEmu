@@ -8,6 +8,8 @@ defmodule WorldServer.Frontend do
     packet_handler: WorldServer.PacketHandler,
     port: Application.get_env(:world_server, :port)
 
+  import WorldManager.Channel, only: [channel: 2]
+
   require Logger
 
   alias ElvenGard.Structures.Client
@@ -66,12 +68,10 @@ defmodule WorldServer.Frontend do
         max_players: Application.get_env(:world_server, :max_players, 100)
       }
 
-      %{
-        world_id: world_id,
-        channel_id: channel_id
-      } = WorldManager.register_channel(channel_specs)
+      {:ok, record} = WorldManager.register_channel(channel_specs)
+      {world_id, channel_id} = channel(record, :id)
 
-      WorldManager.monitor_channel(world_id, channel_id)
+      {:ok, _} = WorldManager.monitor_channel(world_id, channel_id)
 
       Logger.info("Channel registered (#{world_id}:#{channel_id})")
     end
