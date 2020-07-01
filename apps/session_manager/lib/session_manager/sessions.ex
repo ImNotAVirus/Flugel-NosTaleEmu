@@ -135,6 +135,48 @@ defmodule SessionManager.Sessions do
     update_by_username(username, :expire, expire)
   end
 
+  @doc """
+  Clean expired keys
+  """
+  @spec clean_expired_keys(atom()) :: {:ok, [Session.t(), ...]} | {:error, any()}
+  def clean_expired_keys(table) do
+    curr_time = DateTime.to_unix(DateTime.utc_now())
+
+    # Just a little check in case of a record change
+    if session(:expire) != 5, do: raise("invalid key index. Please check the implementation")
+
+    struct =
+      session(
+        username: :"$1",
+        id: :"$2",
+        password: :"$3",
+        state: :"$4",
+        expire: :"$5",
+        monitor: :"$6"
+      )
+
+    guards = [{:<, :"$5", curr_time}]
+    return = [:"$$"]
+
+    query = fn ->
+      case :mnesia.select(table, [{struct, guards, return}], :write) do
+        [] ->
+          {:ok, []}
+
+        [_ | _] = expired_list ->
+          expired_list |> Stream.map(&Enum.at(&1, 0)) |> Enum.each(&:mnesia.delete({table, &1}))
+          result = expired_list |> Stream.map(&[table | &1]) |> Enum.map(&List.to_tuple/1)
+          {:ok, result}
+
+        invalid_term ->
+          {:error, invalid_term}
+      end
+    end
+
+    {:atomic, res} = :mnesia.transaction(query)
+    res
+  end
+
   ## Private functions
 
   @doc false

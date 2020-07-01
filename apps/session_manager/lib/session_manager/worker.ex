@@ -9,8 +9,21 @@ defmodule SessionManager.Worker do
 
   alias SessionManager.{Session, Sessions}
 
+  @doc false
+  @spec start_link(any) :: :ignore | {:error, any} | {:ok, pid}
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
+  end
+
+  ## Public API
+
+  @doc """
+  Clean expired keys
+  """
+  @spec clean_expired_keys(atom()) :: :ok
+  def clean_expired_keys(table) do
+    {:ok, expire_keys} = Sessions.clean_expired_keys(table) |> IO.inspect()
+    Logger.debug("Table `#{table}`: cleared #{length(expire_keys)} key(s)")
   end
 
   ## Genserver behaviour
@@ -40,6 +53,9 @@ defmodule SessionManager.Worker do
 
     # Init counter table
     :mnesia.dirty_update_counter(:auto_increment_counter, session_table_name, 0)
+
+    # Autoclean expired keys
+    :timer.apply_interval(30_000, __MODULE__, :clean_expired_keys, [session_table_name])
 
     {:noreply, nil}
   end
