@@ -22,7 +22,7 @@ defmodule SessionManager.Worker do
   """
   @spec clean_expired_keys(atom()) :: :ok
   def clean_expired_keys(table) do
-    {:ok, expire_keys} = Sessions.clean_expired_keys(table) |> IO.inspect()
+    {:ok, expire_keys} = Sessions.clean_expired_keys(table)
     Logger.debug("Table `#{table}`: cleared #{length(expire_keys)} key(s)")
   end
 
