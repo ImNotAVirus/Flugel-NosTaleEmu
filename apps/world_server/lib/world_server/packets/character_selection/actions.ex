@@ -51,11 +51,7 @@ defmodule WorldServer.Packets.CharacterSelection.Actions do
     {:ok, _} = SessionManager.set_player_state(username, :in_lobby)
     new_state = Client.put_metadata(client, :account, account)
 
-    character_list = Characters.all_by_account(account_id)
-
-    Client.send(client, CharSelectViews.render(:clist_start, nil))
-    Enum.each(character_list, &Client.send(client, CharSelectViews.render(:clist, &1)))
-    Client.send(client, CharSelectViews.render(:clist_end, nil))
+    send_character_list(client, account_id)
 
     {:cont, Client.put_metadata(new_state, :auth_step, :done)}
   end
@@ -81,5 +77,14 @@ defmodule WorldServer.Packets.CharacterSelection.Actions do
     Client.send(client, CharSelectViews.render(:ok, character))
 
     {:cont, client}
+  end
+
+  @spec send_character_list(Client.t(), pos_integer()) :: any()
+  def send_character_list(client, account_id) do
+    character_list = Characters.all_by_account_id(account_id)
+
+    Client.send(client, CharSelectViews.render(:clist_start, nil))
+    Enum.each(character_list, &Client.send(client, CharSelectViews.render(:clist, &1)))
+    Client.send(client, CharSelectViews.render(:clist_end, nil))
   end
 end

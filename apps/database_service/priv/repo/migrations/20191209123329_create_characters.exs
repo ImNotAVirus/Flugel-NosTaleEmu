@@ -4,8 +4,9 @@ defmodule DatabaseService.Repo.Migrations.CreateCharacters do
   def change do
     create table(:characters) do
       add :account_id, references(:accounts), null: false
-      add :name, :string, size: 14, null: false
+      add :name, :string, size: 32, null: false
       add :slot, :int2, null: false
+      add :disabled, :boolean, default: false, null: false
 
       add :class, :int2, default: 0, null: false
       add :faction, :int2, default: 0, null: false
@@ -17,8 +18,8 @@ defmodule DatabaseService.Repo.Migrations.CreateCharacters do
       add :map_x, :int2, null: false
       add :map_y, :int2, null: false
 
-      add :hp, :int4, null: false
-      add :mp, :int4, null: false
+      add :additional_hp, :int4, default: 0, null: false
+      add :additional_mp, :int4, default: 0, null: false
       add :gold, :int8, default: 0, null: false
       add :biography, :string, default: "Hi!", null: false
 

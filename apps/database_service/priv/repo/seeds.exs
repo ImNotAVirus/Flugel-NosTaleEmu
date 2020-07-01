@@ -45,8 +45,6 @@ Characters.create!(%{
   map_id: 1,
   map_x: 40,
   map_y: 60,
-  hp: 25_000,
-  mp: 10_000,
   gold: 1_000_000_000,
   biography: "Hi guys! I'm DarkyZ",
   level: 92,

@@ -35,6 +35,7 @@ defmodule DatabaseService.Player.Character do
     belongs_to :account, DatabaseService.Player.Account
     field :name, :string
     field :slot, :integer
+    field :disabled, :boolean
 
     field :class, CharacterClassType
     field :faction, FactionType
@@ -46,8 +47,8 @@ defmodule DatabaseService.Player.Character do
     field :map_x, :integer
     field :map_y, :integer
 
-    field :hp, :integer
-    field :mp, :integer
+    field :additional_hp, :integer
+    field :additional_mp, :integer
     field :gold, :integer
     field :biography, :string
 
@@ -95,14 +96,15 @@ defmodule DatabaseService.Player.Character do
     :hair_style,
     :map_id,
     :map_x,
-    :map_y,
-    :hp,
-    :mp
+    :map_y
   ]
 
   @optional_fields [
+    :disabled,
     :class,
     :faction,
+    :additional_hp,
+    :additional_mp,
     :gold,
     :biography,
     :level,
@@ -134,6 +136,7 @@ defmodule DatabaseService.Player.Character do
   ]
 
   @fields @required_fields ++ @optional_fields
+  @name_regex ~r/^[\x21-\x7E\xA1-\xAC\xAE-\xFF\x{4e00}-\x{9fa5}\x{0E01}-\x{0E3A}\x{0E3F}-\x{0E5B}\x2E]{4,14}$/u
 
   @doc false
   def changeset(account, attrs) do
@@ -141,8 +144,18 @@ defmodule DatabaseService.Player.Character do
     |> cast(attrs, @fields)
     |> cast_assoc(:account)
     |> validate_required(@required_fields)
-    |> validate_format(:name, ~r/^[\x20-\x7E]{4,14}$/)
+    |> validate_format(:name, @name_regex)
     |> update_change(:name, &String.trim/1)
+    |> unique_constraint(:name)
+  end
+
+  @doc false
+  def disabled_changeset(account, attrs) do
+    account
+    |> cast(attrs, @fields)
+    |> cast_assoc(:account)
+    |> validate_required(@required_fields)
+    |> validate_length(:name, min: 4, max: 32)
     |> unique_constraint(:name)
   end
 end

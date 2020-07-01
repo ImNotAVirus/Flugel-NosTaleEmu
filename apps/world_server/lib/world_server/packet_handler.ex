@@ -7,6 +7,7 @@ defmodule WorldServer.PacketHandler do
 
   import WorldServer.Enums.Packets.Guri, only: [guri_type: 1]
 
+  alias WorldServer.Packets.CharacterManagement.Actions, as: CharMgtActions
   alias WorldServer.Packets.CharacterSelection.Actions, as: CharSelectActions
   alias WorldServer.Packets.Player.Actions, as: PlayerActions
   alias WorldServer.Packets.UserInterface.Actions, as: UIActions
@@ -26,26 +27,27 @@ defmodule WorldServer.PacketHandler do
   # Usefull packets
   #
 
+  ## Authentication part
+
   @desc """
-  First packet send by a client.
+  First packet sent by a client.
   Nedded for decrypt all following packets.
+
+  /!\\ This packet doesn't have any packet header. Here, it's faked by Protocol
+  """
+  packet "encryption_key" do
+    field :encryption_key, :integer
+    resolve &CharSelectActions.process_encryption_key/3
+  end
+
+  @desc """
+  On the new protocol, this packet replace the `username` packet.
 
   /!\\ This packet doesn't have any packet header. Here, it's faked by Protocol
   """
   packet "session_id" do
     field :session_id, :integer
     resolve &CharSelectActions.process_session_id/3
-  end
-
-  @desc """
-  Second packet send by a client.
-  Contains only his username.
-
-  /!\\ This packet doesn't have any packet header. Here, it's faked by Protocol
-  """
-  packet "username" do
-    field :username, :string
-    resolve &CharSelectActions.process_username/3
   end
 
   @desc """
@@ -58,6 +60,37 @@ defmodule WorldServer.PacketHandler do
     field :password, :string
     resolve &CharSelectActions.verify_session/3
   end
+
+  ## Character management
+
+  @desc """
+  Ask for a character creation
+
+  Example: `Char_NEW TestChar 0 1 1 2`
+  """
+  packet "Char_NEW" do
+    field :name, :string
+    field :slot, :integer
+    field :gender, :integer, desc: "Enum: GenderType"
+    field :hair_style, :integer, desc: "Enum: HairStyle"
+    field :hair_color, :integer, desc: "Enum: HairColor"
+
+    resolve &CharMgtActions.create_character/3
+  end
+
+  @desc """
+  Ask for a character suppression
+
+  Example: `Char_DEL 3 password`
+  """
+  packet "Char_DEL" do
+    field :slot, :integer
+    field :password, :string
+
+    resolve &CharMgtActions.delete_character/3
+  end
+
+  ## Character selection
 
   @desc """
   Select a character
@@ -73,6 +106,8 @@ defmodule WorldServer.PacketHandler do
   packet "game_start" do
     resolve &PlayerActions.game_start/3
   end
+
+  ## Others packets
 
   @desc """
   TODO: Description for this packet
