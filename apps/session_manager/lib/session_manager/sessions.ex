@@ -15,30 +15,45 @@ defmodule SessionManager.Sessions do
   @doc false
   @spec update_by_username(String.t(), atom(), any()) :: {:ok, Session.t()} | {:error, any()}
   defmacrop update_by_username(username, key, value) do
-    # FIXME: Race condition (need to wrap everything into a transaction)
-    quote do
-      case get_by_username(unquote(username)) do
-        nil ->
-          {:error, :unknown_user}
+    table = Session.mnesia_table_name()
 
-        record ->
-          new_session = session(record, [{unquote(key), unquote(value)}])
-          write_session(new_session)
+    quote do
+      query = fn ->
+        case :mnesia.wread({unquote(table), unquote(username)}) do
+          [] ->
+            {:error, :unknown_user}
+
+          [record] ->
+            result = session(record, [{unquote(key), unquote(value)}])
+            :mnesia.write(result)
+            {:ok, result}
+        end
       end
+
+      {:atomic, res} = :mnesia.transaction(query)
+      res
     end
   end
 
   ## Public API
 
+  @doc """
+  Returns all existing sessions
+  """
+  @spec all() :: [Session.t(), ...]
+  def all() do
+    match = Session.match_all_record()
+    :mnesia.dirty_match_object(match)
+  end
+
   @doc false
   @spec get_by_username(String.t()) :: Session.t() | nil
   def get_by_username(username) do
     table = Session.mnesia_table_name()
-    res = :mnesia.transaction(fn -> :mnesia.read(table, username) end)
 
-    case res do
-      {:atomic, []} -> nil
-      {:atomic, [attrs]} -> attrs
+    case :mnesia.dirty_read(table, username) do
+      [] -> nil
+      [attrs] -> attrs
     end
   end
 
@@ -46,11 +61,10 @@ defmodule SessionManager.Sessions do
   @spec get_by_id(pos_integer()) :: Session.t() | nil
   def get_by_id(id) do
     table = Session.mnesia_table_name()
-    res = :mnesia.transaction(fn -> :mnesia.index_read(table, id, :id) end)
 
-    case res do
-      {:atomic, []} -> nil
-      {:atomic, [attrs]} -> attrs
+    case :mnesia.dirty_index_read(table, id, :id) do
+      [] -> nil
+      [attrs] -> attrs
     end
   end
 
@@ -59,17 +73,14 @@ defmodule SessionManager.Sessions do
   def exists?(value) do
     table = Session.mnesia_table_name()
 
-    query =
+    result =
       cond do
-        is_integer(value) -> fn -> :mnesia.index_read(table, value, :id) end
-        is_binary(value) -> fn -> :mnesia.read(table, value) end
+        is_integer(value) -> :mnesia.dirty_index_read(table, value, :id)
+        is_binary(value) -> :mnesia.dirty_read(table, value)
         true -> raise "`value` must be an username or a session id"
       end
 
-    case :mnesia.transaction(query) do
-      {:atomic, []} -> false
-      {:atomic, [_]} -> true
-    end
+    match?([_], result)
   end
 
   @doc false
@@ -142,21 +153,9 @@ defmodule SessionManager.Sessions do
   def clean_expired_keys(table) do
     curr_time = DateTime.to_unix(DateTime.utc_now())
 
-    # Just a little check in case of a record change
-    if session(:expire) != 5, do: raise("invalid key index. Please check the implementation")
-
-    struct =
-      session(
-        username: :"$1",
-        id: :"$2",
-        password: :"$3",
-        state: :"$4",
-        expire: :"$5",
-        monitor: :"$6"
-      )
-
-    guards = [{:<, :"$5", curr_time}]
-    return = [:"$$"]
+    struct = Session.match_all_record() |> session(expire: :"$1")
+    guards = [{:<, :"$1", curr_time}]
+    return = [:"$_"]
 
     query = fn ->
       case :mnesia.select(table, [{struct, guards, return}], :write) do
@@ -164,9 +163,8 @@ defmodule SessionManager.Sessions do
           {:ok, []}
 
         [_ | _] = expired_list ->
-          expired_list |> Stream.map(&Enum.at(&1, 0)) |> Enum.each(&:mnesia.delete({table, &1}))
-          result = expired_list |> Stream.map(&[table | &1]) |> Enum.map(&List.to_tuple/1)
-          {:ok, result}
+          expired_list |> Stream.map(&elem(&1, 1)) |> Enum.each(&:mnesia.delete({table, &1}))
+          {:ok, expired_list}
 
         invalid_term ->
           {:error, invalid_term}

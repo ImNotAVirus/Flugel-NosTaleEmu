@@ -2,6 +2,7 @@ defmodule WorldManager.Worlds do
   @moduledoc false
 
   import Record, only: [is_record: 1]
+  import WorldManager.World
 
   alias WorldManager.World
 
@@ -12,8 +13,8 @@ defmodule WorldManager.Worlds do
   """
   @spec all() :: [World.t(), ...]
   def all() do
-    table = World.mnesia_table_name()
-    :mnesia.dirty_match_object({table, :_, :_})
+    match = World.match_all_record()
+    :mnesia.dirty_match_object(match)
   end
 
   @doc """

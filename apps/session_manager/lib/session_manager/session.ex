@@ -48,7 +48,7 @@ defmodule SessionManager.Session do
   end
 
   ## Mnesia Helpers
-  ## TODO: Make `using` macro and inject theses 2 functions
+  ## TODO: Make `using` macro and inject theses helpers
 
   @doc false
   @spec mnesia_table_name() :: atom()
@@ -60,6 +60,15 @@ defmodule SessionManager.Session do
   @spec mnesia_attributes() :: [atom(), ...]
   def mnesia_attributes() do
     @keys
+  end
+
+  @doc false
+  defmacro match_all_record() do
+    match = @keys |> Enum.map(&{&1, :_})
+
+    quote do
+      unquote(@record_name)(unquote(match))
+    end
   end
 
   @doc """

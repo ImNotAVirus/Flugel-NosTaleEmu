@@ -14,8 +14,8 @@ defmodule WorldManager.Channels do
   """
   @spec all() :: [Channel.t(), ...]
   def all() do
-    table = Channel.mnesia_table_name()
-    :mnesia.dirty_match_object({table, :_, :_, :_, :_, :_, :_, :_})
+    match = Channel.match_all_record()
+    :mnesia.dirty_match_object(match)
   end
 
   @doc """
