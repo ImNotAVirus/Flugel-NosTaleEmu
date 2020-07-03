@@ -1,4 +1,4 @@
-defmodule WorldServer.Packets.CharacterManagement.Actions do
+defmodule WorldServer.Packets.CharacterLobby.Actions do
   @moduledoc """
   Manage the login pipe when a client connect to the Frontend
   """
@@ -6,10 +6,21 @@ defmodule WorldServer.Packets.CharacterManagement.Actions do
   alias DatabaseService.Player.Characters
   alias ElvenGard.Structures.Client
   alias WorldServer.Enums.Character, as: CharacterEnums
-  alias WorldServer.Packets.CharacterManagement.Views
-  alias WorldServer.Packets.CharacterSelection.Actions, as: CharSelectActions
+  alias WorldServer.Packets.CharacterLobby.Views
+  alias WorldServer.Structures.Character
 
   @type action_return :: {:ok, map()} | {:halt, {:error, any()}, Client.t()}
+
+  ## Public API
+
+  @spec send_character_list(Client.t(), pos_integer()) :: any()
+  def send_character_list(client, account_id) do
+    character_list = Characters.all_by_account_id(account_id)
+
+    Client.send(client, Views.render(:clist_start, nil))
+    Enum.each(character_list, &Client.send(client, Views.render(:clist, &1)))
+    Client.send(client, Views.render(:clist_end, nil))
+  end
 
   @spec create_character(Client.t(), String.t(), map()) :: action_return()
   def create_character(client, _header, %{slot: slot} = params) do
@@ -34,10 +45,33 @@ defmodule WorldServer.Packets.CharacterManagement.Actions do
          account_id <- Map.get(account, :id),
          {:ok, _} <- Characters.delete_by_account_id_and_slot(account_id, slot) do
       Client.send(client, Views.render(:success, nil))
-      CharSelectActions.send_character_list(client, account_id)
+      send_character_list(client, account_id)
     else
       _ -> Client.send(client, Views.render(:invalid_password, nil))
     end
+
+    {:cont, client}
+  end
+
+  @spec select_character(Client.t(), String.t(), map) :: {:cont, Client.t()}
+  def select_character(client, _header, params) do
+    %{character_slot: _character_slot} = params
+
+    # TODO: Load character from the DB Service and cache it
+    character = %Character{
+      id: 1,
+      slot: 1,
+      name: "DarkyZ",
+      gender: CharacterEnums.gender_type(:female),
+      hair_style: CharacterEnums.hair_style_type(:hair_style_a),
+      hair_color: CharacterEnums.hair_color_type(:yellow),
+      class: CharacterEnums.class_type(:wrestler),
+      level: 92,
+      hero_level: 25,
+      job_level: 80
+    }
+
+    Client.send(client, Views.render(:ok, character))
 
     {:cont, client}
   end
@@ -63,7 +97,7 @@ defmodule WorldServer.Packets.CharacterManagement.Actions do
     # TODO: Create Miniland info here
 
     Client.send(client, Views.render(:success, nil))
-    CharSelectActions.send_character_list(client, account_id)
+    send_character_list(client, account_id)
   end
 
   @doc false

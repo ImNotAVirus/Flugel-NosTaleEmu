@@ -1,6 +1,6 @@
-defmodule WorldServer.Packets.CharacterSelection.Views do
+defmodule WorldServer.Packets.CharacterLobby.Views do
   @moduledoc """
-  TODO: Documentation for WorldServer.Packets.CharacterSelection.Views
+  TODO: Documentation for WorldServer.Packets.CharacterLobby.Views
   """
 
   use ElvenGard.View
@@ -8,18 +8,14 @@ defmodule WorldServer.Packets.CharacterSelection.Views do
   alias DatabaseService.Player.Character
   alias WorldServer.Enums.Character, as: EnumChar
 
-  @spec render(atom, term) :: String.t()
-  def render(:ok, _) do
-    "OK"
-  end
-
-  def render(:clist_start, _) do
-    "clist_start 0"
-  end
-
-  def render(:clist_end, _) do
-    "clist_end"
-  end
+  @spec render(atom(), any()) :: String.t()
+  def render(:ok, _), do: "OK"
+  def render(:clist_start, _), do: "clist_start 0"
+  def render(:clist_end, _), do: "clist_end"
+  def render(:success, _), do: "success"
+  def render(:name_already_used, _), do: "infoi 875 0 0 0"
+  def render(:creation_failed, _), do: "infoi 876 0 0 0"
+  def render(:invalid_password, _), do: "infoi 360 0 0 0"
 
   def render(:clist, %Character{} = character) do
     %Character{

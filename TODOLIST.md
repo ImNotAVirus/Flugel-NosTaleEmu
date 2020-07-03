@@ -13,4 +13,3 @@
 
 - Apply regex on character names before BD insertion (currently, the process crash)
 - Check is character name already taken (currently, the process crash)
-- Rename character_selection => authentication

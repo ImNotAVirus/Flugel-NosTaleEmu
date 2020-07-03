@@ -7,8 +7,8 @@ defmodule WorldServer.PacketHandler do
 
   import WorldServer.Enums.Packets.Guri, only: [guri_type: 1]
 
-  alias WorldServer.Packets.CharacterManagement.Actions, as: CharMgtActions
-  alias WorldServer.Packets.CharacterSelection.Actions, as: CharSelectActions
+  alias WorldServer.Packets.Authentication.Actions, as: AuthenticationActions
+  alias WorldServer.Packets.CharacterLobby.Actions, as: CharacterLobbyActions
   alias WorldServer.Packets.Player.Actions, as: PlayerActions
   alias WorldServer.Packets.UserInterface.Actions, as: UIActions
 
@@ -37,7 +37,7 @@ defmodule WorldServer.PacketHandler do
   """
   packet "encryption_key" do
     field :encryption_key, :integer
-    resolve &CharSelectActions.process_encryption_key/3
+    resolve &AuthenticationActions.process_encryption_key/3
   end
 
   @desc """
@@ -47,7 +47,7 @@ defmodule WorldServer.PacketHandler do
   """
   packet "session_id" do
     field :session_id, :integer
-    resolve &CharSelectActions.process_session_id/3
+    resolve &AuthenticationActions.process_session_id/3
   end
 
   @desc """
@@ -58,7 +58,7 @@ defmodule WorldServer.PacketHandler do
   """
   packet "password" do
     field :password, :string
-    resolve &CharSelectActions.verify_session/3
+    resolve &AuthenticationActions.verify_session/3
   end
 
   ## Character management
@@ -75,7 +75,7 @@ defmodule WorldServer.PacketHandler do
     field :hair_style, :integer, desc: "Enum: HairStyle"
     field :hair_color, :integer, desc: "Enum: HairColor"
 
-    resolve &CharMgtActions.create_character/3
+    resolve &CharacterLobbyActions.create_character/3
   end
 
   @desc """
@@ -87,7 +87,7 @@ defmodule WorldServer.PacketHandler do
     field :slot, :integer
     field :password, :string
 
-    resolve &CharMgtActions.delete_character/3
+    resolve &CharacterLobbyActions.delete_character/3
   end
 
   ## Character selection
@@ -97,7 +97,7 @@ defmodule WorldServer.PacketHandler do
   """
   packet "select" do
     field :character_slot, :integer
-    resolve &CharSelectActions.select_character/3
+    resolve &CharacterLobbyActions.select_character/3
   end
 
   @desc """
