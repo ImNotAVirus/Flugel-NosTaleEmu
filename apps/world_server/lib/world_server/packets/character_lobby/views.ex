@@ -16,6 +16,7 @@ defmodule WorldServer.Packets.CharacterLobby.Views do
   def render(:name_already_used, _), do: "infoi 875 0 0 0"
   def render(:creation_failed, _), do: "infoi 876 0 0 0"
   def render(:invalid_password, _), do: "infoi 360 0 0 0"
+  def render(:invalid_select_slot, _), do: "info INVALID_CHARACTER_SLOT"
 
   def render(:clist, %Character{} = character) do
     %Character{

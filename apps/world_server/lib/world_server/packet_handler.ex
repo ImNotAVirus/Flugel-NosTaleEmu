@@ -96,7 +96,7 @@ defmodule WorldServer.PacketHandler do
   Select a character
   """
   packet "select" do
-    field :character_slot, :integer
+    field :slot, :integer
     resolve &CharacterLobbyActions.select_character/3
   end
 

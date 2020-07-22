@@ -3,11 +3,10 @@ defmodule WorldServer.Packets.CharacterLobby.Actions do
   Manage the login pipe when a client connect to the Frontend
   """
 
-  alias DatabaseService.Player.Characters
+  alias DatabaseService.Player.{Account, Character, Characters}
   alias ElvenGard.Structures.Client
   alias WorldServer.Enums.Character, as: CharacterEnums
   alias WorldServer.Packets.CharacterLobby.Views
-  alias WorldServer.Structures.Character
 
   @type action_return :: {:ok, map()} | {:halt, {:error, any()}, Client.t()}
 
@@ -55,25 +54,24 @@ defmodule WorldServer.Packets.CharacterLobby.Actions do
 
   @spec select_character(Client.t(), String.t(), map) :: {:cont, Client.t()}
   def select_character(client, _header, params) do
-    %{character_slot: _character_slot} = params
+    %{slot: slot} = params
+    account = Client.get_metadata(client, :account)
+    %Account{id: account_id} = account
 
-    # TODO: Load character from the DB Service and cache it
-    character = %Character{
-      id: 1,
-      slot: 1,
-      name: "DarkyZ",
-      gender: CharacterEnums.gender_type(:female),
-      hair_style: CharacterEnums.hair_style_type(:hair_style_a),
-      hair_color: CharacterEnums.hair_color_type(:yellow),
-      class: CharacterEnums.class_type(:wrestler),
-      level: 92,
-      hero_level: 25,
-      job_level: 80
-    }
+    result =
+      case Characters.get_by_account_id_and_slot(account_id, slot) do
+        nil ->
+          Client.send(client, Views.render(:invalid_select_slot, nil))
+          client
 
-    Client.send(client, Views.render(:ok, character))
+        character ->
+          %Character{id: character_id} = character
+          # CachingService.init_player(client, character)
+          Client.send(client, Views.render(:ok, nil))
+          Client.put_metadata(client, :character_id, character_id)
+      end
 
-    {:cont, client}
+    {:cont, result}
   end
 
   ## Private functions
