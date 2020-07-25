@@ -29,19 +29,19 @@ defmodule Flugel.MixProject do
         include_executables_for: [:unix],
         include_erts: Mix.env() == :prod,
         applications: [
-          login_server: :permanent,
-          world_server: :permanent
+          login_frontend: :permanent,
+          channel_frontend: :permanent
         ]
       ],
-      login_server: [
+      login_frontend: [
         include_executables_for: [:unix],
         include_erts: Mix.env() == :prod,
-        applications: [login_server: :permanent]
+        applications: [login_frontend: :permanent]
       ],
-      world_server: [
+      channel_frontend: [
         include_executables_for: [:unix],
         include_erts: Mix.env() == :prod,
-        applications: [world_server: :permanent]
+        applications: [channel_frontend: :permanent]
       ]
     ]
   end

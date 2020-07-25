@@ -1,9 +1,9 @@
-defmodule WorldManager.MixProject do
+defmodule LoginFrontend.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :world_manager,
+      app: :login_frontend,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -18,13 +18,18 @@ defmodule WorldManager.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      mod: {WorldManager.Application, []},
-      extra_applications: [:logger, :mnesia]
+      mod: {LoginFrontend.Application, []},
+      extra_applications: [:logger]
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
-    []
+    [
+      {:database_service, in_umbrella: true},
+      {:session_manager, in_umbrella: true},
+      {:world_manager, in_umbrella: true},
+      {:elven_gard, github: "imnotavirus/elvengard_v2"}
+    ]
   end
 end

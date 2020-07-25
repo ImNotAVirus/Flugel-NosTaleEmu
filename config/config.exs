@@ -35,7 +35,7 @@ config :database_service, DatabaseService.Repo,
 # Login server part
 #
 
-config :login_server,
+config :login_frontend,
   port: System.get_env("LOGIN_PORT", "4002") |> String.to_integer(),
   client_version: System.get_env("CLIENT_VERSION", "0.9.3.3086")
 
@@ -43,7 +43,7 @@ config :login_server,
 # World server part
 #
 
-config :world_server,
+config :channel_frontend,
   world_name: "ElvenGard",
   ip: "127.0.0.1",
   port: 5000,
