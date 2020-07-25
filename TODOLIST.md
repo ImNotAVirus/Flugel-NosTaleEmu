@@ -1,9 +1,10 @@
 # TODOLIST (bugs/refacto)
 
-**Core**:
+**elvengard-network**:
 
-- Create Mnesia wrapper for tables, records, etc...
-- Fix handle_init (`elven_gard` lib)
+- Fix handle_init
+- Fix resolve macro
+- Change handle_packet params order to `header, params, client`
 
 **WorldManager**:
 

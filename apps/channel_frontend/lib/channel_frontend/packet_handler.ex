@@ -7,7 +7,6 @@ defmodule ChannelFrontend.PacketHandler do
 
   import ChannelFrontend.Enums.Packets.Guri, only: [guri_type: 1]
 
-  alias ChannelFrontend.Packets.Authentication.Actions, as: AuthenticationActions
   alias ChannelFrontend.Packets.CharacterLobby.Actions, as: CharacterLobbyActions
   alias ChannelFrontend.Packets.Player.Actions, as: PlayerActions
   alias ChannelFrontend.Packets.UserInterface.Actions, as: UIActions
@@ -37,7 +36,7 @@ defmodule ChannelFrontend.PacketHandler do
   """
   packet "encryption_key" do
     field :encryption_key, :integer
-    resolve &AuthenticationActions.process_encryption_key/3
+    resolve &__MODULE__.call_to_service/3
   end
 
   @desc """
@@ -47,7 +46,7 @@ defmodule ChannelFrontend.PacketHandler do
   """
   packet "session_id" do
     field :session_id, :integer
-    resolve &AuthenticationActions.process_session_id/3
+    resolve &__MODULE__.call_to_service/3
   end
 
   @desc """
@@ -58,7 +57,7 @@ defmodule ChannelFrontend.PacketHandler do
   """
   packet "password" do
     field :password, :string
-    resolve &AuthenticationActions.verify_session/3
+    resolve &__MODULE__.call_to_service/3
   end
 
   ## Character management
@@ -159,4 +158,21 @@ defmodule ChannelFrontend.PacketHandler do
     field :scene_id, :integer, using: guri_type(:scene_req_act5)
     resolve &UIActions.show_scene/3
   end
+
+  ## Helpers
+  ## TODO: Rewrite that part
+
+  @auth_headers ["encryption_key", "session_id", "password"]
+
+  @doc false
+  def call_to_service(client, header, params) when header in @auth_headers do
+    {:ok, new_client} = ChannelAuth.call(header, params, client)
+    {:cont, new_client}
+  end
+
+  # @doc false
+  # def cast_to_service(service, client, header, params) do
+  #   :ok = apply(service, :cast, [header, params, client])
+  #   {:cont, client}
+  # end
 end

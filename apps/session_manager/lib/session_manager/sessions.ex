@@ -4,9 +4,8 @@ defmodule SessionManager.Sessions do
   import Record, only: [is_record: 1]
   import SessionManager.Session
 
+  alias Core.TimeHelper
   alias SessionManager.Session
-
-  @type expiration_time :: :infinity | integer()
 
   @default_ttl 120
 
@@ -93,7 +92,7 @@ defmodule SessionManager.Sessions do
     username = Map.fetch!(attrs, :username)
     password = Map.get(attrs, :password)
     state = Map.get(attrs, :state)
-    expire = ttl_to_expire(ttl)
+    expire = TimeHelper.ttl_to_expire(ttl)
 
     id = :mnesia.dirty_update_counter(:auto_increment_counter, table, 1)
     record = Session.new(id, username, password, state, expire)
@@ -124,7 +123,7 @@ defmodule SessionManager.Sessions do
           {:error, :unknown_user}
 
         [record] ->
-          expire = ttl_to_expire(@default_ttl)
+          expire = TimeHelper.ttl_to_expire(@default_ttl)
 
           {:ok, _} =
             record
@@ -140,9 +139,9 @@ defmodule SessionManager.Sessions do
   end
 
   @doc false
-  @spec set_ttl(String.t(), expiration_time()) :: {:ok, Session.t()} | {:error, any()}
+  @spec set_ttl(String.t(), TimeHelper.expiration_time()) :: {:ok, Session.t()} | {:error, any()}
   def set_ttl(username, ttl) do
-    expire = ttl_to_expire(ttl)
+    expire = TimeHelper.ttl_to_expire(ttl)
     update_by_username(username, :expire, expire)
   end
 
@@ -176,15 +175,6 @@ defmodule SessionManager.Sessions do
   end
 
   ## Private functions
-
-  @doc false
-  @spec ttl_to_expire(expiration_time()) :: expiration_time()
-  defp ttl_to_expire(ttl) do
-    case ttl do
-      :infinity -> :infinity
-      _ -> DateTime.to_unix(DateTime.utc_now()) + ttl
-    end
-  end
 
   @doc false
   @spec write_session(Session.t()) :: {:ok, Session.t()} | {:error, any()}

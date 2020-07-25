@@ -95,8 +95,7 @@ defmodule SessionManager.Worker do
   end
 
   @impl true
-  def handle_call({:monitor_session, username}, from, state) do
-    {pid, _} = from
+  def handle_call({:monitor_session, username, pid}, _from, state) do
     ref = Process.monitor(pid)
 
     case Sessions.set_monitor(username, ref) do

@@ -32,8 +32,11 @@ defmodule SessionManager do
   end
 
   @doc false
-  @spec monitor_session(String.t()) :: {:ok, Session.t()} | {:error, any()}
-  def monitor_session(username) do
-    GenServer.call(@worker_name, {:monitor_session, username})
+  @spec monitor_session(String.t(), pid()) :: {:ok, Session.t()} | {:error, any()}
+  def monitor_session(username, from \\ nil)
+  def monitor_session(username, nil), do: monitor_session(username, self())
+
+  def monitor_session(username, from) do
+    GenServer.call(@worker_name, {:monitor_session, username, from})
   end
 end
