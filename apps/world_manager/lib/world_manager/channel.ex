@@ -5,10 +5,13 @@ defmodule WorldManager.Channel do
   /!\\ The channel's ID is a composite key: {world_id, channel_id}
   """
 
-  import Record, only: [defrecord: 2]
-
   @record_name :channel
   @keys [:id, :world_name, :ip, :port, :max_players, :player_count, :monitor]
+
+  use Core.MnesiaHelper, record_name: @record_name, keys: @keys
+
+  import Record, only: [defrecord: 2]
+
   defrecord @record_name, @keys
 
   ## Public API
@@ -81,29 +84,5 @@ defmodule WorldManager.Channel do
     population = trunc(player_count / max_players * 20)
 
     "#{ip}:#{port}:#{population}:#{world_id}.#{channel_id}.#{world_name}"
-  end
-
-  ## Mnesia Helpers
-  ## TODO: Make `using` macro and inject theses helpers
-
-  @doc false
-  @spec mnesia_table_name() :: atom()
-  def mnesia_table_name() do
-    @record_name
-  end
-
-  @doc false
-  @spec mnesia_attributes() :: [atom(), ...]
-  def mnesia_attributes() do
-    @keys
-  end
-
-  @doc false
-  defmacro match_all_record() do
-    match = @keys |> Enum.map(&{&1, :_})
-
-    quote do
-      unquote(@record_name)(unquote(match))
-    end
   end
 end

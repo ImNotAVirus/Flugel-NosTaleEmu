@@ -1,10 +1,15 @@
 defmodule WorldManager.World do
-  @moduledoc false
-
-  import Record, only: [defrecord: 2]
+  @moduledoc """
+  TODO: Documentation
+  """
 
   @record_name :world
   @keys [:name, :id]
+
+  use Core.MnesiaHelper, record_name: @record_name, keys: @keys
+
+  import Record, only: [defrecord: 2]
+
   defrecord @record_name, @keys
 
   @type t ::
@@ -26,29 +31,5 @@ defmodule WorldManager.World do
   @spec new(pos_integer(), String.t()) :: __MODULE__.t()
   def new(id, name) do
     world(id: id, name: name)
-  end
-
-  ## Mnesia Helpers
-  ## TODO: Make `using` macro and inject theses helpers
-
-  @doc false
-  @spec mnesia_table_name() :: atom()
-  def mnesia_table_name() do
-    @record_name
-  end
-
-  @doc false
-  @spec mnesia_attributes() :: [atom(), ...]
-  def mnesia_attributes() do
-    @keys
-  end
-
-  @doc false
-  defmacro match_all_record() do
-    match = @keys |> Enum.map(&{&1, :_})
-
-    quote do
-      unquote(@record_name)(unquote(match))
-    end
   end
 end

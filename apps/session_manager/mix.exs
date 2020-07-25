@@ -25,6 +25,8 @@ defmodule SessionManager.MixProject do
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
-    []
+    [
+      {:core, in_umbrella: true}
+    ]
   end
 end
