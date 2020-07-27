@@ -14,7 +14,7 @@ defmodule LoginFrontend.Worker do
   @impl true
   def handle_init(args) do
     port = get_in(args, [:port])
-    Logger.info("Login server started on port #{port}")
+    Logger.info("LoginFrontend started on port #{port}")
     {:ok, nil}
   end
 
@@ -33,7 +33,7 @@ defmodule LoginFrontend.Worker do
 
   @impl true
   def handle_message(%Client{id: id} = client, message) do
-    Logger.info("New message from #{id} (len: #{byte_size(message)})")
+    Logger.debug("New message from #{id} (len: #{byte_size(message)})")
     {:ok, client}
   end
 

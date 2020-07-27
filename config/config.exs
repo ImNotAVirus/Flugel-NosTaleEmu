@@ -12,7 +12,8 @@ import Config
 config :logger, :console,
   level: :debug,
   format: "$time $metadata[$level] $message\n",
-  metadata: [:application]
+  metadata: [:application],
+  colors: [info: :green]
 
 config :elven_gard,
   num_acceptors: 5,

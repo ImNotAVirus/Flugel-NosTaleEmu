@@ -22,7 +22,7 @@ defmodule ChannelFrontend.Worker do
     @impl true
     def handle_init(args) do
       port = Keyword.get(args, :port)
-      Logger.info("World server started on port #{port}")
+      Logger.info("ChannelFrontend started on port #{port}")
       register_me()
       {:ok, nil}
     end
@@ -43,7 +43,7 @@ defmodule ChannelFrontend.Worker do
 
   @impl true
   def handle_message(%Client{id: id} = client, message) do
-    Logger.info("New message from #{id} (len: #{byte_size(message)})")
+    Logger.debug("New message from #{id} (len: #{byte_size(message)})")
     {:ok, client}
   end
 

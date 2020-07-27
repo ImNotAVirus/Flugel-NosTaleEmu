@@ -27,6 +27,7 @@ defmodule ChannelAuth.Worker do
   @impl true
   def init(_) do
     :timer.send_interval(@ttl_ms, :clean_handshakes)
+    Logger.info("ChannelAuth started")
     {:ok, %{}}
   end
 

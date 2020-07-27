@@ -19,7 +19,7 @@ defmodule WorldManager.Worker do
 
   @impl true
   def init(_) do
-    Process.flag(:trap_exit, true)
+    Logger.info("WorldManager starting...")
     {:ok, nil, {:continue, :init_mnesia}}
   end
 
@@ -48,6 +48,7 @@ defmodule WorldManager.Worker do
     :mnesia.dirty_update_counter(:auto_increment_counter, world_table_name, 0)
     :mnesia.dirty_update_counter(:auto_increment_counter, channel_table_name, 0)
 
+    Logger.info("WorldManager started")
     {:noreply, nil}
   end
 

@@ -60,7 +60,7 @@ defmodule ChannelFrontend.PacketHandler do
     resolve &__MODULE__.call_to_service/3
   end
 
-  ## Character management
+  ## Lobby packets
 
   @desc """
   Ask for a character creation
@@ -89,8 +89,6 @@ defmodule ChannelFrontend.PacketHandler do
     resolve &CharacterLobbyActions.delete_character/3
   end
 
-  ## Character selection
-
   @desc """
   Select a character
   """
@@ -98,6 +96,8 @@ defmodule ChannelFrontend.PacketHandler do
     field :slot, :integer
     resolve &CharacterLobbyActions.select_character/3
   end
+
+  ## Area Manager
 
   @desc """
   Character will enter on the game

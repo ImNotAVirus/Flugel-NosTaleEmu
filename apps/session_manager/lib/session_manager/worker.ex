@@ -30,6 +30,7 @@ defmodule SessionManager.Worker do
 
   @impl true
   def init(_) do
+    Logger.info("SessionManager starting...")
     {:ok, nil, {:continue, :init_mnesia}}
   end
 
@@ -57,6 +58,7 @@ defmodule SessionManager.Worker do
     # Autoclean expired keys
     :timer.apply_interval(30_000, __MODULE__, :clean_expired_keys, [session_table_name])
 
+    Logger.info("SessionManager started")
     {:noreply, nil}
   end
 
