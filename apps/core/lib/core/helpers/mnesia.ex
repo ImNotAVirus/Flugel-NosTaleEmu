@@ -1,6 +1,6 @@
-defmodule Core.MnesiaHelper do
+defmodule Core.MnesiaHelpers do
   @moduledoc """
-  TODO: Documentation for `Core.MnesiaHelper`.
+  TODO: Documentation for `Core.MnesiaHelpers`.
   """
 
   ## Public API

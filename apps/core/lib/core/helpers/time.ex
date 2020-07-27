@@ -1,6 +1,6 @@
-defmodule Core.TimeHelper do
+defmodule Core.TimeHelpers do
   @moduledoc """
-  TODO: Documentation for `Core.TimeHelper`.
+  TODO: Documentation for `Core.TimeHelpers`.
   """
 
   @type expiration_time :: :infinity | integer()

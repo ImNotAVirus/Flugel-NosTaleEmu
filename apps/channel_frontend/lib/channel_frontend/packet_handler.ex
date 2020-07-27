@@ -74,7 +74,7 @@ defmodule ChannelFrontend.PacketHandler do
     field :hair_style, :integer, desc: "Enum: HairStyle"
     field :hair_color, :integer, desc: "Enum: HairColor"
 
-    resolve &CharacterLobbyActions.create_character/3
+    resolve &__MODULE__.call_to_service/3
   end
 
   @desc """
@@ -86,7 +86,7 @@ defmodule ChannelFrontend.PacketHandler do
     field :slot, :integer
     field :password, :string
 
-    resolve &CharacterLobbyActions.delete_character/3
+    resolve &__MODULE__.call_to_service/3
   end
 
   @desc """
@@ -94,7 +94,7 @@ defmodule ChannelFrontend.PacketHandler do
   """
   packet "select" do
     field :slot, :integer
-    resolve &CharacterLobbyActions.select_character/3
+    resolve &__MODULE__.call_to_service/3
   end
 
   ## Area Manager
@@ -163,6 +163,7 @@ defmodule ChannelFrontend.PacketHandler do
   ## TODO: Rewrite that part
 
   @auth_headers ["encryption_key", "session_id", "password"]
+  @lobby_headers ["Char_NEW", "Char_DEL", "select"]
 
   @doc false
   def call_to_service(client, header, params) when header in @auth_headers do
@@ -170,9 +171,8 @@ defmodule ChannelFrontend.PacketHandler do
     {:cont, new_client}
   end
 
-  # @doc false
-  # def cast_to_service(service, client, header, params) do
-  #   :ok = apply(service, :cast, [header, params, client])
-  #   {:cont, client}
-  # end
+  def call_to_service(client, header, params) when header in @lobby_headers do
+    {:ok, new_client} = ChannelLobby.call(header, params, client)
+    {:cont, new_client}
+  end
 end

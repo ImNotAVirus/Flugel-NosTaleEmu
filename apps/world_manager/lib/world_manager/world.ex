@@ -6,7 +6,7 @@ defmodule WorldManager.World do
   @record_name :world
   @keys [:name, :id]
 
-  use Core.MnesiaHelper, record_name: @record_name, keys: @keys
+  use Core.MnesiaHelpers, record_name: @record_name, keys: @keys
 
   import Record, only: [defrecord: 2]
 

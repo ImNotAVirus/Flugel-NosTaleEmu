@@ -8,7 +8,7 @@ defmodule ChannelAuth.Worker do
   import ChannelAuth.Handshake
   import SessionManager.Session, only: [session: 2]
 
-  alias Core.TimeHelper
+  alias Core.TimeHelpers
   alias ChannelAuth.Handshake
   alias DatabaseService.Player.{Account, Accounts}
   alias ElvenGard.Structures.Client
@@ -38,7 +38,7 @@ defmodule ChannelAuth.Worker do
     if Map.has_key?(state, from) do
       return_error(:encryption_key_already_defined, from, state)
     else
-      expire = TimeHelper.ttl_to_expire(@ttl_sec)
+      expire = TimeHelpers.ttl_to_expire(@ttl_sec)
       record = handshake(encryption_key: encryption_key, expire: expire)
       new_state = Map.put(state, from, record)
 
@@ -62,7 +62,7 @@ defmodule ChannelAuth.Worker do
         return_error(:invalid_handshake, from, state)
 
       record ->
-        expire = TimeHelper.ttl_to_expire(@ttl_sec)
+        expire = TimeHelpers.ttl_to_expire(@ttl_sec)
         new_record = handshake(record, session_id: session_id, expire: expire)
         new_state = Map.put(state, from, new_record)
         new_client = Client.put_metadata(client, :auth_step, :waiting_password)

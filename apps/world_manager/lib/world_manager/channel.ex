@@ -8,7 +8,7 @@ defmodule WorldManager.Channel do
   @record_name :channel
   @keys [:id, :world_name, :ip, :port, :max_players, :player_count, :monitor]
 
-  use Core.MnesiaHelper, record_name: @record_name, keys: @keys
+  use Core.MnesiaHelpers, record_name: @record_name, keys: @keys
 
   import Record, only: [defrecord: 2]
 

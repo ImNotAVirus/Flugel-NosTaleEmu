@@ -1,9 +1,9 @@
-defmodule ChannelAuth.MixProject do
+defmodule ChannelLobby.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :channel_auth,
+      app: :channel_lobby,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -18,19 +18,17 @@ defmodule ChannelAuth.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger, :crypto],
-      mod: {ChannelAuth.Application, []}
+      extra_applications: [:logger],
+      mod: {ChannelLobby.Application, []}
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:elven_gard, github: "imnotavirus/elvengard_v2"},
       {:core, in_umbrella: true},
       {:database_service, in_umbrella: true},
-      {:session_manager, in_umbrella: true, runtime: false},
-      {:channel_lobby, in_umbrella: true, runtime: false}
+      {:elven_gard, github: "imnotavirus/elvengard_v2"}
     ]
   end
 end

@@ -6,7 +6,7 @@ defmodule SessionManager.Session do
   @record_name :session
   @keys [:username, :id, :password, :state, :expire, :monitor]
 
-  use Core.MnesiaHelper, record_name: @record_name, keys: @keys
+  use Core.MnesiaHelpers, record_name: @record_name, keys: @keys
 
   import Record, only: [defrecord: 2]
 
