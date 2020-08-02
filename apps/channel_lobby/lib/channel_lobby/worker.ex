@@ -6,6 +6,7 @@ defmodule ChannelLobby.Worker do
   require Logger
 
   alias ChannelLobby.Views
+  alias Core.FrontendHelpers
   alias DatabaseService.Player.{Account, Character, Characters}
   alias ElvenGard.Structures.Client
 
@@ -27,9 +28,9 @@ defmodule ChannelLobby.Worker do
   def handle_cast({:send_character_list, client, account_id}, state) do
     character_list = Characters.all_by_account_id(account_id)
 
-    Client.send(client, Views.render(:clist_start, nil))
-    Enum.each(character_list, &Client.send(client, Views.render(:clist, &1)))
-    Client.send(client, Views.render(:clist_end, nil))
+    FrontendHelpers.send_packet(client, Views.render(:clist_start, nil))
+    Enum.each(character_list, &FrontendHelpers.send_packet(client, Views.render(:clist, &1)))
+    FrontendHelpers.send_packet(client, Views.render(:clist_end, nil))
 
     {:noreply, state}
   end

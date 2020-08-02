@@ -30,7 +30,9 @@ defmodule ChannelFrontend.Worker do
 
   @impl true
   def handle_connection(socket, transport) do
-    client = Client.new(socket, transport, %{auth_step: :waiting_encryption_key})
+    # TODO: embeded `frontend_pid` inside elvengard-network lib
+    metadata = %{frontend_pid: self(), auth_step: :waiting_encryption_key}
+    client = Client.new(socket, transport, metadata)
     Logger.info("New connection: #{client.id}")
     {:ok, client}
   end
@@ -51,6 +53,13 @@ defmodule ChannelFrontend.Worker do
   def handle_error(%Client{id: id} = client, reason) do
     Logger.error("An error occured with client #{id}: #{inspect(reason)}")
     {:ok, client}
+  end
+
+  @doc false
+  @spec handle_cast({:send_packet, Client.t(), String.t()}, any()) :: {:noreply, any()}
+  def handle_cast({:send_packet, client, message}, state) do
+    Client.send(client, message)
+    {:noreply, state}
   end
 
   #
