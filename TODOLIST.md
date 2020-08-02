@@ -18,4 +18,4 @@
 
 ---------
 
-**NEXT STEP : ChannelLobby Service**
+**NEXT STEP : Caching Service**

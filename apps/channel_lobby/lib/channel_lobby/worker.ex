@@ -6,8 +6,8 @@ defmodule ChannelLobby.Worker do
   require Logger
 
   alias ChannelLobby.Views
-  alias Core.FrontendHelpers
-  alias DatabaseService.Player.{Account, Character, Characters}
+  alias Core.{CharacterEnums, FrontendHelpers}
+  alias DatabaseService.Player.{Character, Characters}
   alias ElvenGard.Structures.Client
 
   @doc false
@@ -26,43 +26,103 @@ defmodule ChannelLobby.Worker do
 
   @impl true
   def handle_cast({:send_character_list, client, account_id}, state) do
-    character_list = Characters.all_by_account_id(account_id)
-
-    FrontendHelpers.send_packet(client, Views.render(:clist_start, nil))
-    Enum.each(character_list, &FrontendHelpers.send_packet(client, Views.render(:clist, &1)))
-    FrontendHelpers.send_packet(client, Views.render(:clist_end, nil))
-
+    do_send_character_list(client, account_id)
     {:noreply, state}
   end
 
   @impl true
   def handle_call({:handle_packet, "Char_NEW", params, client}, _from, state) do
-    %{
-      name: name,
-      slot: slot,
-      gender: gender,
-      hair_style: hair_style,
-      hair_color: hair_color
-    } = params
+    %{slot: slot} = params
+    account_id = client |> Client.get_metadata(:account) |> Map.get(:id)
 
-    ## Code
+    with x when is_nil(x) <- Characters.get_by_account_id_and_slot(account_id, slot),
+         :ok <- do_create_character(client, account_id, params) do
+      :ok
+    else
+      error ->
+        Logger.warn("Character creation failed: #{inspect(error)}")
+        FrontendHelpers.send_packet(client, Views.render(:creation_failed, nil))
+    end
 
     {:reply, {:ok, client}, state}
   end
 
   def handle_call({:handle_packet, "Char_DEL", params, client}, _from, state) do
-    %{slot: slot, password: password} = params
+    %{slot: slot, password: user_input} = params
 
-    ## Code
+    with account <- Client.get_metadata(client, :account),
+         password <- Map.get(account, :password),
+         input_hash when input_hash == password <- hash_password(user_input),
+         account_id <- Map.get(account, :id),
+         {:ok, _} <- Characters.delete_by_account_id_and_slot(account_id, slot) do
+      FrontendHelpers.send_packet(client, Views.render(:success, nil))
+      do_send_character_list(client, account_id)
+    else
+      _ -> FrontendHelpers.send_packet(client, Views.render(:invalid_password, nil))
+    end
 
     {:reply, {:ok, client}, state}
   end
 
   def handle_call({:handle_packet, "select", params, client}, _from, state) do
     %{slot: slot} = params
+    account_id = client |> Client.get_metadata(:account) |> Map.get(:id)
 
-    ## Code
+    result =
+      case Characters.get_by_account_id_and_slot(account_id, slot) do
+        nil ->
+          FrontendHelpers.send_packet(client, Views.render(:invalid_select_slot, nil))
+          client
 
-    {:reply, {:ok, client}, state}
+        character ->
+          %Character{id: character_id} = character
+          # CachingService.init_player(client, character)
+          FrontendHelpers.send_packet(client, Views.render(:ok, nil))
+          Client.put_metadata(client, :character_id, character_id)
+      end
+
+    {:reply, {:ok, result}, state}
+  end
+
+  ## Private functions
+
+  @doc false
+  @spec do_send_character_list(Client.t(), pos_integer()) :: :ok
+  defp do_send_character_list(client, account_id) do
+    character_list = Characters.all_by_account_id(account_id)
+
+    FrontendHelpers.send_packet(client, Views.render(:clist_start, nil))
+    Enum.each(character_list, &FrontendHelpers.send_packet(client, Views.render(:clist, &1)))
+    FrontendHelpers.send_packet(client, Views.render(:clist_end, nil))
+  end
+
+  @doc false
+  @spec do_create_character(Client.t(), pos_integer(), map()) :: :ok | :error
+  defp do_create_character(client, account_id, params) do
+    initial_values = %{
+      account_id: account_id,
+      class: CharacterEnums.class_type(:adventurer),
+      faction: CharacterEnums.faction_type(:neutral),
+      map_id: 1,
+      map_x: :rand.uniform(3) + 77,
+      map_y: :rand.uniform(4) + 113
+    }
+
+    case params |> Map.merge(initial_values) |> Characters.create() do
+      {:ok, _} ->
+        # TODO: Create Miniland info here
+        FrontendHelpers.send_packet(client, Views.render(:success, nil))
+        do_send_character_list(client, account_id)
+        :ok
+
+      {:error, _} ->
+        :error
+    end
+  end
+
+  @doc false
+  @spec hash_password(String.t()) :: String.t()
+  defp hash_password(password) do
+    :crypto.hash(:sha512, password) |> Base.encode16()
   end
 end
