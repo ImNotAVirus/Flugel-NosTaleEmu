@@ -8,6 +8,13 @@ defmodule Core.PacketHelpers do
   @doc """
   TODO: Documentation
   """
+  @spec serialize_boolean(boolean()) :: String.t()
+  def serialize_boolean(false), do: "0"
+  def serialize_boolean(true), do: "1"
+
+  @doc """
+  TODO: Documentation
+  """
   @spec serialize_list([term(), ...], String.t()) :: String.t()
   def serialize_list(enumerable, joiner \\ ".")
   def serialize_list([], _), do: "-1"

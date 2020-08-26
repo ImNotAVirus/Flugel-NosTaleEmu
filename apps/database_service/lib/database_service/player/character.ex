@@ -59,9 +59,9 @@ defmodule DatabaseService.Player.Character do
     field :job_level_xp, :integer
     field :hero_level_xp, :integer
 
-    field :sp_point, :integer
-    field :sp_additional_point, :integer
-    field :rage_point, :integer
+    field :sp_points, :integer
+    field :sp_additional_points, :integer
+    field :rage_points, :integer
     field :max_mate_count, :integer
 
     field :reputation, :integer
@@ -113,9 +113,9 @@ defmodule DatabaseService.Player.Character do
     :level_xp,
     :job_level_xp,
     :hero_level_xp,
-    :sp_point,
-    :sp_additional_point,
-    :rage_point,
+    :sp_points,
+    :sp_additional_points,
+    :rage_points,
     :max_mate_count,
     :reputation,
     :dignity,

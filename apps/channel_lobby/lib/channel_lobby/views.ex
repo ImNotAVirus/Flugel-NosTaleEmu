@@ -42,10 +42,10 @@ defmodule ChannelLobby.Views do
 
     petlist = PacketHelpers.serialize_list(pets)
     equipmentlist = PacketHelpers.serialize_list(equipments)
-    gender_int = CharacterEnums.gender_type(gender)
-    hair_style_int = CharacterEnums.hair_style_type(hair_style)
-    hair_color_int = CharacterEnums.hair_color_type(hair_color)
-    class_int = CharacterEnums.class_type(class)
+    gender_int = CharacterEnums.gender(gender)
+    hair_style_int = CharacterEnums.hair_style(hair_style)
+    hair_color_int = CharacterEnums.hair_color(hair_color)
+    class_int = CharacterEnums.class(class)
 
     "clist #{slot} #{name} 0 #{gender_int} #{hair_style_int} #{hair_color_int} 0 #{class_int}" <>
       " #{level} #{hero_level} #{equipmentlist} #{job_level} #{quest_completion} " <>

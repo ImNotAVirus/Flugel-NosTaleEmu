@@ -119,8 +119,8 @@ defmodule ChannelLobby.Worker do
   defp do_create_character(client, account_id, params) do
     initial_values = %{
       account_id: account_id,
-      class: CharacterEnums.class_type(:adventurer),
-      faction: CharacterEnums.faction_type(:neutral),
+      class: CharacterEnums.class(:adventurer),
+      faction: CharacterEnums.faction(:neutral),
       map_id: 1,
       map_x: :rand.uniform(3) + 77,
       map_y: :rand.uniform(4) + 113

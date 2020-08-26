@@ -55,7 +55,7 @@ Characters.create!(%{
   hero_level_xp: 1_000,
   reputation: 5_000_000,
   dignity: 100,
-  sp_point: 10_000,
-  sp_additional_point: 500_000,
+  sp_points: 10_000,
+  sp_additional_points: 500_000,
   compliment: 2_000
 })

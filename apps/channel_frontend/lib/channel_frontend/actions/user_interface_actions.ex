@@ -1,11 +1,11 @@
-defmodule ChannelFrontend.Packets.UserInterface.Actions do
+defmodule ChannelFrontend.UserInterfaceActions do
   @moduledoc """
-  TODO: Documentation for ChannelFrontend.Packets.UserInterface.Actions
+  TODO: Documentation for ChannelFrontend.UserInterfaceActions
   """
 
   alias ElvenGard.Structures.Client
-  alias ChannelFrontend.Packets.Entity.Views, as: EntityViews
-  alias ChannelFrontend.Packets.UserInterface.Views, as: UserInterfaceViews
+  alias ChannelFrontend.EntityViews, as: EntityViews
+  alias ChannelFrontend.UserInterfaceViews, as: UserInterfaceViews
   alias ChannelFrontend.Structures.Character
 
   @emoji_offset 4099

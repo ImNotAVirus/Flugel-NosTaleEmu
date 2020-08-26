@@ -26,9 +26,9 @@ defmodule ChannelCaching.Character do
     :level_xp,
     :job_level_xp,
     :hero_level_xp,
-    :sp_point,
-    :sp_additional_point,
-    :rage_point,
+    :sp_points,
+    :sp_additional_points,
+    :rage_points,
     :max_mate_count,
     :reputation,
     :dignity,
@@ -50,14 +50,31 @@ defmodule ChannelCaching.Character do
 
   @virtual_keys [
     :hp,
-    :mp
+    :mp,
+    :hp_max,
+    :mp_max,
+    :speed,
+    :group_id,
+    :morph,
+    :morph_upgrade,
+    :invisible,
+    :no_attack,
+    :no_move,
+    :level_xp_max,
+    :job_level_xp_max,
+    :hero_level_xp_max,
+    :rage_points_max,
+    :sp_points_max,
+    :sp_additional_points_max,
+    :cp,
+    :map_instance_ref
   ]
 
   @keys @struct_keys ++ @virtual_keys
 
   use Core.MnesiaHelpers, record_name: @record_name, keys: @keys
 
-  import Record, only: [defrecord: 2]
+  import Record, only: [defrecord: 2, is_record: 2]
 
   alias DatabaseService.Player.Character
   alias Core.PlayerAlgorithms
@@ -89,9 +106,9 @@ defmodule ChannelCaching.Character do
             level_xp: non_neg_integer(),
             job_level_xp: non_neg_integer(),
             hero_level_xp: non_neg_integer(),
-            sp_point: non_neg_integer(),
-            sp_additional_point: non_neg_integer(),
-            rage_point: non_neg_integer(),
+            sp_points: non_neg_integer(),
+            sp_additional_points: non_neg_integer(),
+            rage_points: non_neg_integer(),
             max_mate_count: pos_integer(),
             reputation: non_neg_integer(),
             dignity: integer(),
@@ -111,7 +128,24 @@ defmodule ChannelCaching.Character do
             game_options: [atom(), ...],
             # Virtual fields
             hp: non_neg_integer(),
-            mp: non_neg_integer()
+            mp: non_neg_integer(),
+            hp_max: non_neg_integer(),
+            mp_max: non_neg_integer(),
+            speed: non_neg_integer(),
+            group_id: integer(),
+            morph: integer(),
+            morph_upgrade: integer(),
+            invisible: boolean(),
+            no_attack: boolean(),
+            no_move: boolean(),
+            level_xp_max: integer(),
+            job_level_xp_max: integer(),
+            hero_level_xp_max: integer(),
+            rage_points_max: integer(),
+            sp_points_max: non_neg_integer(),
+            sp_additional_points_max: non_neg_integer(),
+            cp: non_neg_integer(),
+            map_instance_ref: nil | reference()
           )
 
   ## Public API
@@ -124,8 +158,26 @@ defmodule ChannelCaching.Character do
     %Character{class: class, level: level} = character
 
     # TODO: Later add stuff stats and create a function `base_hp/1` and `base_mp/1`
-    hp = PlayerAlgorithms.get_hp(class, level) + character.additional_hp
-    mp = 5_000
+    hp_max = PlayerAlgorithms.get_hp(class, level) + character.additional_hp
+    mp_max = 5_000
+    hp = hp_max
+    mp = mp_max
+    speed = 50
+    level_xp_max = 500
+    job_level_xp_max = 500
+    hero_level_xp_max = 500
+    rage_points_max = 250_000
+
+    sp_points_max = 10_000
+    sp_additional_points_max = 1_000_000
+
+    group_id = -1
+    morph = 0
+    morph_upgrade = 0
+    invisible = false
+    no_attack = false
+    no_move = false
+    cp = 0
 
     character(
       # From struct
@@ -150,9 +202,9 @@ defmodule ChannelCaching.Character do
       level_xp: character.level_xp,
       job_level_xp: character.job_level_xp,
       hero_level_xp: character.hero_level_xp,
-      sp_point: character.sp_point,
-      sp_additional_point: character.sp_additional_point,
-      rage_point: character.rage_point,
+      sp_points: character.sp_points,
+      sp_additional_points: character.sp_additional_points,
+      rage_points: character.rage_points,
       max_mate_count: character.max_mate_count,
       reputation: character.reputation,
       dignity: character.dignity,
@@ -173,7 +225,25 @@ defmodule ChannelCaching.Character do
 
       # Virtual fields
       hp: hp,
-      mp: mp
+      mp: mp,
+      hp_max: hp_max,
+      mp_max: mp_max,
+      speed: speed,
+      group_id: group_id,
+      morph: morph,
+      morph_upgrade: morph_upgrade,
+      invisible: invisible,
+      no_attack: no_attack,
+      no_move: no_move,
+      level_xp_max: level_xp_max,
+      job_level_xp_max: job_level_xp_max,
+      hero_level_xp_max: hero_level_xp_max,
+      rage_points_max: rage_points_max,
+      sp_points_max: sp_points_max,
+      sp_additional_points_max: sp_additional_points_max,
+      cp: cp
     )
   end
+
+  defguard is_character(x) when is_record(x, :character)
 end

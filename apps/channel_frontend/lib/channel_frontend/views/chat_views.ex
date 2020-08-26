@@ -1,6 +1,6 @@
-defmodule ChannelFrontend.Packets.Chat.Views do
+defmodule ChannelFrontend.ChatViews do
   @moduledoc """
-  TODO: Documentation for ChannelFrontend.Packets.Chat.Views
+  TODO: Documentation for ChannelFrontend.ChatViews
   """
 
   use ElvenGard.View
@@ -8,16 +8,9 @@ defmodule ChannelFrontend.Packets.Chat.Views do
   alias ChannelFrontend.Enums.Entity, as: EnumsEntity
   alias ChannelFrontend.Enums.Packets.Say, as: EnumsSay
 
-  @spec render(atom, term) :: String.t()
-  def render(:bn, attrs) do
-    %{
-      id: id,
-      message: message
-    } = attrs
-
-    message_norm = String.replace(message, " ", "^")
-
-    "bn #{id} #{message_norm}"
+  @spec render(atom(), any()) :: String.t()
+  def render(:bn, %{id: id, message: message}) do
+    "bn #{id} #{String.replace(message, " ", "^")}"
   end
 
   def render(:say, attrs) when is_binary(attrs) do

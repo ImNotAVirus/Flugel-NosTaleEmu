@@ -31,6 +31,7 @@ defmodule ChannelFrontend.MixProject do
       {:world_manager, in_umbrella: true},
       {:channel_auth, in_umbrella: true},
       {:channel_lobby, in_umbrella: true},
+      {:channel_caching, in_umbrella: true},
       {:elven_gard, github: "imnotavirus/elvengard_v2"}
     ]
   end

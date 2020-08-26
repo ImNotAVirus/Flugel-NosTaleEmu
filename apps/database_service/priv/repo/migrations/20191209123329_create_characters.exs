@@ -30,9 +30,9 @@ defmodule DatabaseService.Repo.Migrations.CreateCharacters do
       add :job_level_xp, :int4, default: 0, null: false
       add :hero_level_xp, :int4, default: 0, null: false
 
-      add :sp_point, :int4, default: 10_000, null: false
-      add :sp_additional_point, :int4, default: 50_000, null: false
-      add :rage_point, :int4, default: 0, null: false
+      add :sp_points, :int4, default: 10_000, null: false
+      add :sp_additional_points, :int4, default: 50_000, null: false
+      add :rage_points, :int4, default: 0, null: false
       add :max_mate_count, :int2, default: 10, null: false
 
       add :reputation, :int4, default: 0, null: false

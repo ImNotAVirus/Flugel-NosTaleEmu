@@ -5,8 +5,11 @@ defmodule ChannelCaching.Worker do
 
   require Logger
 
+  import ChannelCaching.CharacterSkill, only: [character_skill: 2]
+
   alias ChannelCaching.Account, as: AccountRecord
   alias ChannelCaching.Character, as: CharacterRecord
+  alias ChannelCaching.CharacterSkill, as: CharacterSkillRecord
   alias DatabaseService.Player.{Account, Character}
 
   @doc false
@@ -28,15 +31,19 @@ defmodule ChannelCaching.Worker do
     :ok = :mnesia.start()
 
     account_table_name = AccountRecord.mnesia_table_name()
-    account_attributes = AccountRecord.mnesia_attributes()
-    {:atomic, :ok} = :mnesia.create_table(account_table_name, attributes: account_attributes)
+    account_attrs = AccountRecord.mnesia_attributes()
+    {:atomic, :ok} = :mnesia.create_table(account_table_name, attributes: account_attrs)
     {:atomic, :ok} = :mnesia.add_table_index(account_table_name, :id)
     {:atomic, :ok} = :mnesia.add_table_index(account_table_name, :username)
 
     character_table_name = CharacterRecord.mnesia_table_name()
-    character_attributes = CharacterRecord.mnesia_attributes()
-    {:atomic, :ok} = :mnesia.create_table(character_table_name, attributes: character_attributes)
+    character_attrs = CharacterRecord.mnesia_attributes()
+    {:atomic, :ok} = :mnesia.create_table(character_table_name, attributes: character_attrs)
     {:atomic, :ok} = :mnesia.add_table_index(character_table_name, :name)
+
+    cskill_table_name = CharacterSkillRecord.mnesia_table_name()
+    cskill_attrs = CharacterSkillRecord.mnesia_attributes()
+    {:atomic, :ok} = :mnesia.create_table(cskill_table_name, attributes: cskill_attrs, type: :bag)
 
     Logger.info("ChannelCaching started")
     {:noreply, nil}
@@ -46,41 +53,53 @@ defmodule ChannelCaching.Worker do
   def handle_call({:init_player, %Account{} = account, %Character{} = character}, _from, state) do
     %Character{id: character_id} = character
 
-    with {:ok, _} <- write_account(character_id, account),
-         {:ok, _} <- write_character(character) do
-      {:reply, :ok, state}
-    else
-      {:error, _} = e -> {:reply, e, state}
-      e -> {:reply, {:error, e}, state}
+    acc_record = AccountRecord.new(character_id, account)
+    char_record = CharacterRecord.new(character)
+
+    # TODO: Get from database
+    skill_vnums = [200, 201, 200, 201, 209]
+
+    query = fn ->
+      :mnesia.write(acc_record)
+      :mnesia.write(char_record)
+
+      Enum.each(skill_vnums, fn vnum ->
+        skill_record = CharacterSkillRecord.new(character_id, vnum)
+        :mnesia.write(skill_record)
+      end)
+    end
+
+    {:reply, transaction(query), state}
+  end
+
+  @impl true
+  def handle_call({:get_character_by_id, character_id}, _from, state) do
+    character_table_name = CharacterRecord.mnesia_table_name()
+
+    case :mnesia.dirty_read({character_table_name, character_id}) do
+      [record] -> {:reply, {:ok, record}, state}
+      _ -> {:reply, {:error, :invalid_id}, state}
     end
   end
 
-  ## Private function
+  @impl true
+  def handle_call({:get_skills_by_character_id, character_id}, _from, state) do
+    cskill_table_name = CharacterSkillRecord.mnesia_table_name()
 
-  @typep record :: tuple()
+    case :mnesia.dirty_read({cskill_table_name, character_id}) do
+      [] -> {:reply, {:error, :invalid_id}, state}
+      skills -> {:reply, {:ok, Enum.map(skills, &character_skill(&1, :vnum))}, state}
+    end
+  end
+
+  # Private functions
 
   @doc false
-  @spec write_record(record()) :: {:ok, record()} | {:error, any()}
-  defp write_record(record) do
-    query = fn -> :mnesia.write(record) end
-
+  @spec transaction((... -> any())) :: :ok | {:error, any()}
+  defp transaction(query) do
     case :mnesia.transaction(query) do
-      {:atomic, :ok} -> {:ok, record}
+      {:atomic, :ok} -> :ok
       {:aborted, x} -> {:error, x}
     end
-  end
-
-  @doc false
-  @spec write_account(pos_integer(), Account.t()) :: {:ok, AccountRecord.t()} | {:error, any()}
-  defp write_account(character_id, %Account{} = account) do
-    record = AccountRecord.new(character_id, account)
-    write_record(record)
-  end
-
-  @doc false
-  @spec write_character(Character.t()) :: {:ok, CharacterRecord.t()} | {:error, any()}
-  defp write_character(%Character{} = character) do
-    record = CharacterRecord.new(character)
-    write_record(record)
   end
 end

@@ -7,12 +7,12 @@ defmodule Core.CharacterEnums do
 
   defenum :state, [:unknown, :active, :inactive]
   defenum :channel_color, white: 0, green: 8, orange: 12, red: 32
-  defenum :class_type, [:adventurer, :swordman, :archer, :magician, :wrestler]
-  defenum :gender_type, [:male, :female]
-  defenum :faction_type, [:neutral, :angel, :demon]
-  defenum :hair_style_type, [:hair_style_a, :hair_style_b, :hair_style_c, :hair_style_d, :no_hair]
+  defenum :class, [:adventurer, :swordman, :archer, :magician, :wrestler]
+  defenum :gender, [:male, :female]
+  defenum :faction, [:neutral, :angel, :demon]
+  defenum :hair_style, [:hair_style_a, :hair_style_b, :hair_style_c, :hair_style_d, :no_hair]
   defenum :miniland_state, [:open, :private, :lock]
-  defenum :reputation_icon_type, [:beginner]
+  defenum :reputation_icon, [:beginner]
 
   # player: white name
   # game_master: purple name
@@ -128,7 +128,7 @@ defmodule Core.CharacterEnums do
     mysterious_heros: 31,
     legendary_heros: 32
 
-  defenum :hair_color_type,
+  defenum :hair_color,
     dark_purple: 0,
     yellow: 1,
     blue: 2,

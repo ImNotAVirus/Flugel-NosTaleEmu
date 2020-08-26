@@ -7,9 +7,7 @@ defmodule ChannelFrontend.PacketHandler do
 
   import ChannelFrontend.Enums.Packets.Guri, only: [guri_type: 1]
 
-  alias ChannelFrontend.Packets.CharacterLobby.Actions, as: CharacterLobbyActions
-  alias ChannelFrontend.Packets.Player.Actions, as: PlayerActions
-  alias ChannelFrontend.Packets.UserInterface.Actions, as: UIActions
+  alias ChannelFrontend.{PlayerActions, UserInterfaceActions}
 
   #
   # Useless packets
@@ -116,7 +114,7 @@ defmodule ChannelFrontend.PacketHandler do
     field :unknown, :integer
     field :entity_id, :integer
     field :value, :integer
-    resolve &UIActions.show_emoji/3
+    resolve &UserInterfaceActions.show_emoji/3
   end
 
   @desc """
@@ -124,7 +122,7 @@ defmodule ChannelFrontend.PacketHandler do
   """
   packet "guri" do
     field :scene_id, :integer, using: guri_type(:scene_req_act1)
-    resolve &UIActions.show_scene/3
+    resolve &UserInterfaceActions.show_scene/3
   end
 
   @desc """
@@ -132,7 +130,7 @@ defmodule ChannelFrontend.PacketHandler do
   """
   packet "guri" do
     field :scene_id, :integer, using: guri_type(:scene_req_act2)
-    resolve &UIActions.show_scene/3
+    resolve &UserInterfaceActions.show_scene/3
   end
 
   @desc """
@@ -140,7 +138,7 @@ defmodule ChannelFrontend.PacketHandler do
   """
   packet "guri" do
     field :scene_id, :integer, using: guri_type(:scene_req_act3)
-    resolve &UIActions.show_scene/3
+    resolve &UserInterfaceActions.show_scene/3
   end
 
   @desc """
@@ -148,7 +146,7 @@ defmodule ChannelFrontend.PacketHandler do
   """
   packet "guri" do
     field :scene_id, :integer, using: guri_type(:scene_req_act4)
-    resolve &UIActions.show_scene/3
+    resolve &UserInterfaceActions.show_scene/3
   end
 
   @desc """
@@ -156,7 +154,7 @@ defmodule ChannelFrontend.PacketHandler do
   """
   packet "guri" do
     field :scene_id, :integer, using: guri_type(:scene_req_act5)
-    resolve &UIActions.show_scene/3
+    resolve &UserInterfaceActions.show_scene/3
   end
 
   ## Helpers
