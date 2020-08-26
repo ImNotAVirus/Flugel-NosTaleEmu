@@ -27,6 +27,7 @@ defmodule ChannelLobby.MixProject do
   defp deps do
     [
       {:core, in_umbrella: true},
+      {:channel_caching, in_umbrella: true},
       {:database_service, in_umbrella: true},
       {:elven_gard, github: "imnotavirus/elvengard_v2"}
     ]

@@ -31,6 +31,12 @@ defmodule ChannelLobby.Worker do
   end
 
   @impl true
+  def handle_call({:handle_packet, _, _, client}, _from, state)
+      when not is_nil(client.metadata.character_id) do
+    Logger.warn("Lobby packet received from #{client.metadata.character_id}")
+    {:reply, {:ok, client}, state}
+  end
+
   def handle_call({:handle_packet, "Char_NEW", params, client}, _from, state) do
     %{slot: slot} = params
     account_id = client |> Client.get_metadata(:account) |> Map.get(:id)
@@ -66,9 +72,12 @@ defmodule ChannelLobby.Worker do
 
   def handle_call({:handle_packet, "select", params, client}, _from, state) do
     %{slot: slot} = params
-    account_id = client |> Client.get_metadata(:account) |> Map.get(:id)
+    account = Client.get_metadata(client, :account)
+    account_id = Map.get(account, :id)
+    account_authority = Map.get(account, :authority)
+    account_language = Map.get(account, :language)
 
-    result =
+    new_client =
       case Characters.get_by_account_id_and_slot(account_id, slot) do
         nil ->
           FrontendHelpers.send_packet(client, Views.render(:invalid_select_slot, nil))
@@ -76,12 +85,21 @@ defmodule ChannelLobby.Worker do
 
         character ->
           %Character{id: character_id} = character
-          # CachingService.init_player(client, character)
+          :ok = ChannelCaching.init_player(account, character)
+
           FrontendHelpers.send_packet(client, Views.render(:ok, nil))
-          Client.put_metadata(client, :character_id, character_id)
+
+          # Reduce network load between services
+          # TODO: Add `Client.delete_metadata/2` to elvengard-network
+          new_metadata = Map.delete(client.metadata, :account)
+
+          %Client{client | metadata: new_metadata}
+          |> Client.put_metadata(:character_id, character_id)
+          |> Client.put_metadata(:authority, account_authority)
+          |> Client.put_metadata(:language, account_language)
       end
 
-    {:reply, {:ok, result}, state}
+    {:reply, {:ok, new_client}, state}
   end
 
   ## Private functions

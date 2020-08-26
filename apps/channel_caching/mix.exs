@@ -1,15 +1,15 @@
-defmodule Core.MixProject do
+defmodule ChannelCaching.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :core,
+      app: :channel_caching,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
       deps_path: "../../deps",
       lockfile: "../../mix.lock",
-      elixir: "~> 1.10",
+      elixir: "~> 1.11-dev",
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
@@ -18,15 +18,16 @@ defmodule Core.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger, :mnesia],
+      mod: {ChannelCaching.Application, []}
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:simple_enum, github: "imnotavirus/simple_enum"},
-      {:elven_gard, github: "imnotavirus/elvengard_v2"}
+      {:core, in_umbrella: true},
+      {:database_service, in_umbrella: true, runtime: false}
     ]
   end
 end
