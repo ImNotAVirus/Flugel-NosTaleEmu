@@ -72,6 +72,9 @@ defmodule ChannelLobby.Worker do
 
   def handle_call({:handle_packet, "select", params, client}, _from, state) do
     %{slot: slot} = params
+
+    # TODO: Later use client.frontend_pid
+    frontend_pid = Client.get_metadata(client, :frontend_pid)
     account = Client.get_metadata(client, :account)
     account_id = Map.get(account, :id)
     account_authority = Map.get(account, :authority)
@@ -85,7 +88,7 @@ defmodule ChannelLobby.Worker do
 
         character ->
           %Character{id: character_id} = character
-          :ok = ChannelCaching.init_player(account, character)
+          :ok = ChannelCaching.init_player(account, character, frontend_pid)
 
           FrontendHelpers.send_packet(client, Views.render(:ok, nil))
 

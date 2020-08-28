@@ -6,11 +6,13 @@ defmodule ChannelCaching.Worker do
   require Logger
 
   import ChannelCaching.CharacterSkill, only: [character_skill: 2]
+  import ChannelCaching.CharacterFrontend, only: [character_frontend: 2]
 
   alias ChannelCaching.Account, as: AccountRecord
   alias ChannelCaching.Character, as: CharacterRecord
   alias ChannelCaching.CharacterSkill, as: CharacterSkillRecord
-  alias DatabaseService.Player.{Account, Character}
+  alias ChannelCaching.CharacterFrontend, as: CharacterFrontendRecord
+  alias DatabaseService.Player.Character
 
   @doc false
   @spec start_link(any) :: :ignore | {:error, any} | {:ok, pid}
@@ -45,23 +47,29 @@ defmodule ChannelCaching.Worker do
     cskill_attrs = CharacterSkillRecord.mnesia_attributes()
     {:atomic, :ok} = :mnesia.create_table(cskill_table_name, attributes: cskill_attrs, type: :bag)
 
+    cfrontend_table_name = CharacterFrontendRecord.mnesia_table_name()
+    cfrontend_attrs = CharacterFrontendRecord.mnesia_attributes()
+    {:atomic, :ok} = :mnesia.create_table(cfrontend_table_name, attributes: cfrontend_attrs)
+
     Logger.info("ChannelCaching started")
     {:noreply, nil}
   end
 
   @impl true
-  def handle_call({:init_player, %Account{} = account, %Character{} = character}, _from, state) do
+  def handle_call({:init_player, account, character, frontend_pid}, _from, state) do
     %Character{id: character_id} = character
 
     acc_record = AccountRecord.new(character_id, account)
     char_record = CharacterRecord.new(character)
+    front_record = CharacterFrontendRecord.new(character_id, frontend_pid)
 
     # TODO: Get from database
-    skill_vnums = [200, 201, 200, 201, 209]
+    skill_vnums = [200, 201, 209]
 
     query = fn ->
       :mnesia.write(acc_record)
       :mnesia.write(char_record)
+      :mnesia.write(front_record)
 
       Enum.each(skill_vnums, fn vnum ->
         skill_record = CharacterSkillRecord.new(character_id, vnum)
@@ -89,6 +97,16 @@ defmodule ChannelCaching.Worker do
     case :mnesia.dirty_read({cskill_table_name, character_id}) do
       [] -> {:reply, {:error, :invalid_id}, state}
       skills -> {:reply, {:ok, Enum.map(skills, &character_skill(&1, :vnum))}, state}
+    end
+  end
+
+  @impl true
+  def handle_call({:frontend_pid_from_char_id, character_id}, _from, state) do
+    cfrontend_table_name = CharacterFrontendRecord.mnesia_table_name()
+
+    case :mnesia.dirty_read({cfrontend_table_name, character_id}) do
+      [frontend_record] -> {:reply, {:ok, character_frontend(frontend_record, :pid)}, state}
+      _ -> {:reply, {:error, :invalid_id}, state}
     end
   end
 

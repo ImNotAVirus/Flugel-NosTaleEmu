@@ -3,10 +3,11 @@ defmodule ChannelFrontend.PlayerActions do
   TODO: Documentation for ChannelFrontend.PlayerActions
   """
 
+  import ChannelCaching.Character, only: [character: 2]
+
   alias ChannelFrontend.ChatViews
   alias ChannelFrontend.EntityViews
   # alias ChannelFrontend.InventoryViews
-  alias ChannelFrontend.MiniMapViews
   alias ChannelFrontend.PlayerViews
   alias ChannelFrontend.UserInterfaceViews
   alias ElvenGard.Structures.Client
@@ -31,8 +32,9 @@ defmodule ChannelFrontend.PlayerActions do
     Client.send(client, PlayerViews.render(:lev, character))
     Client.send(client, PlayerViews.render(:ski, skills))
     Client.send(client, EntityViews.render(:cond, character))
-    Client.send(client, MiniMapViews.render(:at, character))
-    Client.send(client, MiniMapViews.render(:c_map, character))
+
+    ChannelMap.setup_player_map(character, self())
+
     Client.send(client, PlayerViews.render(:sc, character))
     Client.send(client, EntityViews.render(:pairy, character))
     Client.send(client, PlayerViews.render(:rsfi, nil))
@@ -54,7 +56,7 @@ defmodule ChannelFrontend.PlayerActions do
   ## Helpers
 
   @doc false
-  @spec send_bns(Client.t()) :: term
+  @spec send_bns(Client.t()) :: any()
   defp send_bns(client) do
     messages = Enum.map(1..10, fn x -> "ElvenGard ##{x}" end)
 
@@ -65,7 +67,7 @@ defmodule ChannelFrontend.PlayerActions do
   end
 
   @doc false
-  @spec send_hello(Client.t()) :: term
+  @spec send_hello(Client.t()) :: any()
   defp send_hello(client) do
     prefix = String.duplicate("-", 31)
     suffix = String.duplicate("-", 82)

@@ -11,10 +11,15 @@ defmodule Core.FrontendHelpers do
   TODO: Documentation
   TODO: Move this function inside ElvenGard lib
   """
-  @spec send_packet(Client.t(), String.t()) :: :ok
+  @spec send_packet(Client.t() | pid(), String.t()) :: :ok
+  def send_packet(frontend_pid, message) when is_pid(frontend_pid) do
+    GenServer.cast(frontend_pid, {:send_packet, message})
+  end
+
   def send_packet(%Client{} = client, message) do
     # TODO: Later use client.frontend_pid
-    frontend_pid = Client.get_metadata(client, :frontend_pid)
-    GenServer.cast(frontend_pid, {:send_packet, client, message})
+    client
+    |> Client.get_metadata(:frontend_pid)
+    |> send_packet(message)
   end
 end

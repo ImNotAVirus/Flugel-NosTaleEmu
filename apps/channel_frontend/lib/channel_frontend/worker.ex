@@ -57,9 +57,9 @@ defmodule ChannelFrontend.Worker do
 
   @doc false
   @spec handle_cast({:send_packet, Client.t(), String.t()}, any()) :: {:noreply, any()}
-  def handle_cast({:send_packet, client, message}, state) do
+  def handle_cast({:send_packet, message}, %Client{} = client) do
     Client.send(client, message)
-    {:noreply, state}
+    {:noreply, client}
   end
 
   #
